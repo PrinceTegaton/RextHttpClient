@@ -27,9 +27,9 @@ namespace RextConsole
                 var rsp = _rext.GetJSON<int>(new RextOptions
                 {
                     Url = "http://localhost/ryderweb.client/api/auth/testbadrequest",
-                    Payload = new { },
-                    Header = 
+                    Payload = new { }
                 }).Result;
+
                 if (rsp.IsSuccess)
                 {
                     Console.WriteLine(rsp.Data.ToString());
