@@ -4,95 +4,69 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rext
 {
-
-
-    public class RextOptions
-    {
-        public string Url { get; set; }
-        public object Payload { get; set; }
-        public HttpHeaders Header { get; set; };
-        public bool ThrowExceptionIfNotSuccessResponse { get; set; }
-        public bool ThrowExceptionOnDeserializationFailure { get; set; }
-    }
-
     public class RextHttpClient
     {
-        public string ProxyAddress { get; set; }
+        public RextHttpCongifuration Configuration { get; set; } = new RextHttpCongifuration();
 
-        public RextHttpClient(string proxyAddress = null)
+
+        public RextHttpClient(RextHttpCongifuration configuration = null)
         {
-            ProxyAddress = proxyAddress;
+            if (configuration != null)
+                this.Configuration = configuration;
         }
 
         public async Task<CustomHttpResponse<T>> GetJSON<T>(RextOptions options)
         {
-            return GetJSON<T>(options.Url, options.Payload, options.Header).Result;
+            return await GetJSON<T>(options.Url, options.Payload, options.Header);
         }
 
-        public async Task<CustomHttpResponse<T>> GetJSON<T>(string url, object param = null, object header = null)
+        public async Task<CustomHttpResponse<T>> GetJSON<T>(string url, object payload = null, object header = null)
         {
-            var rsp = new CustomHttpResponse<T>();
-
-            var data = await MakeRequest(HttpMethod.Get, url, param, header);
+            var data = await MakeRequest<T>(HttpMethod.Get, url, payload, header);
             if (data == null)
             {
 
             }
 
-            rsp.StatusCode = data.StatusCode;
-
-            if (data.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                if (!string.IsNullOrEmpty(data.Content))
-                {
-                    T newObj = Helpers.DeserializeObject<T>(data.Content, true);
-                    rsp.Data = newObj;
-                }
-
-                return rsp;
-            }
-
-            return rsp;
+            return data;
         }
 
-        public async Task<CustomHttpResponse<string>> MakeRequest(HttpMethod method, string url, object param = null, object header = null)
+        public async Task<CustomHttpResponse<T>> MakeRequest<T>(HttpMethod method, string url, object param = null, object header = null)
         {
-            var rsp = new CustomHttpResponse<string>();
+            var rsp = new CustomHttpResponse<T>();
             var response = new HttpResponseMessage();
-            string responseString = null;
+            string responseString = string.Empty;
 
             try
             {
                 string queryString = string.Empty;
 
+                // generate querystring from object if GET
                 if (method == HttpMethod.Get && param != null)
-                {
-                    var type = param.GetType();
-                    var props = type.GetProperties();
-                    var pairs = props.Select(x => x.Name + "=" + x.GetValue(param, null)).ToArray();
-                    queryString = "?" + string.Join("&", pairs);
-                }
+                    queryString = param.ToQueryString();
 
-                string endPoint = $"{queryString}";
-                var requestUri = new Uri($"{url}{queryString}");
-                var httpRequestMessage = new HttpRequestMessage(method, requestUri);
+                HttpRequestMessage requestMsg = new HttpRequestMessage(method, new Uri(url + queryString));
+
+                // set header if object has value
+                if (header != null)
+                    SetHeader(requestMsg, header);
 
                 // POST request
                 if (method == HttpMethod.Post & param != null)
                 {
+                    // convert object to JSON
                     string strPayload = param.ToJson();
-                    httpRequestMessage.Content = new StringContent(strPayload, Encoding.UTF8, "application/json");
+                    requestMsg.Content = new StringContent(strPayload, Encoding.UTF8, "application/json");
                 }
 
-                //httpRequestMessage.Headers. = new AuthenticationHeaderValue("amx", null);
-
-                response = await this.SendAsync(httpRequestMessage, CancellationToken.None);
+                response = await this.SendAsync(requestMsg, CancellationToken.None);
                 rsp.StatusCode = response.StatusCode;
                 responseString = await response.Content.ReadAsStringAsync();
 
@@ -104,18 +78,21 @@ namespace Rext
                 else
                 {
                     rsp.Content = responseString;
-                    rsp.Message = "Http call unsuccessful";
+                    rsp.Message = "Http call completed but not successful";
                 }
 
-                //else
-                //{
-                //    responseString = await response.Content.ReadAsStringAsync();
+                if (rsp.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    if (!string.IsNullOrEmpty(responseString))
+                    {
+                        T newObj = Helpers.DeserializeObject<T>(responseString, true);
+                        rsp.Data = newObj;
+                    }
+                }
+                else
+                {
 
-                //    throw new RextException(responseString)
-                //    {
-                //        StatusCode = response.StatusCode
-                //    };
-                //}
+                }
 
                 return rsp;
             }
@@ -137,7 +114,7 @@ namespace Rext
             //string requestUri = System.Web.HttpUtility.UrlEncode(request.RequestUri.ToString().ToLower());
             //string requestHttpMethod = request.Method.Method;
 
-            using (var httpClientHandler = ProxyHttpClientHandler.ProxyHandler(ProxyAddress))
+            using (var httpClientHandler = ProxyHttpClientHandler.ProxyHandler(Configuration.ProxyAddress, Configuration.RelaxSslCertValidation))
             {
                 using (var client = new HttpClient(httpClientHandler))
                 {
@@ -146,6 +123,45 @@ namespace Rext
             }
 
             return response;
+        }
+
+        private void SetHeader(HttpRequestMessage requestObj, object header)
+        {
+            if (header != null)
+            {
+                // process from a list of objects
+                if (header.IsList())
+                {
+                    foreach (var i in header as List<object>)
+                    {
+                        PropertyInfo headerItem = i.GetType().GetProperties().FirstOrDefault();
+                        string value = headerItem.GetValue(i, null)?.ToString();
+
+                        if (!string.IsNullOrEmpty(value)) // prevent adding null header item
+                            requestObj.Headers.Add(headerItem.Name, value);
+                    }
+                }
+
+                // process from a dictionary or key-value-pair
+                else if (header.IsDictionary())
+                {
+                    foreach (var i in header as Dictionary<string, string>)
+                    {
+                        if (!string.IsNullOrEmpty(i.Value))  // prevent adding null header item
+                            requestObj.Headers.Add(i.Key, i.Value);
+                    }
+                }
+
+                // process from a single object
+                else
+                {
+                    PropertyInfo headerItem = header.GetType().GetProperties().FirstOrDefault();
+                    string value = headerItem.GetValue(header, null)?.ToString();
+
+                    if (!string.IsNullOrEmpty(value))  // prevent adding null header item
+                        requestObj.Headers.Add(headerItem.Name, value);
+                }
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Rext
 {
-    public class CustomHttpResponse
+    public class CustomResponse
     {
         public bool IsSuccess
         {
@@ -19,7 +19,7 @@ namespace Rext
         public string Message { get; set; }
     }
 
-    public class CustomHttpResponse<T> : CustomHttpResponse
+    public class CustomHttpResponse<T> : CustomResponse
     {
         public T Data { get; set; }
     }

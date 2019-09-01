@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -9,6 +11,34 @@ namespace Rext
 {
     public static class Helpers
     {
+        public static bool IsList(this object obj)
+        {
+            if (obj == null) return false;
+
+            Type type = obj.GetType();
+            return obj is IList && type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(IList<>));
+        }
+
+        public static bool IsDictionary(this object obj)
+        {
+            if (obj == null) return false;
+
+            Type type = obj.GetType();
+            return obj is IDictionary && type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>));
+        }
+
+        public static string ToQueryString(this object obj)
+        {
+            if (obj == null) return string.Empty;
+
+            Type type = obj.GetType();
+            var props = type.GetProperties();
+            string[] pairs = props.Select(x => x.Name + "=" + x.GetValue(obj, null)).ToArray();
+            string queryString = "?" + string.Join("&", pairs);
+
+            return queryString;
+        }
+
         public static T DeserializeObject<T>(string content, bool throwExceptionOnFailure = false) // where T : class
         {
             try
@@ -32,22 +62,6 @@ namespace Rext
             };
 
             return JsonConvert.SerializeObject(value, Newtonsoft.Json.Formatting.Indented, settings);
-        }
-    }
-
-    public class ProxyHttpClientHandler
-    {
-        public static HttpClientHandler ProxyHandler(string address)
-        {
-            var proxyHandler = new HttpClientHandler
-            {
-                Proxy = string.IsNullOrEmpty(address) ? null : new WebProxy(new Uri(address), BypassOnLocal: false),
-                UseProxy = string.IsNullOrEmpty(address) ? false : true,
-                DefaultProxyCredentials = System.Net.CredentialCache.DefaultNetworkCredentials,
-                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }
-            };
-
-            return proxyHandler;
         }
     }
 

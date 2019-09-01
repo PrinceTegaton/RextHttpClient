@@ -1,5 +1,6 @@
 ﻿using Rext;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 
 namespace RextConsole
@@ -17,18 +18,16 @@ namespace RextConsole
                 Console.WriteLine("Hello Rext!");
 
                 string url = "http://localhost/ryderweb.client/api/auth/testbadrequest";
-
-                var v = new RextOptions
+                var header = new Dictionary<string, string>
                 {
-                    Url = "http://localhost/ryderweb.client/api/auth/testbadrequest",
-                    Payload = new { }
+                   { "Authorization", "Bearer xxx12345" },
+                   { "Role", "admin" }
                 };
 
-                var rsp = _rext.GetJSON<int>(new RextOptions
-                {
-                    Url = "http://localhost/ryderweb.client/api/auth/testbadrequest",
-                    Payload = new { }
-                }).Result;
+                var header_single = new { Authorization =  "Bearer xxx12345" };
+
+                var rsp = _rext.GetJSON<string>("http://localhost/ryderweb.client/api/auth/testbadrequest",
+                    new { name = "Jordan Pickford" }, header_single).Result;
 
                 if (rsp.IsSuccess)
                 {
@@ -37,6 +36,7 @@ namespace RextConsole
                 else
                 {
                     Console.WriteLine(rsp.StatusCode.ToString());
+                    Console.WriteLine(rsp.Message);
                     Console.WriteLine(rsp.Data.ToString());
                 }
 
