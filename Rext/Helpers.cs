@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace Rext
 {
@@ -39,17 +40,21 @@ namespace Rext
             return queryString;
         }
 
-        public static T DeserializeObject<T>(string content, bool throwExceptionOnFailure = false) // where T : class
+        public static (bool status, string message, T result) DeserializeObject<T>(string content, bool throwExceptionOnDeserializationFailure = false) //, Action callbackOnException = null)
         {
             try
             {
+                // deserialize object to type T
                 var obj = JsonConvert.DeserializeObject<T>(content);
-                return obj;
+                return (true, "OK", obj);
             }
             catch (Exception)
             {
-                throw new RextException($"Unable to deserialize object to specified type of '{nameof(T)}'");
-                //{ex?.InnerException?.Message ?? ex?.Message});
+                string msg = string.Format(StaticMessages.DeserializationFailure, typeof(T).Name);
+                if (throwExceptionOnDeserializationFailure)
+                    throw new RextException(msg); // throw exception as required
+                else
+                    return (false, msg, default(T)); // return failure message as required
             }
         }
 
@@ -63,20 +68,15 @@ namespace Rext
 
             return JsonConvert.SerializeObject(value, Newtonsoft.Json.Formatting.Indented, settings);
         }
-    }
 
-    public class RextException : Exception
-    {
-        public HttpStatusCode StatusCode { get; set; }
-
-        public RextException(string message) : base(message)
+        public static string ToXml(this object value)
         {
-
-        }
-
-        public RextException(string message, HttpStatusCode statusCode) : base(message)
-        {
-            this.StatusCode = statusCode;
+            using (var writer = new System.IO.StringWriter())
+            {
+                var serializer = new XmlSerializer(value.GetType());
+                serializer.Serialize(writer, value);
+                return writer.ToString();
+            }
         }
     }
 }

@@ -18,8 +18,7 @@ namespace Rext
                 {
                     Proxy = new WebProxy(new Uri(address), BypassOnLocal: false),
                     UseProxy = true,
-                    DefaultProxyCredentials = System.Net.CredentialCache.DefaultNetworkCredentials,
-                    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return relaxSslCertValidation; }
+                    DefaultProxyCredentials = System.Net.CredentialCache.DefaultNetworkCredentials
                 };
             }
 
