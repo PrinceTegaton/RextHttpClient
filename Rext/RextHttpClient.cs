@@ -1,98 +1,222 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace Rext
 {
-
-
-    public class RextOptions
+    public class RextHttpClient : IRextHttpClient, IDisposable
     {
-        public string Url { get; set; }
-        public object Payload { get; set; }
-        public HttpHeaders Header { get; set; };
-        public bool ThrowExceptionIfNotSuccessResponse { get; set; }
-        public bool ThrowExceptionOnDeserializationFailure { get; set; }
-    }
+        bool disposed = false;
 
-    public class RextHttpClient
-    {
-        public string ProxyAddress { get; set; }
+        /// <summary>
+        /// Rext configuration object
+        /// </summary>
+        public static RextConfigurationBundle ConfigurationBundle { get; set; } = new RextConfigurationBundle();
 
-        public RextHttpClient(string proxyAddress = null)
+        /// <summary>
+        /// Last http call statuscode
+        /// </summary>
+        public static int ReturnStatusCode { get; }
+
+        public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
+        public Stopwatch Stopwatch { get { return _stopwatch; } }
+        private Stopwatch _stopwatch;
+
+
+        public RextHttpClient(RextHttpCongifuration configuration = null)
         {
-            ProxyAddress = proxyAddress;
+            if (configuration != null)
+                ConfigurationBundle.HttpConfiguration = configuration;
+        }
+
+        public static void Setup(Action<RextConfigurationBundle> config)
+        {
+            config(ConfigurationBundle);
+        }
+
+        #region Interface Implementations
+
+        public async Task<CustomHttpResponse<T>> PostJSON<T>(RextOptions options)
+        {
+            options.Method = HttpMethod.Post;
+            var data = await MakeRequest<T>(options, ContentType.Application_JSON);
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<T>> PostJSON<T>(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest<T>(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Post,
+                Header = header,
+                Payload = payload
+            }, ContentType.Application_JSON);
+
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<string>> GetString(RextOptions options)
+        {
+            options.Method = HttpMethod.Get;
+            var data = await MakeRequest(options, ContentType.Text_Plain);
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<string>> GetString(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Get,
+                Header = header,
+                Payload = payload
+            }, ContentType.Text_Plain);
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<T>> GetXML<T>(RextOptions options)
+        {
+            options.Method = HttpMethod.Get;
+            var data = await MakeRequest<T>(options, ContentType.Application_XML);
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<T>> GetXML<T>(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest<T>(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Get,
+                Header = header,
+                Payload = payload
+            }, ContentType.Application_XML);
+
+            return data;
         }
 
         public async Task<CustomHttpResponse<T>> GetJSON<T>(RextOptions options)
         {
-            return GetJSON<T>(options.Url, options.Payload, options.Header).Result;
+            options.Method = HttpMethod.Get;
+            var data = await MakeRequest<T>(options, ContentType.Application_JSON);
+            return data;
         }
 
-        public async Task<CustomHttpResponse<T>> GetJSON<T>(string url, object param = null, object header = null)
+        public async Task<CustomHttpResponse<T>> GetJSON<T>(string url, object payload = null, object header = null)
         {
-            var rsp = new CustomHttpResponse<T>();
-
-            var data = await MakeRequest(HttpMethod.Get, url, param, header);
-            if (data == null)
+            var data = await MakeRequest<T>(new RextOptions
             {
+                Url = url,
+                Method = HttpMethod.Get,
+                Header = header,
+                Payload = payload
+            }, ContentType.Application_JSON);
 
-            }
+            return data;
+        }
 
-            rsp.StatusCode = data.StatusCode;
-
-            if (data.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                if (!string.IsNullOrEmpty(data.Content))
-                {
-                    T newObj = Helpers.DeserializeObject<T>(data.Content, true);
-                    rsp.Data = newObj;
-                }
-
-                return rsp;
-            }
+        public async Task<CustomHttpResponse<string>> MakeRequest(RextOptions options, string contentType)
+        {
+            var rsp = await ProcessRequest(options, contentType);
+            rsp.Data = rsp.Content;
+            rsp.Content = null;
 
             return rsp;
         }
 
-        public async Task<CustomHttpResponse<string>> MakeRequest(HttpMethod method, string url, object param = null, object header = null)
+        public async Task<CustomHttpResponse<T>> MakeRequest<T>(RextOptions options, string contentType)
         {
+            var rsp = await ProcessRequest(options, contentType);
+
+            var newRsp = new CustomHttpResponse<T>
+            {
+                StatusCode = rsp.StatusCode,
+                Message = rsp.Message
+            };
+
+            if (newRsp.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                if (!string.IsNullOrEmpty(rsp.Content))
+                {
+                    bool throwExOnFail = options.ThrowExceptionOnDeserializationFailure ?? ConfigurationBundle.HttpConfiguration.ThrowExceptionOnDeserializationFailure;
+                    var newObj = Helpers.DeserializeObject<T>(rsp.Content, throwExOnFail);
+                    if (newObj.status)
+                        newRsp.Data = newObj.result;
+                    else
+                        newRsp.Message = newObj.message;
+                }
+            }
+
+            return newRsp;
+        }
+
+        #endregion
+
+
+        //private async Task<CustomHttpResponse<string>> ProcessRequest(HttpMethod method, string url, object param = null, object header = null)
+        private async Task<CustomHttpResponse<string>> ProcessRequest(RextOptions options, string contentType)
+        {
+            // execute all user actions pre-call
+            ConfigurationBundle.BeforeCall();
+
             var rsp = new CustomHttpResponse<string>();
             var response = new HttpResponseMessage();
-            string responseString = null;
+            string responseString = string.Empty;
 
             try
             {
                 string queryString = string.Empty;
 
-                if (method == HttpMethod.Get && param != null)
-                {
-                    var type = param.GetType();
-                    var props = type.GetProperties();
-                    var pairs = props.Select(x => x.Name + "=" + x.GetValue(param, null)).ToArray();
-                    queryString = "?" + string.Join("&", pairs);
-                }
+                // generate querystring from object if GET
+                if (options.Method == HttpMethod.Get && options.Payload != null)
+                    queryString = options.Payload.ToQueryString();
 
-                string endPoint = $"{queryString}";
-                var requestUri = new Uri($"{url}{queryString}");
-                var httpRequestMessage = new HttpRequestMessage(method, requestUri);
+                var requestMsg = new HttpRequestMessage(options.Method, new Uri(options.Url + queryString));
+
+                // set header if object has value
+                if (this.Headers != null)
+                    requestMsg.SetHeader(this.Headers);
+
+                if (options.Header != null)
+                    requestMsg.SetHeader(options.Header);
 
                 // POST request
-                if (method == HttpMethod.Post & param != null)
+                if (options.Method == HttpMethod.Post & options.Payload != null)
                 {
-                    string strPayload = param.ToJson();
-                    httpRequestMessage.Content = new StringContent(strPayload, Encoding.UTF8, "application/json");
+                    string strPayload = string.Empty;
+
+                    // convert object to specified content-type
+                    if (contentType == ContentType.Application_JSON)
+                        strPayload = options.Payload.ToJson();
+                    else if (contentType == ContentType.Application_XML)
+                        strPayload = options.Payload.ToXml();
+                    else
+                        strPayload = options.Payload.ToString();
+
+                    requestMsg.Content = new StringContent(strPayload, Encoding.UTF8, contentType);
                 }
 
-                //httpRequestMessage.Headers. = new AuthenticationHeaderValue("amx", null);
+                // use stopwatch to monitor httpcall duration
+                if (ConfigurationBundle.EnableStopwatch)
+                {
+                    _stopwatch = new Stopwatch();
+                    _stopwatch.Start();
+                }
 
-                response = await this.SendAsync(httpRequestMessage, CancellationToken.None);
+                response = await this.SendAsync(requestMsg, CancellationToken.None);
+
+                // set watch value to public member
+                if (ConfigurationBundle.EnableStopwatch) _stopwatch.Stop();
+
                 rsp.StatusCode = response.StatusCode;
                 responseString = await response.Content.ReadAsStringAsync();
 
@@ -103,49 +227,77 @@ namespace Rext
                 }
                 else
                 {
+                    // this will always run before custom error-code actions
+                    // always to ThrowExceptionIfNotSuccessResponse=false if you will use custom error-code actions
+                    // perform checks for neccessary override
+                    bool throwExIfNotSuccessRsp = options.ThrowExceptionIfNotSuccessResponse ?? ConfigurationBundle.HttpConfiguration.ThrowExceptionIfNotSuccessResponse;
+                    if (throwExIfNotSuccessRsp)
+                        throw new RextException($"Server response is {rsp.StatusCode}");
+
                     rsp.Content = responseString;
-                    rsp.Message = "Http call unsuccessful";
+                    rsp.Message = "Http call completed but not successful";
+
+                    // handle code specific error from user
+                    int code = (int)response.StatusCode;
+                    if (code > 0 && ConfigurationBundle.StatusCodesToHandle.Contains(code))
+                        ConfigurationBundle.OnStatusCode(ReturnStatusCode);
                 }
 
-                //else
-                //{
-                //    responseString = await response.Content.ReadAsStringAsync();
-
-                //    throw new RextException(responseString)
-                //    {
-                //        StatusCode = response.StatusCode
-                //    };
-                //}
-
+                // execute all user actions post-call
+                ConfigurationBundle.AfterCall();
                 return rsp;
             }
             catch (Exception ex)
             {
-                rsp.StatusCode = response.StatusCode;
-                //if (response.Content != null) await response?.Content?.ReadAsStringAsync();
-                rsp.Message = /*responseString ??*/ ($"{ex?.Message} :: {ex?.InnerException?.Message}");
-                //"Error :: Unable to get data at the moment!";
+                // execute all user actions on error
+                ConfigurationBundle.OnError();
+
+                rsp.StatusCode = 0;
+
+                if (ex?.Message.ToLower().Contains("a socket operation was attempted to an unreachable host") == true)
+                    rsp.Message = "Internet connection error";
+                else
+                    rsp.Message = $"{ex?.Message} :: {ex?.InnerException?.InnerException?.Message ?? ex?.InnerException?.Message}";
+
                 return rsp;
             }
         }
 
-        public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+        private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
             HttpResponseMessage response = null;
-            //string requestContentBase64String = string.Empty;
-            //string requestUri = System.Web.HttpUtility.UrlEncode(request.RequestUri.ToString().ToLower());
-            //string requestHttpMethod = request.Method.Method;
+            RextHttpCongifuration config = ConfigurationBundle.HttpConfiguration ?? new RextHttpCongifuration();
 
-            using (var httpClientHandler = ProxyHttpClientHandler.ProxyHandler(ProxyAddress))
+            // create httpclient from proxy handler
+            using (var httpClientHandler = ProxyHttpClientHandler.ProxyHandler(config.ProxyAddress, config.RelaxSslCertValidation))
             {
-                using (var client = new HttpClient(httpClientHandler))
+                using (var client = ConfigurationBundle.HttpClient ?? new HttpClient(httpClientHandler))
                 {
+                    if (ConfigurationBundle.HttpConfiguration.Timeout > 0)
+                        client.Timeout = TimeSpan.FromSeconds(ConfigurationBundle.HttpConfiguration.Timeout);
                     response = await client.SendAsync(request, cancellationToken);
                 }
             }
 
             return response;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected void Dispose(bool disposing)
+        {
+            if (disposed) return;
+
+            if (disposing)
+            {
+                // cleanup objects
+            }
+
+            GC.SuppressFinalize(this);
         }
     }
 }
