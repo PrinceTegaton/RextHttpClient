@@ -23,7 +23,7 @@ namespace Rext
         /// Get XML result deserialized to custom type. Accepts advanced options
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="options">RextOption to configure http call</param>
+        /// <param name="options"></param>
         /// <returns></returns>
         Task<CustomHttpResponse<T>> GetXML<T>(RextOptions options);
 
@@ -41,7 +41,7 @@ namespace Rext
         /// Get JSON result deserialized to custom type. Accepts advanced options
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="options">RextOption to configure http call</param>
+        /// <param name="options"></param>
         /// <returns></returns>
         Task<CustomHttpResponse<T>> GetJSON<T>(RextOptions options);
 
@@ -75,24 +75,22 @@ namespace Rext
         /// Make http request and receive result as string
         /// </summary>
         /// <param name="options">RextOption to configure http call</param>
-        /// <param name="contentType">Set the http content-type</param>
         /// <returns></returns>
-        Task<CustomHttpResponse<string>> MakeRequest(RextOptions options, string contentType);
+        Task<CustomHttpResponse<string>> MakeRequest(RextOptions options);
 
         /// <summary>
         /// Make http request and receive result deserialized to custom type
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="options">RextOption to configure http call</param>
-        /// <param name="contentType">Set the http content-type</param>
         /// <returns></returns>
-        Task<CustomHttpResponse<T>> MakeRequest<T>(RextOptions options, string contentType);
+        Task<CustomHttpResponse<T>> MakeRequest<T>(RextOptions options);
 
         /// <summary>
         /// Post JSON content for JSON result deserialized to custom type. Accepts advanced options
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="options">RextOption to configure http call</param>
+        /// <param name="options"></param>
         /// <returns></returns>
         Task<CustomHttpResponse<T>> PostJSON<T>(RextOptions options);
 
@@ -107,10 +105,10 @@ namespace Rext
         Task<CustomHttpResponse<T>> PostJSON<T>(string url, object payload = null, object header = null);
 
         /// <summary>
-        /// Post XML content for XML result deserialized to custom type. Accepts advanced options
+        /// Post XML content for JSON result deserialized to custom type. Accepts advanced options
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="options">RextOption to configure http call</param>
+        /// <param name="options"></param>
         /// <returns></returns>
         Task<CustomHttpResponse<T>> PostXML<T>(RextOptions options);
 

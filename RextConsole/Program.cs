@@ -75,24 +75,29 @@ namespace RextConsole
                     //                    header_single).GetAwaiter().GetResult();
 
 
-                    var rsp = _rext.GetString("https://localhost:44316/api/home/getstring").GetAwaiter().GetResult();
-                    Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
-                    Console.WriteLine(rsp.Data);
-
-                    //var rsp = _rext.GetJSON<object>("https://localhost:44316/api/home/status?code=400", null, new { api_key = "12345" }).GetAwaiter().GetResult();
+                    //var rsp = _rext.GetString("https://localhost:44316/api/home/getstring").GetAwaiter().GetResult();
                     //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
                     //Console.WriteLine(rsp.Data);
 
-                    //var p = new Person
-                    //{
-                    //    Name = "Jack",
-                    //    Location = "Manchester",
-                    //    Status = true
-                    //};
-
-                    //var rsp = _rext.PostXML<Person>("https://localhost:44316/api/home/createperson", p).GetAwaiter().GetResult();
+                    //var rsp = _rext.GetJSON<object>("https://localhost:44316/api/home/status?code=401", null, new { api_key = "12345" }).GetAwaiter().GetResult();
                     //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
-                    //Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
+                    //Console.WriteLine(rsp.Data);
+
+                    var p = new Person
+                    {
+                        Name = "Jack",
+                        Location = "Manchester",
+                        Status = true
+                    };
+
+                    var rsp = _rext.PostXML<Person>(new RextOptions
+                    {
+                        Url = "https://localhost:44316/api/home/createperson",
+                        Payload = p,
+                        ContentType = ContentType.Application_JSON
+                    }).GetAwaiter().GetResult();
+                    Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
+                    Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
 
                     Console.WriteLine("--------------");
                     goto _RunTest;
