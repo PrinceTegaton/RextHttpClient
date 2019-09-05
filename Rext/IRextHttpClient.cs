@@ -121,5 +121,9 @@ namespace Rext
         /// <param name="header"></param>
         /// <returns></returns>
         Task<CustomHttpResponse<T>> PostXML<T>(string url, object payload = null, object header = null);
+
+        Task<CustomHttpResponse<T>> PostForm<T>(RextOptions options);
+
+        Task<CustomHttpResponse<T>> PostForm<T>(string url, object payload = null, object header = null);
     }
 }

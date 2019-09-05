@@ -100,14 +100,27 @@ namespace RextConsole
                     //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
                     //Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
 
-                    var rsp = _rext.GetXML<ArrayOfPerson>("https://localhost:44316/api/home/getpeoplelist")
+                    //var rsp = _rext.GetXML<ArrayOfPerson>("https://localhost:44316/api/home/getpeoplelist")
+                    //    .GetAwaiter().GetResult();
+                    //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
+
+                    //foreach (var i in rsp.Data.Person)
+                    //{
+                    //    Console.WriteLine($"Name: {i.Name}, Location: {i.Location}");
+                    //}
+
+                    var p = new Person
+                    {
+                        Name = "Vicky Kay",
+                        Location = "London, UK",
+                        Status = false
+                    };
+
+                    var rsp = _rext.PostForm<Person>("https://localhost:44316/api/home/createpersonform", p)
                         .GetAwaiter().GetResult();
                     Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
+                    Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
 
-                    foreach (var i in rsp.Data.Person)
-                    {
-                        Console.WriteLine($"Name: {i.Name}, Location: {i.Location}");
-                    }
 
                     Console.WriteLine("--------------");
                     goto _RunTest;

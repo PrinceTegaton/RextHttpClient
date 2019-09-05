@@ -128,6 +128,8 @@ namespace Rext
         /// If set to true, an exception is thrown whenever a response deserialization fails
         /// </summary>
         public bool? ThrowExceptionOnDeserializationFailure { get; set; }
+
+        internal bool IsForm { get; set; }
     }
     
 }

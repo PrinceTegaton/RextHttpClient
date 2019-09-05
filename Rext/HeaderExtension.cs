@@ -89,6 +89,17 @@ namespace Rext
             }
         }
 
+        public static void SetHeader(this HttpRequestMessage requestObj, string key, string value)
+        {
+            if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
+            {
+                RemoveDuplicate(requestObj, key);
+
+                if (!string.IsNullOrEmpty(value))  // prevent adding null header item
+                    requestObj.Headers.Add(key, value);
+            }
+        }
+
         private static void RemoveDuplicate(HttpRequestMessage requestObj, string headerKey)
         {
             // prevent duplicate header item
