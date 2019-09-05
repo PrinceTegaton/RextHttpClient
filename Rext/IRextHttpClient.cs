@@ -105,5 +105,23 @@ namespace Rext
         /// <param name="header"></param>
         /// <returns></returns>
         Task<CustomHttpResponse<T>> PostJSON<T>(string url, object payload = null, object header = null);
+
+        /// <summary>
+        /// Post XML content for XML result deserialized to custom type. Accepts advanced options
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns></returns>
+        Task<CustomHttpResponse<T>> PostXML<T>(RextOptions options);
+
+        /// <summary>
+        /// Post XML content for XML result deserialized to custom type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="url"></param>
+        /// <param name="payload"></param>
+        /// <param name="header"></param>
+        /// <returns></returns>
+        Task<CustomHttpResponse<T>> PostXML<T>(string url, object payload = null, object header = null);
     }
 }

@@ -110,9 +110,14 @@ namespace Rext
         public object Header { get; set; }
 
         /// <summary>
-        /// Httpclient request content-type
+        /// The data format of your payload
         /// </summary>
-        //public string ContentType { get; set; }
+        public string ContentType { get; set; }
+
+        /// <summary>
+        /// The expected data format of the response
+        /// </summary>
+        public string ExpectedResponseFormat { get; set; }
 
         /// <summary>
         /// If set to true, a exception is thrown whenever httpclient returns a statuscode other than 200

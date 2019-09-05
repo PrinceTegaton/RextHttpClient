@@ -45,6 +45,26 @@ namespace Rext
 
         #region Interface Implementations
 
+        public async Task<CustomHttpResponse<T>> PostXML<T>(RextOptions options)
+        {
+            options.Method = HttpMethod.Post;
+            var data = await MakeRequest<T>(options, ContentType.Application_XML);
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<T>> PostXML<T>(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest<T>(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Post,
+                Header = header,
+                Payload = payload
+            }, ContentType.Application_XML);
+
+            return data;
+        }
+
         public async Task<CustomHttpResponse<T>> PostJSON<T>(RextOptions options)
         {
             options.Method = HttpMethod.Post;
@@ -148,11 +168,22 @@ namespace Rext
                 if (!string.IsNullOrEmpty(rsp.Content))
                 {
                     bool throwExOnFail = options.ThrowExceptionOnDeserializationFailure ?? ConfigurationBundle.HttpConfiguration.ThrowExceptionOnDeserializationFailure;
-                    var newObj = Helpers.DeserializeObject<T>(rsp.Content, throwExOnFail);
-                    if (newObj.status)
-                        newRsp.Data = newObj.result;
+                    (bool status, string message, T result) output = (false, null, default(T));
+                    //T newObj = default(T);
+
+                    if (contentType == ContentType.Application_JSON)
+                    {
+                        output = Helpers.DeserializeJSON<T>(rsp.Content, throwExOnFail);
+                    }
+                    else if (contentType == ContentType.Application_XML)
+                    {
+                        output = Helpers.DeserializeXML<T>(rsp.Content, throwExOnFail);
+                    }
+
+                    if (output.status)
+                        newRsp.Data = output.result;
                     else
-                        newRsp.Message = newObj.message;
+                        newRsp.Message = output.message;
                 }
             }
 
@@ -188,6 +219,9 @@ namespace Rext
 
                 if (options.Header != null)
                     requestMsg.SetHeader(options.Header);
+
+                if (!string.IsNullOrEmpty(contentType))
+                    requestMsg.Headers.Add("Accept", contentType);
 
                 // POST request
                 if (options.Method == HttpMethod.Post & options.Payload != null)

@@ -39,55 +39,69 @@ namespace RextConsole
                     opt.StatusCodesToHandle = new int[] { 401, 500 };
                 });
 
-                _rext = new RextHttpClient();
+            _RunTest:
+                Console.WriteLine("Hit 'R' to run test");
 
-                Console.WriteLine("Hello Rext!");
-
-                string url1 = "https://fudhubapi.dynamicbra.in/api/product/getall";
-                string url2 = "http://httpstat.us/500";
-                var header = new Dictionary<string, string>
+                if (Console.ReadLine().ToUpper() == "R")
                 {
-                   { "client_secret", "xxx12345" },
-                   { "role", "admin" }
-                };
+                    Console.Clear();
+                    _rext = new RextHttpClient();
 
-                var header_single = new { header_single = "header obj from GetJSON" };
+                    Console.WriteLine("Hello Rext!");
 
-                //var rsp = _rext.UseBasicAuthentication("user", "pwd")
-                //               //.UseBearerAuthentication("877834780948087yihfsjhfjs==")
-                //               .AddHeader(new Dictionary<string, string>
-                //               {
-                //                   { "item_1", "one" },
-                //                   { "item_2", "one" }
-                //               })
-                //               .AddHeader("single_obj", "o_b_j")
-                //               .GetJSON<string>(url,
-                //                    new
-                //                    {
-                //                        name = "Jordan Pickford"
-                //                    }, 
-                //                    header_single).GetAwaiter().GetResult();
+                    string url1 = "https://fudhubapi.dynamicbra.in/api/product/getall";
+                    string url2 = "http://httpstat.us/500";
+                    var header = new Dictionary<string, string>
+                    {
+                       { "client_secret", "xxx12345" },
+                       { "role", "admin" }
+                    };
 
-                
+                    var header_single = new { header_single = "header obj from GetJSON" };
 
-                var rsp = _rext.GetString(url2).GetAwaiter().GetResult();
-                Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
-                Console.WriteLine(rsp.Data);
+                    //var rsp = _rext.UseBasicAuthentication("user", "pwd")
+                    //               //.UseBearerAuthentication("877834780948087yihfsjhfjs==")
+                    //               .AddHeader(new Dictionary<string, string>
+                    //               {
+                    //                   { "item_1", "one" },
+                    //                   { "item_2", "one" }
+                    //               })
+                    //               .AddHeader("single_obj", "o_b_j")
+                    //               .GetJSON<string>(url,
+                    //                    new
+                    //                    {
+                    //                        name = "Jordan Pickford"
+                    //                    }, 
+                    //                    header_single).GetAwaiter().GetResult();
 
-                var rsp2 = _rext.GetJSON<object>(new RextOptions
+
+                    var rsp = _rext.GetString("https://localhost:44316/api/home/getstring").GetAwaiter().GetResult();
+                    Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
+                    Console.WriteLine(rsp.Data);
+
+                    //var rsp = _rext.GetJSON<object>("https://localhost:44316/api/home/status?code=400", null, new { api_key = "12345" }).GetAwaiter().GetResult();
+                    //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
+                    //Console.WriteLine(rsp.Data);
+
+                    //var p = new Person
+                    //{
+                    //    Name = "Jack",
+                    //    Location = "Manchester",
+                    //    Status = true
+                    //};
+
+                    //var rsp = _rext.PostXML<Person>("https://localhost:44316/api/home/createperson", p).GetAwaiter().GetResult();
+                    //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
+                    //Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
+
+                    Console.WriteLine("--------------");
+                    goto _RunTest;
+                }
+                else
                 {
-                    Url = url1,
-                    //ThrowExceptionOnDeserializationFailure = true
-                })
-                .GetAwaiter().GetResult();
-                Console.WriteLine($"{rsp2.StatusCode} - {rsp2.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
-                Console.WriteLine(rsp2.Data);
-                
-                var rsp3 = _rext.GetXML<object>("https://api.beta.shipwire.com/exec/RateServices.php")
-                .GetAwaiter().GetResult();
-                Console.WriteLine($"{rsp3.StatusCode} - {rsp3.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
-                Console.WriteLine(rsp3.Data);
-
+                    Console.WriteLine("--------------");
+                    Console.ReadKey();
+                }
             }
             catch (Exception ex)
             {
@@ -112,5 +126,12 @@ namespace RextConsole
             if (code == 500)
                 Console.WriteLine($"---handling Internal Server Error");
         }
+    }
+
+    public class Person
+    {
+        public string Name { get; set; }
+        public string Location { get; set; }
+        public bool Status { get; set; }
     }
 }

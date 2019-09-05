@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Prince Tegaton</Authors>
+    <Company>Dynamic Brain Systems</Company>
+    <Product>Rext Http Client Utility</Product>
+    <RepositoryUrl>https://github.com/princetegaton/RextHttpClient</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageId>RextHttpClient</PackageId>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
