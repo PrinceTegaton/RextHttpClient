@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace Rext
@@ -65,7 +66,7 @@ namespace Rext
             try
             {
                 // deserialize object to type T
-                using (var stringReader = new System.IO.StringReader(content))
+                using (var stringReader = new StringReader(content))
                 {
                     var serializer = new XmlSerializer(typeof(T));
                     var obj = serializer.Deserialize(stringReader);
@@ -81,7 +82,7 @@ namespace Rext
                     return (false, msg, default(T)); // return failure message as required
             }
         }
-
+        
         public static string ToJson(this object value)
         {
             if (value == null) return "{ }";

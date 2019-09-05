@@ -38,7 +38,7 @@ namespace Rext
         Task<CustomHttpResponse<T>> GetXML<T>(string url, object payload = null, object header = null);
 
         /// <summary>
-        /// Get JSON result deserialized to custom type. Accepts advanced options
+        /// Get JSON result deserialized to custom type. Accepts advanced options.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="options"></param>
@@ -87,7 +87,7 @@ namespace Rext
         Task<CustomHttpResponse<T>> MakeRequest<T>(RextOptions options);
 
         /// <summary>
-        /// Post JSON content for JSON result deserialized to custom type. Accepts advanced options
+        /// Post JSON content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="options"></param>
@@ -105,7 +105,7 @@ namespace Rext
         Task<CustomHttpResponse<T>> PostJSON<T>(string url, object payload = null, object header = null);
 
         /// <summary>
-        /// Post XML content for JSON result deserialized to custom type. Accepts advanced options
+        /// Post XML content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="options"></param>

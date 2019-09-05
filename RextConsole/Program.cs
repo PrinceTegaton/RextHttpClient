@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Xml.Serialization;
 
 namespace RextConsole
 {
@@ -83,21 +84,30 @@ namespace RextConsole
                     //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
                     //Console.WriteLine(rsp.Data);
 
-                    var p = new Person
-                    {
-                        Name = "Jack",
-                        Location = "Manchester",
-                        Status = true
-                    };
+                    //var p = new Person
+                    //{
+                    //    Name = "Jack",
+                    //    Location = "Manchester",
+                    //    Status = true
+                    //};
 
-                    var rsp = _rext.PostXML<Person>(new RextOptions
-                    {
-                        Url = "https://localhost:44316/api/home/createperson",
-                        Payload = p,
-                        ContentType = ContentType.Application_JSON
-                    }).GetAwaiter().GetResult();
+                    //var rsp = _rext.PostXML<Person>(new RextOptions
+                    //{
+                    //    Url = "https://localhost:44316/api/home/createperson",
+                    //    Payload = p,
+                    //    ContentType = ContentType.Application_JSON
+                    //}).GetAwaiter().GetResult();
+                    //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
+                    //Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
+
+                    var rsp = _rext.GetXML<ArrayOfPerson>("https://localhost:44316/api/home/getpeoplelist")
+                        .GetAwaiter().GetResult();
                     Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
-                    Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
+
+                    foreach (var i in rsp.Data.Person)
+                    {
+                        Console.WriteLine($"Name: {i.Name}, Location: {i.Location}");
+                    }
 
                     Console.WriteLine("--------------");
                     goto _RunTest;
@@ -133,10 +143,21 @@ namespace RextConsole
         }
     }
 
+    [XmlRoot(ElementName = "ArrayOfPerson")]
+    public class ArrayOfPerson
+    {
+        [XmlElement(ElementName = "Person")]
+        public List<Person> Person { get; set; }
+    }
+
+    [XmlRoot(ElementName = "Person")]
     public class Person
     {
+        [XmlElement(ElementName = "Name")]
         public string Name { get; set; }
+        [XmlElement(ElementName = "Location")]
         public string Location { get; set; }
+        [XmlElement(ElementName = "Status")]
         public bool Status { get; set; }
     }
 }
