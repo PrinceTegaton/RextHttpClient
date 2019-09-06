@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Rext
 {
-    public class ProxyHttpClientHandler
+    internal class ProxyHttpClientHandler
     {
         public static HttpClientHandler ProxyHandler(string address = null, bool relaxSslCertValidation = false)
         {

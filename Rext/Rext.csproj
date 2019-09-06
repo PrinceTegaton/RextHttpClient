@@ -1,11 +1,42 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Prince Tegaton</Authors>
+    <Company>Dynamic Brain Systems</Company>
+    <Product>Rext HttpClient Utility</Product>
+    <RepositoryUrl>https://github.com/princetegaton/RextHttpClient</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageId>RextHttpClient</PackageId>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>Rext is a simple HttpClient wrapper to speed up your api projects. Just plug and play.
+Safely handles request with JSON, XML and Form Data.</Description>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>First ever version of this package release. Beta build. Pls send feedback on github.</PackageReleaseNotes>
+    <PackageTags>json, xml, form-data, encoded-form, api</PackageTags>
+    <PackageIconUrl>https://lh4.googleusercontent.com/YAGKZGub7P1vfgZY4yRoQhZSdqdWM06zXaOjw--7y7nD1O9rTvNPwvyC6wg7zRpx3w59E7sgd38seljRRdg=w1366-h365</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/princetegaton/RextHttpClient</PackageProjectUrl>
+    <PackageLicenseFile>License.txt</PackageLicenseFile>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="License.txt" />
+    <None Remove="ReadMe.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="ReadMe.txt">
+      <PackagePath>\</PackagePath>
+      <Pack>true</Pack>
+    </Content>
+    <None Include="License.txt" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>

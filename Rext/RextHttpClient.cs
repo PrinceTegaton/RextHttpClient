@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -38,6 +39,10 @@ namespace Rext
                 ConfigurationBundle.HttpConfiguration = configuration;
         }
 
+        /// <summary>
+        /// Global setup for Rext behaviors and actions
+        /// </summary>
+        /// <param name="config"></param>
         public static void Setup(Action<RextConfigurationBundle> config)
         {
             config(ConfigurationBundle);
@@ -45,10 +50,65 @@ namespace Rext
 
         #region Interface Implementations
 
+        public async Task<CustomHttpResponse<T>> PostForm<T>(RextOptions options, bool isUrlEncoded = false)
+        {
+            options.Method = HttpMethod.Post;
+            options.IsForm = true;
+            options.ExpectedResponseFormat = ContentType.Application_JSON;
+            options.IsUrlEncoded = isUrlEncoded;
+
+            var data = await MakeRequest<T>(options);
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<T>> PostForm<T>(string url, object payload = null, object header = null, bool isUrlEncoded = false)
+        {
+            var data = await MakeRequest<T>(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Post,
+                Header = header,
+                Payload = payload,
+                ContentType = ContentType.Application_JSON,
+                ExpectedResponseFormat = ContentType.Application_JSON,
+                IsForm = true,
+                IsUrlEncoded = isUrlEncoded
+            });
+
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<T>> PostXML<T>(RextOptions options)
+        {
+            options.Method = HttpMethod.Post;
+            options.ContentType = ContentType.Application_XML;
+            options.ExpectedResponseFormat = ContentType.Application_XML;
+
+            var data = await MakeRequest<T>(options);
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<T>> PostXML<T>(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest<T>(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Post,
+                Header = header,
+                Payload = payload,
+                ContentType = ContentType.Application_XML,
+                ExpectedResponseFormat = ContentType.Application_XML
+            });
+
+            return data;
+        }
+
         public async Task<CustomHttpResponse<T>> PostJSON<T>(RextOptions options)
         {
             options.Method = HttpMethod.Post;
-            var data = await MakeRequest<T>(options, ContentType.Application_JSON);
+            options.ExpectedResponseFormat = ContentType.Application_JSON;
+
+            var data = await MakeRequest<T>(options);
             return data;
         }
 
@@ -59,8 +119,10 @@ namespace Rext
                 Url = url,
                 Method = HttpMethod.Post,
                 Header = header,
-                Payload = payload
-            }, ContentType.Application_JSON);
+                Payload = payload,
+                ContentType = ContentType.Application_JSON,
+                ExpectedResponseFormat = ContentType.Application_JSON
+            });
 
             return data;
         }
@@ -68,7 +130,9 @@ namespace Rext
         public async Task<CustomHttpResponse<string>> GetString(RextOptions options)
         {
             options.Method = HttpMethod.Get;
-            var data = await MakeRequest(options, ContentType.Text_Plain);
+            options.ExpectedResponseFormat = ContentType.Text_Plain;
+
+            var data = await MakeRequest(options);
             return data;
         }
 
@@ -79,15 +143,19 @@ namespace Rext
                 Url = url,
                 Method = HttpMethod.Get,
                 Header = header,
-                Payload = payload
-            }, ContentType.Text_Plain);
+                Payload = payload,
+                ContentType = ContentType.Text_Plain,
+                ExpectedResponseFormat = ContentType.Text_Plain
+            });
             return data;
         }
 
         public async Task<CustomHttpResponse<T>> GetXML<T>(RextOptions options)
         {
             options.Method = HttpMethod.Get;
-            var data = await MakeRequest<T>(options, ContentType.Application_XML);
+            options.ExpectedResponseFormat = ContentType.Application_XML;
+
+            var data = await MakeRequest<T>(options);
             return data;
         }
 
@@ -98,8 +166,10 @@ namespace Rext
                 Url = url,
                 Method = HttpMethod.Get,
                 Header = header,
-                Payload = payload
-            }, ContentType.Application_XML);
+                Payload = payload,
+                ContentType = ContentType.Application_XML,
+                ExpectedResponseFormat = ContentType.Application_XML
+            });
 
             return data;
         }
@@ -107,7 +177,9 @@ namespace Rext
         public async Task<CustomHttpResponse<T>> GetJSON<T>(RextOptions options)
         {
             options.Method = HttpMethod.Get;
-            var data = await MakeRequest<T>(options, ContentType.Application_JSON);
+            options.ExpectedResponseFormat = ContentType.Application_JSON;
+
+            var data = await MakeRequest<T>(options);
             return data;
         }
 
@@ -118,24 +190,26 @@ namespace Rext
                 Url = url,
                 Method = HttpMethod.Get,
                 Header = header,
-                Payload = payload
-            }, ContentType.Application_JSON);
+                Payload = payload,
+                ContentType = ContentType.Application_JSON,
+                ExpectedResponseFormat = ContentType.Application_JSON
+            });
 
             return data;
         }
 
-        public async Task<CustomHttpResponse<string>> MakeRequest(RextOptions options, string contentType)
+        public async Task<CustomHttpResponse<string>> MakeRequest(RextOptions options)
         {
-            var rsp = await ProcessRequest(options, contentType);
+            var rsp = await ProcessRequest(options);
             rsp.Data = rsp.Content;
             rsp.Content = null;
 
             return rsp;
         }
 
-        public async Task<CustomHttpResponse<T>> MakeRequest<T>(RextOptions options, string contentType)
+        public async Task<CustomHttpResponse<T>> MakeRequest<T>(RextOptions options)
         {
-            var rsp = await ProcessRequest(options, contentType);
+            var rsp = await ProcessRequest(options);
 
             var newRsp = new CustomHttpResponse<T>
             {
@@ -148,11 +222,21 @@ namespace Rext
                 if (!string.IsNullOrEmpty(rsp.Content))
                 {
                     bool throwExOnFail = options.ThrowExceptionOnDeserializationFailure ?? ConfigurationBundle.HttpConfiguration.ThrowExceptionOnDeserializationFailure;
-                    var newObj = Helpers.DeserializeObject<T>(rsp.Content, throwExOnFail);
-                    if (newObj.status)
-                        newRsp.Data = newObj.result;
+                    (bool status, string message, T result) output = (false, null, default(T));
+
+                    if (options.ExpectedResponseFormat == ContentType.Application_JSON)
+                    {
+                        output = Helpers.DeserializeJSON<T>(rsp.Content, throwExOnFail);
+                    }
+                    else if (options.ExpectedResponseFormat == ContentType.Application_XML)
+                    {
+                        output = Helpers.DeserializeXML<T>(rsp.Content, throwExOnFail);
+                    }
+
+                    if (output.status)
+                        newRsp.Data = output.result;
                     else
-                        newRsp.Message = newObj.message;
+                        newRsp.Message = output.message;
                 }
             }
 
@@ -161,9 +245,7 @@ namespace Rext
 
         #endregion
 
-
-        //private async Task<CustomHttpResponse<string>> ProcessRequest(HttpMethod method, string url, object param = null, object header = null)
-        private async Task<CustomHttpResponse<string>> ProcessRequest(RextOptions options, string contentType)
+        private async Task<CustomHttpResponse<string>> ProcessRequest(RextOptions options)
         {
             // execute all user actions pre-call
             ConfigurationBundle.BeforeCall();
@@ -189,20 +271,54 @@ namespace Rext
                 if (options.Header != null)
                     requestMsg.SetHeader(options.Header);
 
+                if (!string.IsNullOrEmpty(options.ContentType))
+                    requestMsg.SetHeader("Accept", options.ExpectedResponseFormat);
+
                 // POST request
                 if (options.Method == HttpMethod.Post & options.Payload != null)
                 {
                     string strPayload = string.Empty;
 
-                    // convert object to specified content-type
-                    if (contentType == ContentType.Application_JSON)
-                        strPayload = options.Payload.ToJson();
-                    else if (contentType == ContentType.Application_XML)
-                        strPayload = options.Payload.ToXml();
-                    else
-                        strPayload = options.Payload.ToString();
+                    if (!options.IsForm)
+                    {
+                        // convert object to specified content-type
+                        if (options.ContentType == ContentType.Application_JSON)
+                            strPayload = options.Payload.ToJson();
+                        else if (options.ContentType == ContentType.Application_XML)
+                            strPayload = options.Payload.ToXml();
+                        else
+                            strPayload = options.Payload.ToString();
 
-                    requestMsg.Content = new StringContent(strPayload, Encoding.UTF8, contentType);
+                        requestMsg.Content = new StringContent(strPayload, Encoding.UTF8, options.ContentType);
+                    }
+                    else
+                    {
+                        strPayload = options.Payload.ToQueryString()?.TrimStart('?');
+
+                        // form-data content post
+                        if (!options.IsUrlEncoded)
+                        {
+                            // handle multipart/form-data
+                            var formData = strPayload.Split('&');
+                            var mpfDataBucket = new MultipartFormDataContent();
+
+                            foreach (var i in formData)
+                            {
+                                var row = i.Split('=');
+                                if (row.Length == 2) // check index to avoid null
+                                    mpfDataBucket.Add(new StringContent(row[1]), row[0]);
+                            }
+
+                            requestMsg.Content = mpfDataBucket;
+                            mpfDataBucket.Dispose();
+                        }
+                        else
+                        {
+                            // handle application/x-www-form-urlencoded
+                            requestMsg.Content = new StringContent(strPayload, Encoding.UTF8, "application/x-www-form-urlencoded");
+                        }
+                    }
+
                 }
 
                 // use stopwatch to monitor httpcall duration
@@ -212,7 +328,7 @@ namespace Rext
                     _stopwatch.Start();
                 }
 
-                response = await this.SendAsync(requestMsg, CancellationToken.None);
+                response = await this.Send(requestMsg, CancellationToken.None, options.IsForm);
 
                 // set watch value to public member
                 if (ConfigurationBundle.EnableStopwatch) _stopwatch.Stop();
@@ -263,8 +379,7 @@ namespace Rext
             }
         }
 
-        private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
-            CancellationToken cancellationToken)
+        private async Task<HttpResponseMessage> Send(HttpRequestMessage request, CancellationToken cancellationToken, bool isForm = false)
         {
             HttpResponseMessage response = null;
             RextHttpCongifuration config = ConfigurationBundle.HttpConfiguration ?? new RextHttpCongifuration();

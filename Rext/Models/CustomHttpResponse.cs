@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Rext
 {
-    public class CustomResponse
+    public class CustomHttpResponse
     {
         public bool IsSuccess
         {
@@ -14,12 +14,13 @@ namespace Rext
                 return StatusCode == HttpStatusCode.OK;
             }
         }
+
         public HttpStatusCode StatusCode { get; set; }
         public string Content { get; set; }
         public string Message { get; set; }
     }
 
-    public class CustomHttpResponse<T> : CustomResponse
+    public class CustomHttpResponse<T> : CustomHttpResponse
     {
         public T Data { get; set; }
     }

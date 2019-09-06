@@ -90,7 +90,7 @@ namespace Rext
     public class RextOptions
     {
         /// <summary>
-        /// Request url
+        /// Request url in full
         /// </summary>
         public string Url { get; set; }
 
@@ -100,7 +100,7 @@ namespace Rext
         public HttpMethod Method { get; set; }
 
         /// <summary>
-        /// Content to post. This can be a simple or complex object
+        /// Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request
         /// </summary>
         public object Payload { get; set; }
 
@@ -110,9 +110,14 @@ namespace Rext
         public object Header { get; set; }
 
         /// <summary>
-        /// Httpclient request content-type
+        /// The data format of your payload
         /// </summary>
-        //public string ContentType { get; set; }
+        public string ContentType { get; set; }
+
+        /// <summary>
+        /// The expected data format of the response
+        /// </summary>
+        public string ExpectedResponseFormat { get; set; }
 
         /// <summary>
         /// If set to true, a exception is thrown whenever httpclient returns a statuscode other than 200
@@ -123,6 +128,9 @@ namespace Rext
         /// If set to true, an exception is thrown whenever a response deserialization fails
         /// </summary>
         public bool? ThrowExceptionOnDeserializationFailure { get; set; }
-    }
-    
+
+        internal bool IsForm { get; set; }
+
+        internal bool IsUrlEncoded { get; set; }
+    }    
 }
