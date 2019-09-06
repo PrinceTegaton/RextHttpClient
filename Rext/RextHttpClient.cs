@@ -39,6 +39,10 @@ namespace Rext
                 ConfigurationBundle.HttpConfiguration = configuration;
         }
 
+        /// <summary>
+        /// Global setup for Rext behaviors and actions
+        /// </summary>
+        /// <param name="config"></param>
         public static void Setup(Action<RextConfigurationBundle> config)
         {
             config(ConfigurationBundle);
@@ -46,17 +50,18 @@ namespace Rext
 
         #region Interface Implementations
 
-        public async Task<CustomHttpResponse<T>> PostForm<T>(RextOptions options)
+        public async Task<CustomHttpResponse<T>> PostForm<T>(RextOptions options, bool isUrlEncoded = false)
         {
             options.Method = HttpMethod.Post;
             options.IsForm = true;
             options.ExpectedResponseFormat = ContentType.Application_JSON;
+            options.IsUrlEncoded = isUrlEncoded;
 
             var data = await MakeRequest<T>(options);
             return data;
         }
 
-        public async Task<CustomHttpResponse<T>> PostForm<T>(string url, object payload = null, object header = null)
+        public async Task<CustomHttpResponse<T>> PostForm<T>(string url, object payload = null, object header = null, bool isUrlEncoded = false)
         {
             var data = await MakeRequest<T>(new RextOptions
             {
@@ -66,7 +71,8 @@ namespace Rext
                 Payload = payload,
                 ContentType = ContentType.Application_JSON,
                 ExpectedResponseFormat = ContentType.Application_JSON,
-                IsForm = true
+                IsForm = true,
+                IsUrlEncoded = isUrlEncoded
             });
 
             return data;
@@ -75,6 +81,7 @@ namespace Rext
         public async Task<CustomHttpResponse<T>> PostXML<T>(RextOptions options)
         {
             options.Method = HttpMethod.Post;
+            options.ContentType = ContentType.Application_XML;
             options.ExpectedResponseFormat = ContentType.Application_XML;
 
             var data = await MakeRequest<T>(options);
@@ -238,7 +245,6 @@ namespace Rext
 
         #endregion
 
-
         private async Task<CustomHttpResponse<string>> ProcessRequest(RextOptions options)
         {
             // execute all user actions pre-call
@@ -287,27 +293,30 @@ namespace Rext
                     }
                     else
                     {
-                        // handle form data posting
                         strPayload = options.Payload.ToQueryString()?.TrimStart('?');
-                        var formData = strPayload.Split('&');
-                        var mpfDataBucket = new MultipartFormDataContent();
 
-                        foreach (var i in formData)
+                        // form-data content post
+                        if (!options.IsUrlEncoded)
                         {
-                            var row = i.Split('=');
-                            mpfDataBucket.Add(new StringContent(row[1]), row[0]);
+                            // handle multipart/form-data
+                            var formData = strPayload.Split('&');
+                            var mpfDataBucket = new MultipartFormDataContent();
+
+                            foreach (var i in formData)
+                            {
+                                var row = i.Split('=');
+                                if (row.Length == 2) // check index to avoid null
+                                    mpfDataBucket.Add(new StringContent(row[1]), row[0]);
+                            }
+
+                            requestMsg.Content = mpfDataBucket;
+                            mpfDataBucket.Dispose();
                         }
-
-                        //mpfDataBucket.Add(new StringContent("Portland"), "Location");
-
-
-                        requestMsg.Content = mpfDataBucket;
-                        //requestMsg.Content.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data");
-
-                        // populate the form variable
-                        //var formVariables = new List<KeyValuePair<string, string>>();
-                        //formVariables.Add(new KeyValuePair<string, string>("id", "ho"));
-                        //var formContent = new FormUrlEncodedContent(formVariables);
+                        else
+                        {
+                            // handle application/x-www-form-urlencoded
+                            requestMsg.Content = new StringContent(strPayload, Encoding.UTF8, "application/x-www-form-urlencoded");
+                        }
                     }
 
                 }

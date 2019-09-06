@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Rext
 {
-    public class ContentType
+    internal class ContentType
     {
         public const string Text_Plain = "text/plain";
         public const string Text_XML = "text/xml";

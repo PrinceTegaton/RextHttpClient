@@ -13,7 +13,7 @@ using System.Xml.Serialization;
 
 namespace Rext
 {
-    public static class Helpers
+    internal static class Helpers
     {
         public static bool IsList(this object obj)
         {

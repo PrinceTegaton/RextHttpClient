@@ -84,21 +84,26 @@ namespace RextConsole
                     //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
                     //Console.WriteLine(rsp.Data);
 
-                    //var p = new Person
-                    //{
-                    //    Name = "Jack",
-                    //    Location = "Manchester",
-                    //    Status = true
-                    //};
+                    var p = new Person
+                    {
+                        Name = "Vicky Kay",
+                        Location = "London, UK",
+                        Status = false,
+                        NextOkKin = new Person
+                        {
+                            Name = "William",
+                            Location = "Lisbon",
+                            Status = true
+                        }
+                    };
 
-                    //var rsp = _rext.PostXML<Person>(new RextOptions
-                    //{
-                    //    Url = "https://localhost:44316/api/home/createperson",
-                    //    Payload = p,
-                    //    ContentType = ContentType.Application_JSON
-                    //}).GetAwaiter().GetResult();
-                    //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
-                    //Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
+                    var rsp = _rext.PostXML<Person>(new RextOptions
+                    {
+                        Url = "https://localhost:44316/api/home/createperson",
+                        Payload = p
+                    }).GetAwaiter().GetResult();
+                    Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
+                    Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
 
                     //var rsp = _rext.GetXML<ArrayOfPerson>("https://localhost:44316/api/home/getpeoplelist")
                     //    .GetAwaiter().GetResult();
@@ -108,18 +113,11 @@ namespace RextConsole
                     //{
                     //    Console.WriteLine($"Name: {i.Name}, Location: {i.Location}");
                     //}
-
-                    var p = new Person
-                    {
-                        Name = "Vicky Kay",
-                        Location = "London, UK",
-                        Status = false
-                    };
-
-                    var rsp = _rext.PostForm<Person>("https://localhost:44316/api/home/createpersonform", p)
-                        .GetAwaiter().GetResult();
-                    Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
-                    Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
+                    
+                    //var rsp = _rext.PostForm<Person>("https://localhost:44316/api/home/createpersonform", p)
+                    //    .GetAwaiter().GetResult();
+                    //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
+                    //Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
 
 
                     Console.WriteLine("--------------");
@@ -172,5 +170,8 @@ namespace RextConsole
         public string Location { get; set; }
         [XmlElement(ElementName = "Status")]
         public bool Status { get; set; }
+
+        [XmlElement(ElementName = "NextOfKin")]
+        public Person NextOkKin { get; set; }
     }
 }

@@ -90,7 +90,7 @@ namespace Rext
     public class RextOptions
     {
         /// <summary>
-        /// Request url
+        /// Request url in full
         /// </summary>
         public string Url { get; set; }
 
@@ -100,7 +100,7 @@ namespace Rext
         public HttpMethod Method { get; set; }
 
         /// <summary>
-        /// Content to post. This can be a simple or complex object
+        /// Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request
         /// </summary>
         public object Payload { get; set; }
 
@@ -130,6 +130,7 @@ namespace Rext
         public bool? ThrowExceptionOnDeserializationFailure { get; set; }
 
         internal bool IsForm { get; set; }
-    }
-    
+
+        internal bool IsUrlEncoded { get; set; }
+    }    
 }

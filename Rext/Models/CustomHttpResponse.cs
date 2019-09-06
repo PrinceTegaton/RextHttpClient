@@ -14,6 +14,7 @@ namespace Rext
                 return StatusCode == HttpStatusCode.OK;
             }
         }
+
         public HttpStatusCode StatusCode { get; set; }
         public string Content { get; set; }
         public string Message { get; set; }

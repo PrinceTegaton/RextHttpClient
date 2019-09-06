@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Rext
 {
-    public class StaticMessages
+    internal class StaticMessages
     {
         public static string DeserializationFailure = "Unable to deserialize object to specified type of '{0}'";
     }
