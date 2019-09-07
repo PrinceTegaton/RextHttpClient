@@ -14,9 +14,12 @@ using System.Xml.Linq;
 
 namespace Rext
 {
-    public class RextHttpClient : IRextHttpClient, IDisposable
+    /// <summary>
+    /// Rext HttpClient wrapper implementation
+    /// </summary>
+    public class RextHttpClient : IRextHttpClient
     {
-        bool disposed = false;
+        //bool disposed = false;
 
         /// <summary>
         /// Rext configuration object
@@ -32,7 +35,10 @@ namespace Rext
         public Stopwatch Stopwatch { get { return _stopwatch; } }
         private Stopwatch _stopwatch;
 
-
+        /// <summary>
+        /// Initialize class
+        /// </summary>
+        /// <param name="configuration"></param>
         public RextHttpClient(RextHttpCongifuration configuration = null)
         {
             if (configuration != null)
@@ -245,10 +251,30 @@ namespace Rext
 
         #endregion
 
+
         private async Task<CustomHttpResponse<string>> ProcessRequest(RextOptions options)
         {
+            // validate essential params
+            if (string.IsNullOrEmpty(options.Url))
+            {
+                if (string.IsNullOrEmpty(ConfigurationBundle.HttpConfiguration.BaseUrl))
+                    throw new ArgumentNullException(nameof(options.Url), $"{nameof(options.Url)} is required. Provide fully qualified api endpoint.");
+                else
+                    throw new ArgumentNullException(nameof(options.Url), $"{nameof(options.Url)} is required. Provide the other part of api endpoint to match the BaseUrl.");
+            }
+
+            if (options.Method == null)
+                throw new ArgumentNullException(nameof(options.Method), $"{nameof(options.Method)} is required. Use GET, POST etc..");
+
+            if (string.IsNullOrEmpty(options.ContentType))
+                throw new ArgumentNullException(nameof(options.ContentType), $"{nameof(options.ContentType) } is required. Use application/json, text.plain etc..");
+
+            if (string.IsNullOrEmpty(options.ExpectedResponseFormat))
+                throw new ArgumentNullException(nameof(options.ExpectedResponseFormat), $"{nameof(options.ExpectedResponseFormat)} is required. Use application/json, text.plain etc..");
+
+
             // execute all user actions pre-call
-            ConfigurationBundle.BeforeCall();
+            ConfigurationBundle.BeforeCall?.Invoke();
 
             var rsp = new CustomHttpResponse<string>();
             var response = new HttpResponseMessage();
@@ -256,13 +282,12 @@ namespace Rext
 
             try
             {
-                string queryString = string.Empty;
+                Uri uri = options.CreateUri(ConfigurationBundle.HttpConfiguration.BaseUrl);
+                if (uri == null)
+                    throw new UriFormatException("Invalid request Uri");
 
-                // generate querystring from object if GET
-                if (options.Method == HttpMethod.Get && options.Payload != null)
-                    queryString = options.Payload.ToQueryString();
 
-                var requestMsg = new HttpRequestMessage(options.Method, new Uri(options.Url + queryString));
+                var requestMsg = new HttpRequestMessage(options.Method, uri);
 
                 // set header if object has value
                 if (this.Headers != null)
@@ -279,19 +304,7 @@ namespace Rext
                 {
                     string strPayload = string.Empty;
 
-                    if (!options.IsForm)
-                    {
-                        // convert object to specified content-type
-                        if (options.ContentType == ContentType.Application_JSON)
-                            strPayload = options.Payload.ToJson();
-                        else if (options.ContentType == ContentType.Application_XML)
-                            strPayload = options.Payload.ToXml();
-                        else
-                            strPayload = options.Payload.ToString();
-
-                        requestMsg.Content = new StringContent(strPayload, Encoding.UTF8, options.ContentType);
-                    }
-                    else
+                    if (options.IsForm)
                     {
                         strPayload = options.Payload.ToQueryString()?.TrimStart('?');
 
@@ -318,7 +331,18 @@ namespace Rext
                             requestMsg.Content = new StringContent(strPayload, Encoding.UTF8, "application/x-www-form-urlencoded");
                         }
                     }
+                    else
+                    {
+                        // convert object to specified content-type
+                        if (options.ContentType == ContentType.Application_JSON)
+                            strPayload = options.Payload.ToJson();
+                        else if (options.ContentType == ContentType.Application_XML)
+                            strPayload = options.Payload.ToXml();
+                        else
+                            strPayload = options.Payload.ToString();
 
+                        requestMsg.Content = new StringContent(strPayload, Encoding.UTF8, options.ContentType);
+                    }
                 }
 
                 // use stopwatch to monitor httpcall duration
@@ -356,26 +380,33 @@ namespace Rext
                     // handle code specific error from user
                     int code = (int)response.StatusCode;
                     if (code > 0 && ConfigurationBundle.StatusCodesToHandle.Contains(code))
-                        ConfigurationBundle.OnStatusCode(ReturnStatusCode);
+                        ConfigurationBundle.OnStatusCode?.Invoke(ReturnStatusCode);
                 }
 
                 // execute all user actions post-call
-                ConfigurationBundle.AfterCall();
+                ConfigurationBundle.AfterCall?.Invoke();
                 return rsp;
             }
             catch (Exception ex)
             {
                 // execute all user actions on error
-                ConfigurationBundle.OnError();
+                ConfigurationBundle.OnError?.Invoke();
 
-                rsp.StatusCode = 0;
+                if (ConfigurationBundle.SuppressRextExceptions)
+                {
+                    rsp.StatusCode = 0;
 
-                if (ex?.Message.ToLower().Contains("a socket operation was attempted to an unreachable host") == true)
-                    rsp.Message = "Internet connection error";
+                    if (ex?.Message.ToLower().Contains("a socket operation was attempted to an unreachable host") == true)
+                        rsp.Message = "Internet connection error";
+                    else
+                        rsp.Message = ex?.Message; //{ex?.InnerException?.Message ?? ex?.InnerException?.Message}";
+
+                    return rsp;
+                }
                 else
-                    rsp.Message = $"{ex?.Message} :: {ex?.InnerException?.InnerException?.Message ?? ex?.InnerException?.Message}";
-
-                return rsp;
+                {
+                    throw ex;
+                }
             }
         }
 
@@ -398,21 +429,21 @@ namespace Rext
             return response;
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-        }
+        //public void Dispose()
+        //{
+        //    Dispose(true);
+        //}
 
-        protected void Dispose(bool disposing)
-        {
-            if (disposed) return;
+        //protected void Dispose(bool disposing)
+        //{
+        //    if (disposed) return;
 
-            if (disposing)
-            {
-                // cleanup objects
-            }
+        //    if (disposing)
+        //    {
+        //        // cleanup objects
+        //    }
 
-            GC.SuppressFinalize(this);
-        }
+        //    GC.SuppressFinalize(this);
+        //}
     }
 }

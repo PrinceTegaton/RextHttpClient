@@ -19,23 +19,25 @@ namespace RextConsole
                 {
                     opt.HttpConfiguration = new RextHttpCongifuration
                     {
+                        BaseUrl = "https://localhost:44316/api/home",
                         ProxyAddress = "http://172.27.4.3:80",
                         ThrowExceptionOnDeserializationFailure = false,
-                        ThrowExceptionIfNotSuccessResponse = false,
+                        ThrowExceptionIfNotSuccessResponse = false
                         //Timeout = 60
                     };
-                    opt.BeforeCall = delegate ()
-                    {
-                        Console.WriteLine("---About to initiate http task");
-                    };
-                    opt.AfterCall = delegate ()
-                    {
-                        Console.WriteLine("---End of http task");
-                    };
-                    opt.OnError = delegate ()
-                    {
-                        Console.WriteLine("---Error occured");
-                    };
+                    opt.SuppressRextExceptions = false;
+                    //opt.BeforeCall = delegate ()
+                    //{
+                    //    Console.WriteLine("---About to initiate http task");
+                    //};
+                    //opt.AfterCall = delegate ()
+                    //{
+                    //    Console.WriteLine("---End of http task");
+                    //};
+                    //opt.OnError = delegate ()
+                    //{
+                    //    Console.WriteLine("---Error occured");
+                    //};
                     opt.OnStatusCode = (int code) => ErrorCodeHandler();
                     opt.StatusCodesToHandle = new int[] { 401, 500 };
                 });
@@ -81,8 +83,11 @@ namespace RextConsole
                     //Console.WriteLine(rsp.Data);
 
                     //var rsp = _rext.GetJSON<object>("https://localhost:44316/api/home/status?code=401", null, new { api_key = "12345" }).GetAwaiter().GetResult();
-                    //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
-                    //Console.WriteLine(rsp.Data);
+
+                    //var rsp = _rext.GetJSON<object>("getperson?id=1001", new { name = "joe" }, new { api_key = "12345" }).GetAwaiter().GetResult();
+
+                    //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch?.ElapsedMilliseconds}ms");
+                    //Console.WriteLine(rsp?.Data);
 
                     var p = new Person
                     {
@@ -97,23 +102,23 @@ namespace RextConsole
                         }
                     };
 
-                    var rsp = _rext.PostXML<Person>(new RextOptions
-                    {
-                        Url = "https://localhost:44316/api/home/createperson",
-                        Payload = p
-                    }).GetAwaiter().GetResult();
-                    Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
-                    Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
-
-                    //var rsp = _rext.GetXML<ArrayOfPerson>("https://localhost:44316/api/home/getpeoplelist")
-                    //    .GetAwaiter().GetResult();
-                    //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
-
-                    //foreach (var i in rsp.Data.Person)
+                    //var rsp = _rext.PostXML<Person>(new RextOptions
                     //{
-                    //    Console.WriteLine($"Name: {i.Name}, Location: {i.Location}");
-                    //}
-                    
+                    //    Url = "https://localhost:44316/api/home/createperson",
+                    //    Payload = p
+                    //}).GetAwaiter().GetResult();
+                    //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
+                    //Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
+
+                    var rsp = _rext.GetXML<ArrayOfPerson>("getpeoplelist")
+                        .GetAwaiter().GetResult();
+                    Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
+
+                    foreach (var i in rsp.Data.Person)
+                    {
+                        Console.WriteLine($"Name: {i.Name}, Location: {i.Location}");
+                    }
+
                     //var rsp = _rext.PostForm<Person>("https://localhost:44316/api/home/createpersonform", p)
                     //    .GetAwaiter().GetResult();
                     //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");

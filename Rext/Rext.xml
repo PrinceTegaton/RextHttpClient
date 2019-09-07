@@ -1,0 +1,255 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RextHttpClient</name>
+    </assembly>
+    <members>
+        <member name="M:Rext.HeaderExtension.AddHeader(Rext.IRextHttpClient,System.String,System.String)">
+            <summary>
+            Add a single header item with key and value
+            </summary>
+            <param name="client"></param>
+            <param name="key"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Rext.HeaderExtension.AddHeader(Rext.IRextHttpClient,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Add a Dictionary of headers
+            </summary>
+            <param name="client"></param>
+            <param name="headers"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Rext.HeaderExtension.UseBearerAuthentication(Rext.IRextHttpClient,System.String)">
+            <summary>
+            Use Bearer Authentication by supplying just the token
+            </summary>
+            <param name="client"></param>
+            <param name="token">API bearer token</param>
+            <returns></returns>
+        </member>
+        <member name="M:Rext.HeaderExtension.UseBasicAuthentication(Rext.IRextHttpClient,System.String,System.String)">
+            <summary>
+            Use Basic Authentication by supplying just the username and password
+            </summary>
+            <param name="client"></param>
+            <param name="username">API username</param>
+            <param name="password">API password</param>
+            <returns></returns>
+        </member>
+        <member name="T:Rext.IRextHttpClient">
+            <summary>
+            IRextHttpClient interface
+            </summary>
+        </member>
+        <member name="P:Rext.IRextHttpClient.Headers">
+            <summary>
+            List of headers appended from HeaderExtension
+            </summary>
+        </member>
+        <member name="P:Rext.IRextHttpClient.Stopwatch">
+            <summary>
+            Get execution time of the http call
+            </summary>
+        </member>
+        <member name="M:Rext.IRextHttpClient.GetXML``1(Rext.RextOptions)">
+            <summary>
+            Get XML result deserialized to custom type. Accepts advanced options
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.GetXML``1(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.GetJSON``1(Rext.RextOptions)">
+            <summary>
+            Get JSON result deserialized to custom type. Accepts advanced options.
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.GetJSON``1(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.GetString(Rext.RextOptions)">
+            <summary>
+            Get plain string result. Accepts advanced options
+            </summary>
+            <param name="options">RextOption to configure http call</param>
+            <returns>String response</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.GetString(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.MakeRequest(Rext.RextOptions)">
+            <summary>
+            Make http request and receive result as string
+            </summary>
+            <param name="options">RextOption to configure http call</param>
+            <returns>String content for your consumption as required</returns>
+        </member>
+        <member name="M:Rext.IRextHttpClient.MakeRequest``1(Rext.RextOptions)">
+            <summary>
+            Make http request and receive result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.IRextHttpClient.PostJSON``1(Rext.RextOptions)">
+            <summary>
+            Post JSON content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostJSON``1(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.PostXML``1(Rext.RextOptions)">
+            <summary>
+            Post XML content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostXML``1(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.PostForm``1(Rext.RextOptions,System.Boolean)">
+            <summary>
+            Post content as form-data for JSON result deserialized to custom type. Uses multipart/form-data by default
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <param name="isUrlEncoded">Set to true to send as application/x-www-form-urlencoded</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostForm``1(System.String,System.Object,System.Object,System.Boolean)" -->
+        <member name="P:Rext.RextConfigurationBundle.HttpConfiguration">
+            <summary>
+            Configure httpclient and actions
+            </summary>
+        </member>
+        <member name="P:Rext.RextConfigurationBundle.HttpClient">
+            <summary>
+            Create a custom client for usage. This will discard every setting in RextHttpCongifuration.HttpConfiguration
+            </summary>
+        </member>
+        <member name="P:Rext.RextConfigurationBundle.BeforeCall">
+            <summary>
+            Execute action before any http call
+            </summary>
+        </member>
+        <member name="P:Rext.RextConfigurationBundle.AfterCall">
+            <summary>
+            Execute action after any http call
+            </summary>
+        </member>
+        <member name="P:Rext.RextConfigurationBundle.OnError">
+            <summary>
+            Execute action when an exception is thrown by RextHttpClient
+            </summary>
+        </member>
+        <member name="P:Rext.RextConfigurationBundle.OnStatusCode">
+            <summary>
+            Execute action for a specific statuscode
+            </summary>
+        </member>
+        <member name="P:Rext.RextConfigurationBundle.StatusCodesToHandle">
+            <summary>
+            Array for all statuscodes to run custom action for
+            </summary>
+        </member>
+        <member name="P:Rext.RextConfigurationBundle.EnableStopwatch">
+            <summary>
+            Control Http Stopwatch from being executed. Value is True by default
+            </summary>
+        </member>
+        <member name="P:Rext.RextHttpCongifuration.BaseUrl">
+            <summary>
+            Set the base url for every call
+            </summary>
+        </member>
+        <member name="P:Rext.RextHttpCongifuration.ProxyAddress">
+            <summary>
+            Set a proxy address when behind a corporate network eg: http://127.0.0.1:80. Mostly valid for development mode. Value should be passed from a dynamic setting
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:Rext.RextHttpCongifuration.Header" -->
+        <member name="P:Rext.RextHttpCongifuration.RelaxSslCertValidation">
+            <summary>
+            If set to true, httpclient will be configured to ignore SSL validations. This is useful when using selfsigned certificates
+            </summary>
+        </member>
+        <member name="P:Rext.RextHttpCongifuration.ThrowExceptionIfNotSuccessResponse">
+            <summary>
+            If set to true, an exception is thrown whenever httpclient returns a statuscode other than 200
+            </summary>
+        </member>
+        <member name="P:Rext.RextHttpCongifuration.ThrowExceptionOnDeserializationFailure">
+            <summary>
+            If set to true, an exception is thrown whenever a response deserialization fails
+            </summary>
+        </member>
+        <member name="P:Rext.RextHttpCongifuration.Timeout">
+            <summary>
+            Http timeout in seconds
+            </summary>
+        </member>
+        <member name="P:Rext.RextOptions.Url">
+            <summary>
+            Request url in full
+            </summary>
+        </member>
+        <member name="P:Rext.RextOptions.Method">
+            <summary>
+            Http verb to use, e.g GET, POST, DELETE
+            </summary>
+        </member>
+        <member name="P:Rext.RextOptions.Payload">
+            <summary>
+            Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:Rext.RextOptions.Header" -->
+        <member name="P:Rext.RextOptions.ContentType">
+            <summary>
+            The data format of your payload
+            </summary>
+        </member>
+        <member name="P:Rext.RextOptions.ExpectedResponseFormat">
+            <summary>
+            The expected data format of the response
+            </summary>
+        </member>
+        <member name="P:Rext.RextOptions.ThrowExceptionIfNotSuccessResponse">
+            <summary>
+            If set to true, a exception is thrown whenever httpclient returns a statuscode other than 200
+            </summary>
+        </member>
+        <member name="P:Rext.RextOptions.ThrowExceptionOnDeserializationFailure">
+            <summary>
+            If set to true, an exception is thrown whenever a response deserialization fails
+            </summary>
+        </member>
+        <member name="P:Rext.RextHttpClient.ConfigurationBundle">
+            <summary>
+            Rext configuration object
+            </summary>
+        </member>
+        <member name="P:Rext.RextHttpClient.ReturnStatusCode">
+            <summary>
+            Last http call statuscode
+            </summary>
+        </member>
+        <member name="M:Rext.RextHttpClient.#ctor(Rext.RextHttpCongifuration)">
+            <summary>
+            Initialize class
+            </summary>
+            <param name="configuration"></param>
+        </member>
+        <member name="M:Rext.RextHttpClient.Setup(System.Action{Rext.RextConfigurationBundle})">
+            <summary>
+            Global setup for Rext behaviors and actions
+            </summary>
+            <param name="config"></param>
+        </member>
+    </members>
+</doc>
