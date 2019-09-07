@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace Rext
 {
+    /// <summary>
+    /// IRextHttpClient interface
+    /// </summary>
     public interface IRextHttpClient
     {
         /// <summary>
@@ -16,8 +19,6 @@ namespace Rext
         /// Get execution time of the http call
         /// </summary>
         Stopwatch Stopwatch { get; }
-
-        void Dispose();
 
         /// <summary>
         /// Get XML result deserialized to custom type. Accepts advanced options
@@ -140,6 +141,6 @@ namespace Rext
         /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
         /// <param name="isUrlEncoded">Set to true to send as application/x-www-form-urlencoded</param>
         /// <returns>Deserialized response of T</returns>
-        new Task<CustomHttpResponse<T>> PostForm<T>(string url, object payload = null, object header = null, bool isUrlEncoded = false);
+        Task<CustomHttpResponse<T>> PostForm<T>(string url, object payload = null, object header = null, bool isUrlEncoded = false);
     }
 }

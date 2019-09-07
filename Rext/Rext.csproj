@@ -20,6 +20,11 @@ Safely handles request with JSON, XML and Form Data.</Description>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <Version>1.0.0</Version>
+    <AssemblyName>RextHttpClient</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>D:\ICT LAB\Projects\Rext\Rext\RextHttpClient.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

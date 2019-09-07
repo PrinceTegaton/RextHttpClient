@@ -9,6 +9,13 @@ namespace Rext
 {
     public static class HeaderExtension
     {
+        /// <summary>
+        /// Add a single header item with key and value
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static IRextHttpClient AddHeader(this IRextHttpClient client, string key, string value)
         {
             client.Headers.Add(key, value);
@@ -16,6 +23,12 @@ namespace Rext
             return client;
         }
 
+        /// <summary>
+        /// Add a Dictionary of headers
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="headers"></param>
+        /// <returns></returns>
         public static IRextHttpClient AddHeader(this IRextHttpClient client, IDictionary<string, string> headers)
         {
             foreach (var i in headers)
@@ -26,6 +39,12 @@ namespace Rext
             return client;
         }
 
+        /// <summary>
+        /// Use Bearer Authentication by supplying just the token
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="token">API bearer token</param>
+        /// <returns></returns>
         public static IRextHttpClient UseBearerAuthentication(this IRextHttpClient client, string token)
         {
             client.Headers.Add("Authorization", $"Bearer {token}");
@@ -33,6 +52,13 @@ namespace Rext
             return client;
         }
 
+        /// <summary>
+        /// Use Basic Authentication by supplying just the username and password
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="username">API username</param>
+        /// <param name="password">API password</param>
+        /// <returns></returns>
         public static IRextHttpClient UseBasicAuthentication(this IRextHttpClient client, string username, string password)
         {
             // encode credentials
@@ -42,7 +68,7 @@ namespace Rext
             return client;
         }
 
-        public static void SetHeader(this HttpRequestMessage requestObj, object header)
+        internal static void SetHeader(this HttpRequestMessage requestObj, object header)
         {
             //todo: review reflection process
 
@@ -89,7 +115,7 @@ namespace Rext
             }
         }
 
-        public static void SetHeader(this HttpRequestMessage requestObj, string key, string value)
+        internal static void SetHeader(this HttpRequestMessage requestObj, string key, string value)
         {
             if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
             {

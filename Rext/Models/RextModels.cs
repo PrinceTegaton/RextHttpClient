@@ -6,6 +6,9 @@ using System.Text;
 
 namespace Rext
 {
+    /// <summary>
+    /// RextConfigurationBundle class
+    /// </summary>
     public class RextConfigurationBundle
     {
         /// <summary>
@@ -17,6 +20,11 @@ namespace Rext
         /// Create a custom client for usage. This will discard every setting in RextHttpCongifuration.HttpConfiguration
         /// </summary>
         public HttpClient HttpClient { get; set; }
+
+        /// <summary>
+        /// This allow you to retrieve exception messages in RextHttpClient.Message. Set to false if you want to handle all exceptions from your code
+        /// </summary>
+        public bool SuppressRextExceptions { get; set; } = true;
 
         /// <summary>
         /// Execute action before any http call
@@ -49,10 +57,13 @@ namespace Rext
         public bool EnableStopwatch { get; set; } = true;
     }
 
+    /// <summary>
+    /// RextHttpCongifuration class
+    /// </summary>
     public class RextHttpCongifuration
     {
         /// <summary>
-        /// Set the base url for every call
+        /// Set the base url for every http call
         /// </summary>
         public string BaseUrl { get; set; }
 
@@ -62,7 +73,7 @@ namespace Rext
         public string ProxyAddress { get; set; }
 
         /// <summary>
-        /// Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }
+        /// Set a default header for every http call via IDictionary(string, string) IList(string, string) or key-value object (new { Authorization = "xxxx" }
         /// </summary>
         public object Header { get; set; }
 
@@ -87,6 +98,9 @@ namespace Rext
         public int Timeout { get; set; }
     }
 
+    /// <summary>
+    /// RextOptions class
+    /// </summary>
     public class RextOptions
     {
         /// <summary>
@@ -105,7 +119,7 @@ namespace Rext
         public object Payload { get; set; }
 
         /// <summary>
-        /// Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }
+        /// Set a default header for every http call via IDictionary(string, string), IList(string, string) or key-value object (new { Authorization = "xxxx" }
         /// </summary>
         public object Header { get; set; }
 
@@ -132,5 +146,5 @@ namespace Rext
         internal bool IsForm { get; set; }
 
         internal bool IsUrlEncoded { get; set; }
-    }    
+    }
 }
