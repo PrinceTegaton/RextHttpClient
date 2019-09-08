@@ -19,25 +19,25 @@ namespace RextConsole
                 {
                     opt.HttpConfiguration = new RextHttpCongifuration
                     {
-                        BaseUrl = "https://localhost:44316/api/home",
+                        BaseUrl = "localhost:44316/api/home",
                         ProxyAddress = "http://172.27.4.3:80",
                         ThrowExceptionOnDeserializationFailure = false,
                         ThrowExceptionIfNotSuccessResponse = false
                         //Timeout = 60
                     };
                     opt.SuppressRextExceptions = false;
-                    //opt.BeforeCall = delegate ()
-                    //{
-                    //    Console.WriteLine("---About to initiate http task");
-                    //};
-                    //opt.AfterCall = delegate ()
-                    //{
-                    //    Console.WriteLine("---End of http task");
-                    //};
-                    //opt.OnError = delegate ()
-                    //{
-                    //    Console.WriteLine("---Error occured");
-                    //};
+                    opt.BeforeCall = delegate ()
+                    {
+                        Console.WriteLine("---About to initiate http task");
+                    };
+                    opt.AfterCall = delegate ()
+                    {
+                        Console.WriteLine("---End of http task");
+                    };
+                    opt.OnError = delegate ()
+                    {
+                        Console.WriteLine("---Error occured");
+                    };
                     opt.OnStatusCode = (int code) => ErrorCodeHandler();
                     opt.StatusCodesToHandle = new int[] { 401, 500 };
                 });
@@ -110,20 +110,45 @@ namespace RextConsole
                     //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
                     //Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
 
-                    var rsp = _rext.GetXML<ArrayOfPerson>("getpeoplelist")
-                        .GetAwaiter().GetResult();
-                    Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
+                    //var rsp = _rext.GetXML<ArrayOfPerson>("https://localhost:44316/api/home/getpeoplelist")
+                    //    .GetAwaiter().GetResult();
+                    //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
 
-                    foreach (var i in rsp.Data.Person)
-                    {
-                        Console.WriteLine($"Name: {i.Name}, Location: {i.Location}");
-                    }
+                    //foreach (var i in rsp.Data.Person)
+                    //{
+                    //    Console.WriteLine($"Name: {i.Name}, Location: {i.Location}");
+                    //}
 
                     //var rsp = _rext.PostForm<Person>("https://localhost:44316/api/home/createpersonform", p)
                     //    .GetAwaiter().GetResult();
                     //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
                     //Console.WriteLine($"Name: {rsp.Data.Name} - Location: {rsp.Data.Location}");
 
+                    //var headers = new Dictionary<string, string>
+                    //{
+                    //    { "header1", "value 1" },
+                    //    { "header2", "value 2" }
+                    //};
+
+                    //var rsp = _rext.AddHeader(headers)
+                    //               .AddHeader("header3", "value 3")
+                    //               .UseBearerAuthentication("ueyuywyt.iduizcg0e.kiuwnk==")
+                    //               .UseBasicAuthentication("api_username", "api_passkey")
+                    //               .PostJSON<@Person>(new RextOptions
+                    //               {
+                    //                    Url = "http://myapp.com/api/employee/getemployee",
+                    //                    ContentType = "application/xml",
+                    //                    Header = new { header4 = "value4" }
+                    //               });
+
+                    var person = new Person
+                    {
+                        Name = "Prince Tegaton",
+                        Location = "Lagos, Nigeria",
+                        Status = true
+                    };
+
+                    var rsp = _rext.PostForm(url, person)
 
                     Console.WriteLine("--------------");
                     goto _RunTest;

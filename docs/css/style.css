@@ -1,0 +1,31 @@
+body {
+    /* margin-top: 80px !important; */
+}
+
+.sidebar {
+    /* position: absolute; */
+}
+
+.intro-section {
+    padding: 20px 10px;
+    background-color: orangered;
+    color: #fff;
+}
+
+.active {
+    color: red;
+}
+
+h4 {
+    border-left: 3px solid orangered;
+    padding-left: 10px;
+}
+
+.item-section {
+    margin: 40px 0;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 0 15px;
+}

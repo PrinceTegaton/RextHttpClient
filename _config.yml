@@ -1,1 +1,3 @@
-theme: jekyll-theme-leap-day
+title: RextHttpClient Documentation
+description: Simple HttpClient wrapper for .NET
+theme: jekyll-theme-cayman

@@ -1,14 +1,233 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>RextHttpClient Docs</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Rext HttpCient Docs</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/prism.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
 </head>
+
 <body>
-    <h2>RextHttpClient Documentation</h2>
-    <hr>
-    <p>Welcome to Rext doc pages</p>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">RextHttpCient Docs</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">GitHub</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Download</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contribute</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid m-0 intro-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-md-4 col-sm-3 text-center text-md-right">
+                    <img class="img-fluid" src="imgs/rext_logo.png" />
+                </div>
+                <div class="col-12 col-md-8 col-sm-9 text-center text-md-left text-sm-left">
+                    <h2>Rext HttpClient</h2>
+                    <p class="font-sm">A simple smart HttpClient wrapper library for dotnet. Just plug and play.<br>
+                        Safely handles request with JSON, XML and Form Data<br>
+                        <!-- <span class="small">Created by <a href="https://github.comb/princetegaton">Prince Tegaton</a></span> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-3 sidebar">
+                <h4>Quick Links</h4>
+                <nav id="navbar-side">
+                    <div id="list-example" class="list-group">
+                        <a class="list-group-item list-group-item-action" href="#list-item-1">Installation</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-2">Basic Usage</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-3">Posting Form Data</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-3">Use Header Extension</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-4">Global Configuration</a>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="col-lg-9" data-spy="scroll" data-target="#navbar-side" data-offset="0">
+                <div class="item-section" id="intro">
+                    <h4>Installation</h4>
+                    <p>RextHttpClient is only available via nuget for Visual Studio. You can install from the CLI with
+                        the below command.</p>
+                    <pre><code class="lang-csharp">Install-Package RextHttpClient</code></pre>
+                </div>
+
+                <div class="item-section" id="intro">
+                    <h4>Basic Usage</h4>
+                    <p>All basic API operations have been made available for quick access via IRextHttpClient. If you
+                        wish to make a direct call and handle deserialization your self, then call <code>_rext.MakeRequest</code>
+                        method.</p>
+                    <pre><code class="lang-csharp">
+IRextHttpClient _rext = new RextHttpClient(); // create new instance via new or DI
+                    </code></pre>
+
+                    <p>Make http call with result deserialized to object</p>
+                    <pre><code class="lang-csharp">
+string url = "http://myapp.com/api/employee/getemployee";
+var rsp = await _rext.GetJSON<@Person>(url).Result; // download json
+var rsp = await _rext.GetXML<@Person>(url).Result; // download xml
+var rsp = await _rext.GetString(url).Result; // download string
+
+Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - 
+Duration: {_rext.Stopwatch?.ElapsedMilliseconds}ms"); // get duration of http call
+Console.WriteLine(rsp?.Data); // get deserialized result as object
+                    </code></pre>
+
+                    <p>Add other parameters</p>
+                    <pre><code class="lang-csharp">
+var rsp = await _rext.GetJSON<@Person>("http://myapp.com/api/prople/getperson",
+                    new { id = 1001 }, // object get converted to querystring
+                    new { header1 = "value1" });
+                    </code></pre>
+
+                    <p>Change the request content-type if needed</p>
+                    <pre><code class="lang-csharp">
+var rsp = await _rext.PostJSON<@Employee>(new RextOptions
+                    {
+                        Url = "http://myapp.com/api/employee/getemployee",
+                        ContentType = "application/xml",
+                        Header = new { header2 = "value2" },
+                        Payload = new Employee { id = 1002, Name = "Francisca" }
+                    });
+                    </code></pre>
+                </div>
+
+                <div class="item-section">
+                    <h4>Posting Form Data</h4>
+                    <p>Rext make it easy to submit form data to APIs. You just feed the object to the method. By
+                        default Rext uses <code>multipart/form-data</code> content-type when submitting content. You
+                        can change it to <code>application/x-www-form-urlencoded</code> by setting <code>isUrlEncoded=true</code></p>
+                    <pre><code class="lang-csharp">
+var person = new Person
+{
+    Name = "Prince Tegaton",
+    Location = "Lagos, Nigeria",
+    Status = true
+};
+
+var rsp = await _rext.PostForm(url, person, isUrlEncoded : true);
+                            </code></pre>
+                </div>
+
+                <div class="item-section">
+                    <h4>Use Header Extension</h4>
+                    <p>You can explore the Rext flexible Header Extension when making calls</p>
+                    <pre><code class="lang-csharp">
+var headers = new Dictionary<@string, string>
+{
+    { "header1", "value 1" },
+    { "header2", "value 2" }
+};
+
+var rsp = _rext.AddHeader(headers)
+                .AddHeader("header3", "value 3")
+                .UseBearerAuthentication("ueyuywyt.iduizcg0e.kiuwnk==")
+                .UseBasicAuthentication("api_username", "api_passkey")
+                .PostJSON<@Person>(new RextOptions
+                {
+                    Url = "http://myapp.com/api/employee/getemployee",
+                    ContentType = "application/xml",
+                    Header = new { header4 = "value4" }
+                });
+                                                </code></pre>
+                </div>
+
+                <div class="item-section" id="intro">
+                    <h4>Global Configuration</h4>
+                    <p>You can setup app wide configuration with various options for once. Some can be overriden on
+                        specific calls too.</p>
+                    <pre><code class="lang-csharp">
+static void Main(string[] args)
+{
+    RextHttpClient.Setup(opt =>
+    {
+        opt.HttpConfiguration = new RextHttpCongifuration
+        {
+            BaseUrl = "http://myapp.com/api",
+            ProxyAddress = "http://172.27.4.3:80",
+            ThrowExceptionOnDeserializationFailure = false,
+            ThrowExceptionIfNotSuccessResponse = true
+            //Timeout = 60
+        };
+        opt.SuppressRextExceptions = false;
+        opt.BeforeCall = delegate ()
+        {
+            Console.WriteLine("---About to initiate http task");
+        };
+        opt.AfterCall = delegate ()
+        {
+            Console.WriteLine("---End of http task");
+        };
+        opt.OnError = delegate ()
+        {
+            Console.WriteLine("---Error occured");
+        };
+        opt.OnStatusCode = (int code) => ErrorCodeHandler();
+        opt.StatusCodesToHandle = new int[] { 401, 500 };
+    });
+
+    IRextHttpClient _rext = new RextHttpClient();
+}
+
+static void ErrorCodeHandler(int code)
+{
+    if (code == 401)
+        Console.WriteLine($"---handling Unauthorized Error");
+    if (code == 500)
+        Console.WriteLine($"---handling Internal Server Error");
+}
+
+                    </code></pre>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="py-5">
+        <div class="container">
+            <p class="m-0 text-center text-white">Created for all</p>
+        </div>
+    </footer>
+
+    <script src="js/jquery.slim.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prism.js"></script>
+
+    <script>
+        $(function () {
+            $('body').scrollspy({ target: '#navbar-side' })
+        });
+    </script>
+
 </body>
+
 </html>
