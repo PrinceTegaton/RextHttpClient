@@ -27,7 +27,7 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">GitHub</a>
+                        <a class="nav-link" title="View project source code" href="https://github.com/princetegaton/RextHttpClient">GitHub</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Download</a>
@@ -47,7 +47,7 @@
                     <img class="img-fluid" src="imgs/rext_logo.png" />
                 </div>
                 <div class="col-12 col-md-8 col-sm-9 text-center text-md-left text-sm-left">
-                    <h2>Rext HttpClient</h2>
+                    <h3>Rext Documentation</h3>
                     <p class="font-sm">A simple smart HttpClient wrapper library for dotnet. Just plug and play.<br>
                         Safely handles request with JSON, XML and Form Data<br>
                         <!-- <span class="small">Created by <a href="https://github.comb/princetegaton">Prince Tegaton</a></span> -->
@@ -59,13 +59,14 @@
     <div class="container mt-5">
         <div class="row">
             <div class="col-lg-3 sidebar">
-                <h4>Quick Links</h4>
                 <nav id="navbar-side">
+                    <h4>Quick Links</h4>
                     <div id="list-example" class="list-group">
                         <a class="list-group-item list-group-item-action" href="#list-item-1">Installation</a>
                         <a class="list-group-item list-group-item-action" href="#list-item-2">Basic Usage</a>
                         <a class="list-group-item list-group-item-action" href="#list-item-3">Posting Form Data</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-3">Use Header Extension</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-3">Using the Header
+                            Extension</a>
                         <a class="list-group-item list-group-item-action" href="#list-item-4">Global Configuration</a>
                     </div>
                 </nav>
@@ -82,7 +83,7 @@
                 <div class="item-section" id="intro">
                     <h4>Basic Usage</h4>
                     <p>All basic API operations have been made available for quick access via IRextHttpClient. If you
-                        wish to make a direct call and handle deserialization your self, then call <code>_rext.MakeRequest</code>
+                        wish to make a direct call and handle deserialization yourself, then call <code>_rext.MakeRequest</code>
                         method.</p>
                     <pre><code class="lang-csharp">
 IRextHttpClient _rext = new RextHttpClient(); // create new instance via new or DI
@@ -91,23 +92,46 @@ IRextHttpClient _rext = new RextHttpClient(); // create new instance via new or 
                     <p>Make http call with result deserialized to object</p>
                     <pre><code class="lang-csharp">
 string url = "http://myapp.com/api/employee/getemployee";
-var rsp = await _rext.GetJSON<@Person>(url).Result; // download json
-var rsp = await _rext.GetXML<@Person>(url).Result; // download xml
-var rsp = await _rext.GetString(url).Result; // download string
+var rsp = await _rext.GetJSON<@Person>(url); // download json
+var rsp = await _rext.GetXML<@Person>(url); // download xml
+var rsp = await _rext.GetString(url); // download string
 
 Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - 
 Duration: {_rext.Stopwatch?.ElapsedMilliseconds}ms"); // get duration of http call
 Console.WriteLine(rsp?.Data); // get deserialized result as object
                     </code></pre>
+                    <p>All Rext methods for http call have overloads for adding more options to suit your need. You
+                        supply a type of <code>T</code> and the result from the call is deserialized into it. To
+                        retrieve the result you have to check if the call was successful with <code>_rext.IsSuccess</code>,
+                        if the value is <code>true</code> then access the data with <code>_rext.Data</code>.</p>
 
-                    <p>Add other parameters</p>
+                    <p class="mt-5">
+                        <strong>How does Rext handle payload?</strong>
+                    </p>
+                    <p>
+                        Simple! for <code>GET</code> requests, all object (payloads) are converted to querystring.
+                        <code>POST</code> requests are converted to JSON, XML or Form depending on the chosen method.
+                    </p>
+
+                    <p class="mt-5">
+                        <strong>The response object from Rext after a call is as seen below:</strong>
+                    </p>
+                    <p>
+                        <code>IsSuccess</code> : This is true if the http repsonse code is 200<br>
+                        <code>StatusCode</code> : The Http StatusCode associated with the call response<br>
+                        <code>Content</code> : Plain string response from the http call<br>
+                        <code>Message</code> : Rext message on the status of the request and also shows handled
+                        exception messages<br>
+                        <code>Data</code> : Generic type of T for response to be deserialized
+                    </p>
+                    <h5 class="mt-5">Add other parameters</h5>
                     <pre><code class="lang-csharp">
-var rsp = await _rext.GetJSON<@Person>("http://myapp.com/api/prople/getperson",
-                    new { id = 1001 }, // object get converted to querystring
-                    new { header1 = "value1" });
+var rsp = await _rext.GetJSON<@IEnumerable<@Person>>("http://myapp.com/api/people/getpeople",
+                        new { location = "Lagos" }, // object get converted to querystring for GET
+                        new { header1 = "value1" });
                     </code></pre>
 
-                    <p>Change the request content-type if needed</p>
+                    <p>Change the request content-type if needed by exploring the overload with <code>RextOption</code></p>
                     <pre><code class="lang-csharp">
 var rsp = await _rext.PostJSON<@Employee>(new RextOptions
                     {
@@ -137,7 +161,7 @@ var rsp = await _rext.PostForm(url, person, isUrlEncoded : true);
                 </div>
 
                 <div class="item-section">
-                    <h4>Use Header Extension</h4>
+                    <h4>Using the Header Extension</h4>
                     <p>You can explore the Rext flexible Header Extension when making calls</p>
                     <pre><code class="lang-csharp">
 var headers = new Dictionary<@string, string>
@@ -163,7 +187,8 @@ var rsp = _rext.AddHeader(headers)
                     <h4>Global Configuration</h4>
                     <p>You can setup app wide configuration with various options for once. Some can be overriden on
                         specific calls too.</p>
-                    <pre><code class="lang-csharp">
+                    <p>
+                        <pre><code class="lang-csharp">
 static void Main(string[] args)
 {
     RextHttpClient.Setup(opt =>
@@ -171,7 +196,7 @@ static void Main(string[] args)
         opt.HttpConfiguration = new RextHttpCongifuration
         {
             BaseUrl = "http://myapp.com/api",
-            ProxyAddress = "http://172.27.4.3:80",
+            ProxyAddress = "http://127.0.0.1:80",
             ThrowExceptionOnDeserializationFailure = false,
             ThrowExceptionIfNotSuccessResponse = true
             //Timeout = 60
@@ -204,7 +229,41 @@ static void ErrorCodeHandler(int code)
         Console.WriteLine($"---handling Internal Server Error");
 }
 
-                    </code></pre>
+</code></pre>
+                    </p>
+                    <p class="mt-5">
+                        <strong>RextHttpCongifuration</strong> contains
+                    </p>
+                    <p>
+                        <code>HttpConfiguration.BaseUrl</code> : Set the base url for every http call<br>
+                        <code>HttpConfiguration.ProxyAddress</code> : Set a proxy address when behind a corporate
+                        network eg: http://127.0.0.1:80. Mostly valid for development mode. Value should be passed from
+                        a dynamic setting<br>
+                        <code>HttpConfiguration.Header</code> : Set a default header for every http call via
+                        IDictionary(string, string) IList(string, string) or key-value object (new { Authorization =
+                        "xxxx" }<br>
+                        <code>HttpConfiguration.RelaxSslCertValidation</code> : If set to true, httpclient will be
+                        configured to ignore SSL validations. This is useful when using selfsigned certificates<br>
+                        <code>HttpConfiguration.ThrowExceptionIfNotSuccessResponse</code> : If set to true, an
+                        exception is thrown whenever httpclient returns a statuscode other than 200<br>
+                        <code>HttpConfiguration.ThrowExceptionOnDeserializationFailure</code> : If set to true, an
+                        exception is thrown whenever a response deserialization fails<br>
+                        <code>HttpConfiguration.Timeout</code> : Http timeout in seconds
+                    </p>
+                    <p class="mt-3"><strong>Other properties of Rext global configuration are:</strong></p>
+                    <p>
+                        <code>HttpClient</code> : Create a custom client for usage. This will discard every setting in
+                        RextHttpCongifuration.HttpConfiguration<br>
+                        <code>SuppressRextExceptions</code> : This allow you to retrieve exception messages in
+                        RextHttpClient.Message. Set to false if you want to handle all exceptions from your code<br>
+                        <code>BeforeCall</code> : Execute action before any http call<br>
+                        <code>AfterCall</code> : Execute action after any http call<br>
+                        <code>OnError</code> : Execute action when an exception is thrown by RextHttpClient<br>
+                        <code>OnStatusCode</code> : Execute action for a specific statuscode<br>
+                        <code>StatusCodesToHandle</code> : Array for all statuscodes to run custom action for<br>
+                        <code>EnableStopwatch</code> : Determine if Rext Stopwatch should be used. Value is True by
+                        default
+                    </p>
                 </div>
 
 

@@ -52,7 +52,7 @@ namespace Rext
 
             return uri;
         }
-
+       
         public static bool IsList(this object obj)
         {
             if (obj == null) return false;

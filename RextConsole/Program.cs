@@ -148,8 +148,6 @@ namespace RextConsole
                         Status = true
                     };
 
-                    var rsp = _rext.PostForm(url, person)
-
                     Console.WriteLine("--------------");
                     goto _RunTest;
                 }

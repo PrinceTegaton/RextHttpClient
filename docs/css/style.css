@@ -1,9 +1,14 @@
 body {
+    font-size: 14px;
     /* margin-top: 80px !important; */
 }
 
 .sidebar {
-    /* position: absolute; */
+    position: relative;
+}
+
+#navbar-side {
+    position: fixed;
 }
 
 .intro-section {
@@ -12,13 +17,10 @@ body {
     color: #fff;
 }
 
-.active {
-    color: red;
-}
-
 h4 {
     border-left: 3px solid orangered;
     padding-left: 10px;
+    margin: 15px 0;
 }
 
 .item-section {
