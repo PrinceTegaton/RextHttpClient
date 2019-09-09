@@ -1,6 +1,6 @@
 body {
-    font-size: 14px;
-    /* margin-top: 80px !important; */
+    /* font-size: 14px; */
+    margin-top: 55px !important;
 }
 
 .sidebar {
@@ -8,13 +8,25 @@ body {
 }
 
 #navbar-side {
-    position: fixed;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 70px;
+}
+
+.list-group-item.active {
+    background-color: orangered;
+    border-color: orangered;
 }
 
 .intro-section {
     padding: 20px 10px;
-    background-color: orangered;
+    background: rgb(82, 7, 7);
+    background: linear-gradient(90deg, rgba(82, 7, 7, 1) 0%, rgba(213, 61, 6, 1) 100%, rgba(0, 212, 255, 1) 100%);
     color: #fff;
+}
+
+.intro-section a {
+    color: white;
 }
 
 h4 {
@@ -28,6 +40,7 @@ h4 {
 }
 
 /* Code blocks */
+
 pre[class*="language-"] {
-	padding: 0 15px;
+    padding: 0 15px;
 }

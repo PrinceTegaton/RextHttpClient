@@ -4,12 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
+    <meta name="description" content="A simple smart HttpClient wrapper library for dotnet. Just plug and play.<br>
+    Safely handles request with JSON, XML and Form Data.">
+    <meta name="author" content="Prince Tegaton">
     <title>Rext HttpCient Docs</title>
 
-    <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/prism.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
@@ -17,7 +16,7 @@
 
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
             <a class="navbar-brand" href="#">RextHttpCient Docs</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
@@ -30,7 +29,7 @@
                         <a class="nav-link" title="View project source code" href="https://github.com/princetegaton/RextHttpClient">GitHub</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Download</a>
+                        <a class="nav-link" href="https://github.com/PrinceTegaton/RextHttpClient/archive/master.zip">Download</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Contribute</a>
@@ -48,39 +47,39 @@
                 </div>
                 <div class="col-12 col-md-8 col-sm-9 text-center text-md-left text-sm-left">
                     <h3>Rext Documentation</h3>
-                    <p class="font-sm">A simple smart HttpClient wrapper library for dotnet. Just plug and play.<br>
-                        Safely handles request with JSON, XML and Form Data<br>
-                        <!-- <span class="small">Created by <a href="https://github.comb/princetegaton">Prince Tegaton</a></span> -->
+                    <p>A simple smart HttpClient wrapper library for dotnet. Just plug and play.<br>
+                        Safely handles request with JSON, XML and Form Data</p>
+                    <p><span class="small">A project by <a href="https://twitter.com/princetegaton">Prince Tegaton</a></span></p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="container mt-5">
+    <div class="container">
         <div class="row">
-            <div class="col-lg-3 sidebar">
+            <div class="col-lg-3 mt-4">
                 <nav id="navbar-side">
-                    <h4>Quick Links</h4>
                     <div id="list-example" class="list-group">
-                        <a class="list-group-item list-group-item-action" href="#list-item-1">Installation</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-2">Basic Usage</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-3">Posting Form Data</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-3">Using the Header
+                        <h5 class="list-group-header">Quick Links</h5>
+                        <a class="list-group-item list-group-item-action" href="#s1">Installation</a>
+                        <a class="list-group-item list-group-item-action" href="#s2">Basic Usage</a>
+                        <a class="list-group-item list-group-item-action" href="#s3">Posting Form Data</a>
+                        <a class="list-group-item list-group-item-action" href="#s4">Using the Header
                             Extension</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-4">Global Configuration</a>
+                        <a class="list-group-item list-group-item-action" href="#s5">Global Configuration</a>
                     </div>
                 </nav>
             </div>
 
             <div class="col-lg-9" data-spy="scroll" data-target="#navbar-side" data-offset="0">
-                <div class="item-section" id="intro">
+                <div class="item-section" id="s1">
                     <h4>Installation</h4>
                     <p>RextHttpClient is only available via nuget for Visual Studio. You can install from the CLI with
                         the below command.</p>
                     <pre><code class="lang-csharp">Install-Package RextHttpClient</code></pre>
                 </div>
 
-                <div class="item-section" id="intro">
+                <div id="s2" class="item-section">
                     <h4>Basic Usage</h4>
                     <p>All basic API operations have been made available for quick access via IRextHttpClient. If you
                         wish to make a direct call and handle deserialization yourself, then call <code>_rext.MakeRequest</code>
@@ -143,7 +142,7 @@ var rsp = await _rext.PostJSON<@Employee>(new RextOptions
                     </code></pre>
                 </div>
 
-                <div class="item-section">
+                <div id="s3" class="item-section">
                     <h4>Posting Form Data</h4>
                     <p>Rext make it easy to submit form data to APIs. You just feed the object to the method. By
                         default Rext uses <code>multipart/form-data</code> content-type when submitting content. You
@@ -160,7 +159,7 @@ var rsp = await _rext.PostForm(url, person, isUrlEncoded : true);
                             </code></pre>
                 </div>
 
-                <div class="item-section">
+                <div id="s4" class="item-section">
                     <h4>Using the Header Extension</h4>
                     <p>You can explore the Rext flexible Header Extension when making calls</p>
                     <pre><code class="lang-csharp">
@@ -183,7 +182,7 @@ var rsp = _rext.AddHeader(headers)
                                                 </code></pre>
                 </div>
 
-                <div class="item-section" id="intro">
+                <div id="s5" class="item-section">
                     <h4>Global Configuration</h4>
                     <p>You can setup app wide configuration with various options for once. Some can be overriden on
                         specific calls too.</p>
