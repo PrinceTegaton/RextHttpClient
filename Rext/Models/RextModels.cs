@@ -52,7 +52,7 @@ namespace Rext
         public int[] StatusCodesToHandle { get; set; }
 
         /// <summary>
-        /// Control Http Stopwatch from being executed. Value is True by default
+        /// Determine if Rext Stopwatch should be used. Value is True by default
         /// </summary>
         public bool EnableStopwatch { get; set; } = true;
     }

@@ -4,11 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Xml;
-using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace Rext
@@ -52,7 +49,7 @@ namespace Rext
 
             return uri;
         }
-
+       
         public static bool IsList(this object obj)
         {
             if (obj == null) return false;

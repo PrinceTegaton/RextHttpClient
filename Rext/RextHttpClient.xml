@@ -122,6 +122,42 @@
             <returns>Deserialized response of T</returns>
         </member>
         <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostForm``1(System.String,System.Object,System.Object,System.Boolean)" -->
+        <member name="T:Rext.CustomHttpResponse">
+            <summary>
+            Custom Rext response for every http call
+            </summary>
+        </member>
+        <member name="P:Rext.CustomHttpResponse.IsSuccess">
+            <summary>
+            This is true if the http repsonse code is 200
+            </summary>
+        </member>
+        <member name="P:Rext.CustomHttpResponse.StatusCode">
+            <summary>
+            The Http StatusCode associated with the call response
+            </summary>
+        </member>
+        <member name="P:Rext.CustomHttpResponse.Content">
+            <summary>
+            Plain string response from the http call
+            </summary>
+        </member>
+        <member name="P:Rext.CustomHttpResponse.Message">
+            <summary>
+            Rext message on the status of the request and also shows handled exception messages
+            </summary>
+        </member>
+        <member name="T:Rext.CustomHttpResponse`1">
+            <summary>
+            Generic response that allows object to be deserialized to specified type of T
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:Rext.CustomHttpResponse`1.Data">
+            <summary>
+            Generic type of T for response to be deserialized
+            </summary>
+        </member>
         <member name="T:Rext.RextConfigurationBundle">
             <summary>
             RextConfigurationBundle class
@@ -169,7 +205,7 @@
         </member>
         <member name="P:Rext.RextConfigurationBundle.EnableStopwatch">
             <summary>
-            Control Http Stopwatch from being executed. Value is True by default
+            Determine if Rext Stopwatch should be used. Value is True by default
             </summary>
         </member>
         <member name="T:Rext.RextHttpCongifuration">
