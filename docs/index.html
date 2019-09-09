@@ -63,10 +63,11 @@
                         <h5 class="list-group-header">Quick Links</h5>
                         <a class="list-group-item list-group-item-action" href="#s1">Installation</a>
                         <a class="list-group-item list-group-item-action" href="#s2">Basic Usage</a>
-                        <a class="list-group-item list-group-item-action" href="#s3">Posting Form Data</a>
-                        <a class="list-group-item list-group-item-action" href="#s4">Using the Header
+                        <a class="list-group-item list-group-item-action" href="#s3">Handling Payloads</a>
+                        <a class="list-group-item list-group-item-action" href="#s4">Posting Form Data</a>
+                        <a class="list-group-item list-group-item-action" href="#s5">Using the Header
                             Extension</a>
-                        <a class="list-group-item list-group-item-action" href="#s5">Global Configuration</a>
+                        <a class="list-group-item list-group-item-action" href="#s6">Global Configuration</a>
                     </div>
                 </nav>
             </div>
@@ -104,15 +105,17 @@ Console.WriteLine(rsp?.Data); // get deserialized result as object
                         retrieve the result you have to check if the call was successful with <code>_rext.IsSuccess</code>,
                         if the value is <code>true</code> then access the data with <code>_rext.Data</code>.</p>
 
-                    <p class="mt-5">
+                </div>
+                <div id="s3" class="item-section">
+                    <h4>Handling Payloads</h4>
+                    <p>
                         <strong>How does Rext handle payload?</strong>
                     </p>
                     <p>
                         Simple! for <code>GET</code> requests, all object (payloads) are converted to querystring.
                         <code>POST</code> requests are converted to JSON, XML or Form depending on the chosen method.
                     </p>
-
-                    <p class="mt-5">
+                    <p class="mt-4">
                         <strong>The response object from Rext after a call is as seen below:</strong>
                     </p>
                     <p>
@@ -122,6 +125,9 @@ Console.WriteLine(rsp?.Data); // get deserialized result as object
                         <code>Message</code> : Rext message on the status of the request and also shows handled
                         exception messages<br>
                         <code>Data</code> : Generic type of T for response to be deserialized
+                    </p>
+                    <p class="alert alert-info">
+                        <span class="text-danger">Note:</span> Ignore the '@' in <@Object> shown in the code snippets.
                     </p>
                     <h5 class="mt-5">Add other parameters</h5>
                     <pre><code class="lang-csharp">
@@ -142,7 +148,7 @@ var rsp = await _rext.PostJSON<@Employee>(new RextOptions
                     </code></pre>
                 </div>
 
-                <div id="s3" class="item-section">
+                <div id="s4" class="item-section">
                     <h4>Posting Form Data</h4>
                     <p>Rext make it easy to submit form data to APIs. You just feed the object to the method. By
                         default Rext uses <code>multipart/form-data</code> content-type when submitting content. You
@@ -159,7 +165,7 @@ var rsp = await _rext.PostForm(url, person, isUrlEncoded : true);
                             </code></pre>
                 </div>
 
-                <div id="s4" class="item-section">
+                <div id="s5" class="item-section">
                     <h4>Using the Header Extension</h4>
                     <p>You can explore the Rext flexible Header Extension when making calls</p>
                     <pre><code class="lang-csharp">
@@ -182,7 +188,7 @@ var rsp = _rext.AddHeader(headers)
                                                 </code></pre>
                 </div>
 
-                <div id="s5" class="item-section">
+                <div id="s6" class="item-section">
                     <h4>Global Configuration</h4>
                     <p>You can setup app wide configuration with various options for once. Some can be overriden on
                         specific calls too.</p>
