@@ -21,7 +21,7 @@ body {
 .intro-section {
     padding: 20px 10px;
     background: rgb(82, 7, 7);
-    background: linear-gradient(90deg, rgba(82, 7, 7, 1) 0%, rgba(213, 61, 6, 1) 100%, rgba(0, 212, 255, 1) 100%);
+    background: linear-gradient(50deg, rgba(82, 7, 7, 1) 0%, rgba(213, 61, 6, 1) 100%);
     color: #fff;
 }
 
