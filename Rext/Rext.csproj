@@ -15,7 +15,7 @@ Safely handles request with JSON, XML and Form Data.</Description>
     <PackageReleaseNotes>First ever version of this package release. Beta build. Pls send feedback on github.</PackageReleaseNotes>
     <PackageTags>json, xml, form-data, encoded-form, api</PackageTags>
     <PackageIconUrl>https://lh4.googleusercontent.com/YAGKZGub7P1vfgZY4yRoQhZSdqdWM06zXaOjw--7y7nD1O9rTvNPwvyC6wg7zRpx3w59E7sgd38seljRRdg=w1366-h365</PackageIconUrl>
-    <PackageProjectUrl>https://github.com/princetegaton/RextHttpClient</PackageProjectUrl>
+    <PackageProjectUrl>https://princetegaton.github.io/RextHttpClient</PackageProjectUrl>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <AssemblyVersion>1.0.0.1</AssemblyVersion>
     <FileVersion>1.0.0.1</FileVersion>
