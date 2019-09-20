@@ -128,6 +128,30 @@ namespace Rext
             return data;
         }
 
+        public async Task<CustomHttpResponse<string>> PostJSONForString(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Post,
+                Header = header,
+                Payload = payload,
+                ContentType = ContentType.Application_JSON,
+                ExpectedResponseFormat = ContentType.Application_JSON
+            });
+
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<string>> PostJSONForString(RextOptions options)
+        {
+            options.Method = HttpMethod.Post;
+            options.ExpectedResponseFormat = ContentType.Application_JSON;
+
+            var data = await MakeRequest(options);
+            return data;
+        }
+
         public async Task<CustomHttpResponse<string>> GetString(RextOptions options)
         {
             options.Method = HttpMethod.Get;
@@ -389,8 +413,6 @@ namespace Rext
 
                 if (ConfigurationBundle.SuppressRextExceptions)
                 {
-                    rsp.StatusCode = 0;
-
                     if (ex?.Message.ToLower().Contains("a socket operation was attempted to an unreachable host") == true)
                         rsp.Message = "Internet connection error";
                     else
