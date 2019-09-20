@@ -227,7 +227,7 @@ namespace Rext
         {
             var rsp = await ProcessRequest(options);
             rsp.Data = rsp.Content;
-            rsp.Content = null;
+            //rsp.Content = null;
 
             return rsp;
         }
