@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -227,7 +228,6 @@ namespace Rext
         {
             var rsp = await ProcessRequest(options);
             rsp.Data = rsp.Content;
-            //rsp.Content = null;
 
             return rsp;
         }
@@ -377,7 +377,18 @@ namespace Rext
                 if (ConfigurationBundle.EnableStopwatch) _stopwatch.Stop();
 
                 rsp.StatusCode = response.StatusCode;
-                responseString = await response.Content.ReadAsStringAsync();
+
+                if (options.IsResponseStream)
+                {
+                    var stream = await response.Content.ReadAsStreamAsync();
+                    if (stream.Length > 0)
+                    {
+                        using (var rd = new StreamReader(stream))
+                            responseString = rd.ReadToEnd();
+                    }
+                }
+                else
+                    responseString = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -415,6 +426,8 @@ namespace Rext
                 {
                     if (ex?.Message.ToLower().Contains("a socket operation was attempted to an unreachable host") == true)
                         rsp.Message = "Internet connection error";
+                    else if (ex?.Message.ToLower().Contains("the character set provided in contenttype is invalid") == true)
+                        rsp.Message = "Invald response ContentType. If you are expecting a Stream response then set RextOptions.IsStreamResponse=true";
                     else
                         rsp.Message = ex?.Message; //{ex?.InnerException?.Message ?? ex?.InnerException?.Message}";
 
