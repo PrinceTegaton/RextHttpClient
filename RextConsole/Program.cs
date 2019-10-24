@@ -19,10 +19,15 @@ namespace RextConsole
                 {
                     opt.HttpConfiguration = new RextHttpCongifuration
                     {
-                        BaseUrl = "localhost:44316/api/home",
+                        //BaseUrl = "localhost:44316/api/home",
                         ProxyAddress = "http://127.0.0.1:80",
                         ThrowExceptionOnDeserializationFailure = false,
-                        ThrowExceptionIfNotSuccessResponse = false
+                        ThrowExceptionIfNotSuccessResponse = false,
+                        Certificate = new CertificateInfo
+                        {
+                            FilePath = "cert.pfx",
+                            Password = "12345"
+                        }
                         //Timeout = 60
                     };
                     opt.SuppressRextExceptions = false;
@@ -78,6 +83,8 @@ namespace RextConsole
                     //                    header_single).GetAwaiter().GetResult();
 
 
+
+                    var rsp = _rext.GetString(url1).GetAwaiter().GetResult();
                     //var rsp = _rext.GetString("https://localhost:44316/api/home/getstring").GetAwaiter().GetResult();
                     //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
                     //Console.WriteLine(rsp.Data);
