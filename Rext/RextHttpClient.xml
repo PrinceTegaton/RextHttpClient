@@ -120,6 +120,14 @@
             <param name="options">RextOption to configure http call</param>
             <returns>Deserialized response of T</returns>
         </member>
+        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostXMLForString(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.PostXMLForString(Rext.RextOptions)">
+            <summary>
+            Post XML content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+            </summary>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
         <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostForm``1(System.String,System.Object,System.Object,System.Boolean)" -->
         <member name="M:Rext.IRextHttpClient.PostForm``1(Rext.RextOptions,System.Boolean)">
             <summary>
@@ -319,6 +327,11 @@
         <member name="P:Rext.RextOptions.ThrowExceptionOnDeserializationFailure">
             <summary>
             If set to true, an exception is thrown whenever a response deserialization fails
+            </summary>
+        </member>
+        <member name="P:Rext.RextOptions.IsStreamResponse">
+            <summary>
+            Set to true if you are expecting Http response
             </summary>
         </member>
         <member name="T:Rext.RextHttpClient">

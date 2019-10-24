@@ -105,6 +105,31 @@ namespace Rext
             return data;
         }
 
+        public async Task<CustomHttpResponse<string>> PostXMLForString(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Post,
+                Header = header,
+                Payload = payload,
+                ContentType = ContentType.Application_XML,
+                ExpectedResponseFormat = ContentType.Application_XML
+            });
+
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<string>> PostXMLForString(RextOptions options)
+        {
+            options.Method = HttpMethod.Post;
+            options.ContentType = ContentType.Application_XML;
+            options.ExpectedResponseFormat = ContentType.Application_XML;
+
+            var data = await MakeRequest(options);
+            return data;
+        }
+
         public async Task<CustomHttpResponse<T>> PostJSON<T>(RextOptions options)
         {
             options.Method = HttpMethod.Post;
@@ -147,6 +172,7 @@ namespace Rext
         public async Task<CustomHttpResponse<string>> PostJSONForString(RextOptions options)
         {
             options.Method = HttpMethod.Post;
+            options.ContentType = ContentType.Application_JSON;
             options.ExpectedResponseFormat = ContentType.Application_JSON;
 
             var data = await MakeRequest(options);
@@ -378,7 +404,7 @@ namespace Rext
 
                 rsp.StatusCode = response.StatusCode;
 
-                if (options.IsResponseStream)
+                if (options.IsStreamResponse)
                 {
                     var stream = await response.Content.ReadAsStreamAsync();
                     if (stream.Length > 0)
@@ -459,6 +485,7 @@ namespace Rext
 
             return response;
         }
+
 
         //public void Dispose()
         //{

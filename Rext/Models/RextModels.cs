@@ -170,7 +170,7 @@ namespace Rext
         /// <summary>
         /// Set to true if you are expecting Http response
         /// </summary>
-        public bool IsResponseStream { get; set; }
+        public bool IsStreamResponse { get; set; }
 
         internal bool IsForm { get; set; }
 
