@@ -433,12 +433,13 @@ namespace Rext
             RextHttpCongifuration config = ConfigurationBundle.HttpConfiguration ?? new RextHttpCongifuration();
 
             // create httpclient from proxy handler
-            using (var httpClientHandler = ProxyHttpClientHandler.ProxyHandler(config.ProxyAddress, config.RelaxSslCertValidation))
+            using (var httpClientHandler = ProxyHttpClientHandler.ProxyHandler(config.ProxyAddress, config.RelaxSslCertValidation, config.Certificate))
             {
                 using (var client = ConfigurationBundle.HttpClient ?? new HttpClient(httpClientHandler))
                 {
                     if (ConfigurationBundle.HttpConfiguration.Timeout > 0)
                         client.Timeout = TimeSpan.FromSeconds(ConfigurationBundle.HttpConfiguration.Timeout);
+
                     response = await client.SendAsync(request, cancellationToken);
                 }
             }

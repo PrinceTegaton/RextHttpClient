@@ -6,6 +6,25 @@ using System.Text;
 
 namespace Rext
 {
+    public class CertificateInfo
+    {
+        /// <summary>
+        /// File path to certificate on machine. This is used ahead of CertificateBytes if a value is provided for both
+        /// </summary>
+        public string FilePath { get; set; }
+
+        /// <summary>
+        /// Certificate password if any
+        /// </summary>
+        public string Password { get; set; }
+
+        /// <summary>
+        /// Certificate byte content
+        /// </summary>
+        public byte[] CertificateBytes { get; set; }
+    }
+
+
     /// <summary>
     /// RextConfigurationBundle class
     /// </summary>
@@ -96,6 +115,11 @@ namespace Rext
         /// Http timeout in seconds
         /// </summary>
         public int Timeout { get; set; }
+
+        /// <summary>
+        /// Add a X509Certificate to the HttpClient
+        /// </summary>
+        public CertificateInfo Certificate { get; set; }
     }
 
     /// <summary>
