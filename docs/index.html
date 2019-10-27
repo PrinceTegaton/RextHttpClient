@@ -68,6 +68,8 @@
                         <a class="list-group-item list-group-item-action" href="#s5">Using the Header
                             Extension</a>
                         <a class="list-group-item list-group-item-action" href="#s6">Global Configuration</a>
+                        <a class="list-group-item list-group-item-action" href="#s7">Using Server Certificate</a>
+                        <a class="list-group-item list-group-item-action" href="#s8">Troubleshooting Tips</a>
                     </div>
                 </nav>
             </div>
@@ -75,7 +77,7 @@
             <div class="col-lg-9" data-spy="scroll" data-target="#navbar-side" data-offset="0">
                 <div class="item-section" id="s1">
                     <h4>Installation</h4>
-                    <p>RextHttpClient is only available via nuget for Visual Studio. You can install from the CLI with
+                    <p>RextHttpClient is built for (dotnet) NetStandard projects only and is NOT compatible with NetFramework. It is available via nuget for Visual Studio. You can install from the CLI with
                         the below command.</p>
                     <pre><code class="lang-csharp">Install-Package RextHttpClient</code></pre>
                 </div>
@@ -146,6 +148,26 @@ var rsp = await _rext.PostJSON<@Employee>(new RextOptions
                         Payload = new Employee { id = 1002, Name = "Francisca" }
                     });
                     </code></pre>
+                    <br>
+                    <p><strong>Handling XML</strong> payloads and response requires the elements and model properties to match as usual. Arrays requires you to set the element name in most cases. Here is an example</p>
+                    <pre><code class="lang-csharp">
+[XmlRoot(ElementName = "ArrayOfPerson")] // match root node name <@ArrayOfperson>...<@/ArrayOfPerson>
+    public class ArrayOfPerson
+    {
+        [XmlElement(ElementName = "Person")]
+        public List<Person> Person { get; set; }
+    }
+
+    [XmlRoot(ElementName = "Person")]
+    public class Person
+    {
+        [XmlElement(ElementName = "Name")]
+        public string Name { get; set; }
+
+        [XmlElement(ElementName = "Location")]
+        public string Location { get; set; }
+    }
+</code></pre>
                 </div>
 
                 <div id="s4" class="item-section">
@@ -271,7 +293,48 @@ static void ErrorCodeHandler(int code)
                     </p>
                 </div>
 
+                <div id="s7" class="item-section">
+                    <h4>Using Server Certificate</h4>
+                    <p>Rext allow you to attach a Certificate[.pfx] file when making calls to secure services that requires such.</p>
+                    <p>
+                        <strong>Fetch certificate file from folder</strong>
+                        <pre><code class="lang-csharp">
+RextHttpClient.Setup(opt =>
+{
+    opt.HttpConfiguration.Certificate = new CertificateInfo
+    {
+        FilePath = "server_appstore.pfx",
+        Password = "12345" // if cert have a password
+    };
+});
+                        </code></pre>
+                    </p>
+                    <p>
+                            <strong>Read certificate file content as bytes</strong>
+                            <pre><code class="lang-csharp">
+byte[] cert_bytes = System.IO.File.ReadAllBytes("server_appstore.pfx");
+RextHttpClient.Setup(opt =>
+{
+    opt.HttpConfiguration.Certificate = new CertificateInfo
+    {
+        CertificateBytes = cert_bytes
+        Password = "12345" // if cert have a password
+    };
+});
+                            </code></pre>
+                        </p>
+                        <p>
+                            If you specify both a FilePath and CertificateBytes, Rext will use the file only.
+                        </p>
+                </div>
 
+                <div id="s8" class="item-section">
+                    <h4>Troubleshooting Tips</h4>
+                    <ul>
+                        <li><strong>Deserialization Failure:</strong> Simple download the response as string to analyse the incoming fields if they matches the model you want to deserialize it to. You can use <code>GetString</code>, <code>PostJSONForString</code> or <code>PostXMLForString</code>. After confirmation you can then use the methods with instant deserialization.</li>
+                        <li><strong>The SSL Connection could not be established:</strong> This is because the API server certificate on https is not valid. To bypass this validation, set <code>HttpConfiguration.RelaxSslCertValidation</code> = <code>true</code>.</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
