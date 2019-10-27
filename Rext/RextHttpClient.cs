@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -104,6 +105,31 @@ namespace Rext
             return data;
         }
 
+        public async Task<CustomHttpResponse<string>> PostXMLForString(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Post,
+                Header = header,
+                Payload = payload,
+                ContentType = ContentType.Application_XML,
+                ExpectedResponseFormat = ContentType.Application_XML
+            });
+
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<string>> PostXMLForString(RextOptions options)
+        {
+            options.Method = HttpMethod.Post;
+            options.ContentType = ContentType.Application_XML;
+            options.ExpectedResponseFormat = ContentType.Application_XML;
+
+            var data = await MakeRequest(options);
+            return data;
+        }
+
         public async Task<CustomHttpResponse<T>> PostJSON<T>(RextOptions options)
         {
             options.Method = HttpMethod.Post;
@@ -146,6 +172,7 @@ namespace Rext
         public async Task<CustomHttpResponse<string>> PostJSONForString(RextOptions options)
         {
             options.Method = HttpMethod.Post;
+            options.ContentType = ContentType.Application_JSON;
             options.ExpectedResponseFormat = ContentType.Application_JSON;
 
             var data = await MakeRequest(options);
@@ -227,7 +254,6 @@ namespace Rext
         {
             var rsp = await ProcessRequest(options);
             rsp.Data = rsp.Content;
-            //rsp.Content = null;
 
             return rsp;
         }
@@ -377,7 +403,18 @@ namespace Rext
                 if (ConfigurationBundle.EnableStopwatch) _stopwatch.Stop();
 
                 rsp.StatusCode = response.StatusCode;
-                responseString = await response.Content.ReadAsStringAsync();
+
+                if (options.IsStreamResponse)
+                {
+                    var stream = await response.Content.ReadAsStreamAsync();
+                    if (stream.Length > 0)
+                    {
+                        using (var rd = new StreamReader(stream))
+                            responseString = rd.ReadToEnd();
+                    }
+                }
+                else
+                    responseString = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -415,6 +452,8 @@ namespace Rext
                 {
                     if (ex?.Message.ToLower().Contains("a socket operation was attempted to an unreachable host") == true)
                         rsp.Message = "Internet connection error";
+                    else if (ex?.Message.ToLower().Contains("the character set provided in contenttype is invalid") == true)
+                        rsp.Message = "Invald response ContentType. If you are expecting a Stream response then set RextOptions.IsStreamResponse=true";
                     else
                         rsp.Message = ex?.Message; //{ex?.InnerException?.Message ?? ex?.InnerException?.Message}";
 
@@ -446,6 +485,7 @@ namespace Rext
 
             return response;
         }
+
 
         //public void Dispose()
         //{

@@ -167,6 +167,11 @@ namespace Rext
         /// </summary>
         public bool? ThrowExceptionOnDeserializationFailure { get; set; }
 
+        /// <summary>
+        /// Set to true if you are expecting Http response
+        /// </summary>
+        public bool IsStreamResponse { get; set; }
+
         internal bool IsForm { get; set; }
 
         internal bool IsUrlEncoded { get; set; }
