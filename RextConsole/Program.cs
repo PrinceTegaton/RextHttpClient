@@ -20,7 +20,7 @@ namespace RextConsole
                     opt.HttpConfiguration = new RextHttpCongifuration
                     {
                         //BaseUrl = "localhost:44316/api/home",
-                        ProxyAddress = "http://127.0.0.1:80",
+                        //ProxyAddress = "http://127.0.0.1:80",
                         ThrowExceptionOnDeserializationFailure = false,
                         ThrowExceptionIfNotSuccessResponse = false,
                         RelaxSslCertValidation = true
@@ -80,10 +80,10 @@ namespace RextConsole
 
 
 
-                    //var rsp = _rext.GetString(url1).GetAwaiter().GetResult();
+                    var rsp = _rext.GetJSON<dynamic>(url1).GetAwaiter().GetResult();
                     //var rsp = _rext.GetString("https://localhost:44316/api/home/getstring").GetAwaiter().GetResult();
-                    //Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
-                    //Console.WriteLine(rsp.Data);
+                    Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} - Duration: {_rext.Stopwatch.ElapsedMilliseconds}ms");
+                    Console.WriteLine(rsp.Data);
 
                     //var rsp = _rext.GetJSON<object>("https://localhost:44316/api/home/status?code=401", null, new { api_key = "12345" }).GetAwaiter().GetResult();
 
@@ -143,29 +143,6 @@ namespace RextConsole
                     //                    ContentType = "application/xml",
                     //                    Header = new { header4 = "value4" }
                     //               });
-
-                    var createOrderPayload = new UPSL_TKKPG
-                    {
-                        Request = new UPSL_CreateOrder
-                        {
-                            Order = new UPSL_Order
-                            {
-                                Merchant = "Outlet",
-                                Amount = "100",
-                                Currency = "566",
-                                Description = "Test payment 01",
-                                ApproveURL = "https://outlet.alat.ng",
-                                DeclineURL = "https://outlet.alat.ng",
-                                CancelURL = "https://outlet.alat.ng"
-                            },
-                            //AddParams = new Dictionary<string, string>()
-                            //{
-                            //    { "name", "Prince Tegaton" },
-                            //    { "email", "princetegaton@gmail.com" },
-                            //    { "phone", "07052442223" }
-                            //}
-                        }
-                    };
 
                     Console.WriteLine("--------------");
                     goto _RunTest;
