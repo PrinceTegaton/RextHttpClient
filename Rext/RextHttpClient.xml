@@ -128,6 +128,14 @@
             <param name="options">RextOption to configure http call</param>
             <returns>Deserialized response of T</returns>
         </member>
+        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostString(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.PostString(Rext.RextOptions)">
+            <summary>
+            Post plain string content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+            </summary>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Plain string response</returns>
+        </member>
         <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostForm``1(System.String,System.Object,System.Object,System.Boolean)" -->
         <member name="M:Rext.IRextHttpClient.PostForm``1(Rext.RextOptions,System.Boolean)">
             <summary>

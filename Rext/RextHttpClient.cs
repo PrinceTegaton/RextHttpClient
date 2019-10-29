@@ -179,6 +179,31 @@ namespace Rext
             return data;
         }
 
+        public async Task<CustomHttpResponse<string>> PostString(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Post,
+                Header = header,
+                Payload = payload,
+                ContentType = ContentType.Text_Plain,
+                ExpectedResponseFormat = ContentType.Text_Plain
+            });
+
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<string>> PostString(RextOptions options)
+        {
+            options.Method = HttpMethod.Post;
+            options.ContentType = ContentType.Text_Plain;
+            options.ExpectedResponseFormat = ContentType.Text_Plain;
+
+            var data = await MakeRequest(options);
+            return data;
+        }
+
         public async Task<CustomHttpResponse<string>> GetString(RextOptions options)
         {
             options.Method = HttpMethod.Get;
@@ -254,6 +279,7 @@ namespace Rext
         {
             var rsp = await ProcessRequest(options);
             rsp.Data = rsp.Content;
+            rsp.Content = null;
 
             return rsp;
         }
@@ -265,7 +291,8 @@ namespace Rext
             var newRsp = new CustomHttpResponse<T>
             {
                 StatusCode = rsp.StatusCode,
-                Message = rsp.Message
+                Message = rsp.Message,
+                Content = rsp.Content
             };
 
             if (newRsp.StatusCode == System.Net.HttpStatusCode.OK)

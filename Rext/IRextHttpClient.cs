@@ -142,7 +142,7 @@ namespace Rext
         Task<CustomHttpResponse<T>> PostXML<T>(RextOptions options);
 
         /// <summary>
-        /// Post XML content for  string result
+        /// Post XML content for string result
         /// </summary>
         /// <param name="url">Request url in full</param>
         /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
@@ -156,6 +156,22 @@ namespace Rext
         /// <param name="options">RextOption to configure http call</param>
         /// <returns>Deserialized response of T</returns>
         Task<CustomHttpResponse<string>> PostXMLForString(RextOptions options);
+
+        /// <summary>
+        /// Post plain string content for string result
+        /// </summary>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Plain string response</returns>
+        Task<CustomHttpResponse<string>> PostString(string url, object payload = null, object header = null);
+
+        /// <summary>
+        /// Post plain string content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// </summary>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Plain string response</returns>
+        Task<CustomHttpResponse<string>> PostString(RextOptions options);
 
         /// <summary>
         /// Post content as form-data for JSON result deserialized to custom type. Uses multipart/form-data by default
