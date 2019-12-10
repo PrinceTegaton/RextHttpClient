@@ -17,14 +17,14 @@ Safely handles request with JSON, XML and Form Data.</Description>
     <PackageIconUrl>https://lh4.googleusercontent.com/YAGKZGub7P1vfgZY4yRoQhZSdqdWM06zXaOjw--7y7nD1O9rTvNPwvyC6wg7zRpx3w59E7sgd38seljRRdg=w1366-h365</PackageIconUrl>
     <PackageProjectUrl>https://princetegaton.github.io/RextHttpClient</PackageProjectUrl>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
-    <AssemblyVersion>1.0.3</AssemblyVersion>
-    <FileVersion>1.0.3</FileVersion>
-    <Version>1.0.3</Version>
+    <AssemblyVersion>1.0.4</AssemblyVersion>
+    <FileVersion>1.0.4</FileVersion>
+    <Version>1.0.4</Version>
     <AssemblyName>RextHttpClient</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile></DocumentationFile>
+    <DocumentationFile>C:\Users\otega.ovie\Projects\Playground\RextHttpClient\Rext\RextHttpClient.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
