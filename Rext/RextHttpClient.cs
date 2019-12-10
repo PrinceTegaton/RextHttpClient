@@ -51,7 +51,7 @@ namespace Rext
         }
 
         #region Interface Implementations
-
+        
         public async Task<CustomHttpResponse<T>> PostForm<T>(RextOptions options, bool isUrlEncoded = false)
         {
             options.Method = HttpMethod.Post;
@@ -395,7 +395,6 @@ namespace Rext
                             }
 
                             requestMsg.Content = mpfDataBucket;
-                            mpfDataBucket.Dispose();
                         }
                         else
                         {
