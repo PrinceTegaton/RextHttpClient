@@ -12,9 +12,9 @@ namespace Rext
         {
             HttpClientHandler proxyHandler = new HttpClientHandler();
 
-            if (Uri.IsWellFormedUriString(address, UriKind.Absolute))
+            if (!string.IsNullOrEmpty(address))
             {
-                if (!string.IsNullOrEmpty(address))
+                if (Uri.IsWellFormedUriString(address, UriKind.Absolute))
                 {
                     proxyHandler = new HttpClientHandler
                     {
@@ -23,11 +23,12 @@ namespace Rext
                         DefaultProxyCredentials = System.Net.CredentialCache.DefaultNetworkCredentials
                     };
                 }
+                else
+                {
+                    throw new RextException("Invalid Proxy Url");
+                }
             }
-            else
-            {
-                throw new RextException("Invalid Proxy Url");
-            }
+           
 
             if (relaxSslCertValidation)
                 proxyHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return relaxSslCertValidation; };
