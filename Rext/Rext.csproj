@@ -24,7 +24,7 @@ Safely handles request with JSON, XML and Form Data.</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\otega.ovie\Projects\Playground\RextHttpClient\Rext\RextHttpClient.xml</DocumentationFile>
+    <DocumentationFile>D:\DEV PROJECTS\WEB\Rextclient\Rext\RextHttpClient.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
