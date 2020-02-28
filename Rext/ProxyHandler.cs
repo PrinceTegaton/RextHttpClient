@@ -14,13 +14,21 @@ namespace Rext
 
             if (!string.IsNullOrEmpty(address))
             {
-                proxyHandler = new HttpClientHandler
+                if (Uri.IsWellFormedUriString(address, UriKind.Absolute))
                 {
-                    Proxy = new WebProxy(new Uri(address), BypassOnLocal: false),
-                    UseProxy = true,
-                    DefaultProxyCredentials = System.Net.CredentialCache.DefaultNetworkCredentials
-                };
+                    proxyHandler = new HttpClientHandler
+                    {
+                        Proxy = new WebProxy(new Uri(address), BypassOnLocal: false),
+                        UseProxy = true,
+                        DefaultProxyCredentials = System.Net.CredentialCache.DefaultNetworkCredentials
+                    };
+                }
+                else
+                {
+                    throw new RextException("Invalid Proxy Url");
+                }
             }
+           
 
             if (relaxSslCertValidation)
                 proxyHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return relaxSslCertValidation; };
