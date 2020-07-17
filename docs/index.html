@@ -331,7 +331,7 @@ RextHttpClient.Setup(opt =>
                 <div id="s8" class="item-section">
                     <h4>Troubleshooting Tips</h4>
                     <ul>
-                        <li><strong>Deserialization Failure:</strong> Simple download the response as string to analyse the incoming fields if they matches the model you want to deserialize it to. You can use <code>GetString</code>, <code>PostJSONForString</code> or <code>PostXMLForString</code>. After confirmation you can then use the methods with instant deserialization.</li>
+                        <li><strong>Deserialization Failure:</strong> Simply download the response as string to analyse the incoming fields if they matches the model you want to deserialize it to. You can use <code>GetString</code>, <code>PostJSONForString</code> or <code>PostXMLForString</code>. After confirmation you can then use the methods with instant deserialization.</li>
                         <li><strong>The SSL Connection could not be established:</strong> This is because the API server certificate on https is not valid. To bypass this validation, set <code>HttpConfiguration.RelaxSslCertValidation</code> = <code>true</code>.</li>
                     </ul>
                 </div>
