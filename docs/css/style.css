@@ -1,7 +1,10 @@
+html {
+    scroll-behavior: smooth;    
+}
+
 body {
     /* font-size: 14px; */
     margin-top: 55px !important;
-    scroll-behavior: smooth;
 }
 
 .sidebar {
