@@ -49,7 +49,7 @@ namespace Rext
             HttpClientHandler httpClientHandler = new HttpClientHandler();
             if (configuration != null)
             {
-                httpClientHandler = ProxyHttpClientHandler.ProxyHandler(configuration.ProxyAddress, configuration.RelaxSslCertValidation, configuration.Certificate);
+                httpClientHandler = CustomHttpClientHandler.CreateHandler(configuration.ProxyAddress, configuration.RelaxSslCertValidation, configuration.Certificate);
             }
 
             this.Client = ConfigurationBundle.HttpClient ?? new HttpClient(httpClientHandler);
