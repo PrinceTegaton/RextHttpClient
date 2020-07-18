@@ -509,6 +509,7 @@ namespace Rext
         private async Task<HttpResponseMessage> Send(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             if (this.Client == null) throw new ArgumentNullException("HttpClient object cannot be null");
+            
             HttpResponseMessage response = await this.Client.SendAsync(request, cancellationToken);
             return response;
         }
