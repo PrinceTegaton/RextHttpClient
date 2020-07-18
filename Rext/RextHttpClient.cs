@@ -17,6 +17,8 @@ namespace Rext
     {
         //bool disposed = false;
 
+        public HttpClient Client { get; set; }
+
         /// <summary>
         /// Rext configuration object
         /// </summary>
@@ -39,6 +41,18 @@ namespace Rext
         {
             if (configuration != null)
                 ConfigurationBundle.HttpConfiguration = configuration;
+
+            // create httpclient from proxy handler
+            HttpClientHandler httpClientHandler = new HttpClientHandler();
+            if (configuration != null)
+            {
+                httpClientHandler = ProxyHttpClientHandler.ProxyHandler(configuration.ProxyAddress, configuration.RelaxSslCertValidation, configuration.Certificate);
+            }
+
+            this.Client = ConfigurationBundle.HttpClient ?? new HttpClient(httpClientHandler);
+
+            if (ConfigurationBundle.HttpConfiguration.Timeout > 0)
+                this.Client.Timeout = TimeSpan.FromSeconds(ConfigurationBundle.HttpConfiguration.Timeout);
         }
 
         /// <summary>
@@ -51,7 +65,7 @@ namespace Rext
         }
 
         #region Interface Implementations
-        
+
         public async Task<CustomHttpResponse<T>> PostForm<T>(RextOptions options, bool isUrlEncoded = false)
         {
             options.Method = HttpMethod.Post;
@@ -423,7 +437,7 @@ namespace Rext
                     _stopwatch.Start();
                 }
 
-                response = await this.Send(requestMsg, CancellationToken.None, options.IsForm);
+                response = await this.Send(requestMsg, CancellationToken.None);
 
                 // set watch value to public member
                 if (ConfigurationBundle.EnableStopwatch) _stopwatch.Stop();
@@ -492,23 +506,10 @@ namespace Rext
             }
         }
 
-        private async Task<HttpResponseMessage> Send(HttpRequestMessage request, CancellationToken cancellationToken, bool isForm = false)
+        private async Task<HttpResponseMessage> Send(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            HttpResponseMessage response = null;
-            RextHttpCongifuration config = ConfigurationBundle.HttpConfiguration ?? new RextHttpCongifuration();
-
-            // create httpclient from proxy handler
-            using (var httpClientHandler = ProxyHttpClientHandler.ProxyHandler(config.ProxyAddress, config.RelaxSslCertValidation, config.Certificate))
-            {
-                using (var client = ConfigurationBundle.HttpClient ?? new HttpClient(httpClientHandler))
-                {
-                    if (ConfigurationBundle.HttpConfiguration.Timeout > 0)
-                        client.Timeout = TimeSpan.FromSeconds(ConfigurationBundle.HttpConfiguration.Timeout);
-
-                    response = await client.SendAsync(request, cancellationToken);
-                }
-            }
-
+            if (this.Client == null) throw new ArgumentNullException("HttpClient object cannot be null");
+            HttpResponseMessage response = await this.Client.SendAsync(request, cancellationToken);
             return response;
         }
 
