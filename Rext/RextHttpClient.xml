@@ -292,6 +292,11 @@
             Add a X509Certificate to the HttpClient
             </summary>
         </member>
+        <member name="P:Rext.RextHttpCongifuration.HttpCompletionOption">
+            <summary>
+            Set the global HttpClient HttpCompletionOption call for every call. Default value is HttpCompletionOption.ResponseContentRead
+            </summary>
+        </member>
         <member name="T:Rext.RextOptions">
             <summary>
             RextOptions class
@@ -340,6 +345,11 @@
         <member name="P:Rext.RextOptions.IsStreamResponse">
             <summary>
             Set to true if you are expecting Http response
+            </summary>
+        </member>
+        <member name="P:Rext.RextOptions.HttpCompletionOption">
+            <summary>
+            Set the HttpClient HttpCompletionOption call. Default value is HttpCompletionOption.ResponseContentRead
             </summary>
         </member>
         <member name="T:Rext.RextHttpClient">

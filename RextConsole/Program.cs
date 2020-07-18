@@ -15,6 +15,14 @@ namespace RextConsole
         {
             Console.WriteLine("Checking Rext performance to GET google.com \n============================");
             _rext = new RextHttpClient();
+            RextHttpClient.Setup(opt =>
+            {
+                opt.HttpConfiguration = new RextHttpCongifuration
+                {
+                    RelaxSslCertValidation = false,
+                    Timeout = 20
+                };
+            });
 
         restart:
             var s = new Stopwatch();
@@ -22,7 +30,11 @@ namespace RextConsole
 
             for (int i = 0; i < 10; i++)
             {
-                var r = _rext.GetString("https://google.com").Result;
+                var r = _rext.GetString(new RextOptions
+                {
+                    Url = "https://postman-echo.com/get?foo1=bar1&foo2=bar2",
+                    ContentType = "application/json"
+                }).Result;
                 Console.WriteLine($"{i + 1}. {r.StatusCode} {_rext.Stopwatch.ElapsedMilliseconds.ToString("N4")}ms");
             }
 

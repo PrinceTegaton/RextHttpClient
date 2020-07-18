@@ -10,13 +10,13 @@ namespace Rext
     {
         public static HttpClientHandler ProxyHandler(string address = null, bool relaxSslCertValidation = false, CertificateInfo certificateInfo = null)
         {
-            HttpClientHandler proxyHandler = new HttpClientHandler();
+            HttpClientHandler customHandler = new HttpClientHandler();
 
             if (!string.IsNullOrEmpty(address))
             {
                 if (Uri.IsWellFormedUriString(address, UriKind.Absolute))
                 {
-                    proxyHandler = new HttpClientHandler
+                    customHandler = new HttpClientHandler
                     {
                         Proxy = new WebProxy(new Uri(address), BypassOnLocal: false),
                         UseProxy = true,
@@ -28,10 +28,9 @@ namespace Rext
                     throw new RextException("Invalid Proxy Url");
                 }
             }
-           
 
             if (relaxSslCertValidation)
-                proxyHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return relaxSslCertValidation; };
+                customHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return relaxSslCertValidation; };
 
             // add certificate
             if (certificateInfo != null)
@@ -46,10 +45,10 @@ namespace Rext
                     else
                         cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateInfo.FilePath, certificateInfo.Password);
 
-                    proxyHandler.ClientCertificates.Add(cert);
-                    proxyHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
+                    customHandler.ClientCertificates.Add(cert);
+                    customHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
 
-                    return proxyHandler;
+                    return customHandler;
                 }
 
                 // create cert from certificate content bytes
@@ -60,15 +59,15 @@ namespace Rext
                     else
                         cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateInfo.CertificateBytes, certificateInfo.Password);
 
-                    proxyHandler.ClientCertificates.Add(cert);
-                    proxyHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
+                    customHandler.ClientCertificates.Add(cert);
+                    customHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
 
-                    return proxyHandler;
+                    return customHandler;
                 }
 
             }
 
-            return proxyHandler;
+            return customHandler;
         }
     }
 }

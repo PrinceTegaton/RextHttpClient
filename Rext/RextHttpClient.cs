@@ -437,7 +437,15 @@ namespace Rext
                     _stopwatch.Start();
                 }
 
-                response = await this.Send(requestMsg, CancellationToken.None);
+                // check if HttpCompletionOption option is used
+                HttpCompletionOption httpCompletionOption = ConfigurationBundle.HttpConfiguration.HttpCompletionOption;
+                if (options.HttpCompletionOption.HasValue)
+                {
+                    if (ConfigurationBundle.HttpConfiguration.HttpCompletionOption != options.HttpCompletionOption.Value)
+                        httpCompletionOption = options.HttpCompletionOption.Value;
+                }
+
+                response = await this.Send(requestMsg, httpCompletionOption, CancellationToken.None);
 
                 // set watch value to public member
                 if (ConfigurationBundle.EnableStopwatch) _stopwatch.Stop();
@@ -491,7 +499,7 @@ namespace Rext
                 if (ConfigurationBundle.SuppressRextExceptions)
                 {
                     if (ex?.Message.ToLower().Contains("a socket operation was attempted to an unreachable host") == true)
-                        rsp.Message = "Internet connection error";
+                        rsp.Message = "Network connection error";
                     else if (ex?.Message.ToLower().Contains("the character set provided in contenttype is invalid") == true)
                         rsp.Message = "Invald response ContentType. If you are expecting a Stream response then set RextOptions.IsStreamResponse=true";
                     else
@@ -506,11 +514,10 @@ namespace Rext
             }
         }
 
-        private async Task<HttpResponseMessage> Send(HttpRequestMessage request, CancellationToken cancellationToken)
+        private async Task<HttpResponseMessage> Send(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken)
         {
             if (this.Client == null) throw new ArgumentNullException("HttpClient object cannot be null");
-            
-            HttpResponseMessage response = await this.Client.SendAsync(request, cancellationToken);
+            HttpResponseMessage response = await this.Client.SendAsync(request, completionOption, cancellationToken);
             return response;
         }
 
