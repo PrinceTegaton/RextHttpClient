@@ -13,17 +13,9 @@ namespace RextConsole
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Checking Rext performance to GET google.com \n============================");
+            Console.WriteLine("Checking Rext performance to GET postman-echo.com/get?foo1=bar1&foo2=bar2 \n============================");
             _rext = new RextHttpClient();
-            RextHttpClient.Setup(opt =>
-            {
-                opt.HttpConfiguration = new RextHttpCongifuration
-                {
-                    RelaxSslCertValidation = false,
-                    Timeout = 20
-                };
-            });
-
+           
         restart:
             var s = new Stopwatch();
             s.Start();
