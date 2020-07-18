@@ -17,10 +17,13 @@ namespace Rext
     {
         //bool disposed = false;
 
+        /// <summary>
+        /// Default HttpClient object
+        /// </summary>
         public HttpClient Client { get; set; }
 
         /// <summary>
-        /// Rext configuration object
+        /// Rext global configuration object
         /// </summary>
         public static RextConfigurationBundle ConfigurationBundle { get; set; } = new RextConfigurationBundle();
 

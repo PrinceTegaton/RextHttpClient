@@ -357,9 +357,14 @@
             Rext HttpClient wrapper implementation
             </summary>
         </member>
+        <member name="P:Rext.RextHttpClient.Client">
+            <summary>
+            Default HttpClient object
+            </summary>
+        </member>
         <member name="P:Rext.RextHttpClient.ConfigurationBundle">
             <summary>
-            Rext configuration object
+            Rext global configuration object
             </summary>
         </member>
         <member name="P:Rext.RextHttpClient.ReturnStatusCode">
