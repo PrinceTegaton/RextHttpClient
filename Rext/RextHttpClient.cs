@@ -33,7 +33,7 @@ namespace Rext
         public static int ReturnStatusCode { get; }
 
         public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
-        public Stopwatch Stopwatch { get { return _stopwatch; } }
+        public Stopwatch Stopwatch => _stopwatch;
         private Stopwatch _stopwatch;
 
         /// <summary>

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
+﻿using System.Net;
 
 namespace Rext
 {
@@ -13,13 +10,7 @@ namespace Rext
         /// <summary>
         /// This is true if the http repsonse code is 200
         /// </summary>
-        public bool IsSuccess
-        {
-            get
-            {
-                return StatusCode == HttpStatusCode.OK;
-            }
-        }
+        public bool IsSuccess => StatusCode == HttpStatusCode.OK;
 
         /// <summary>
         /// The Http StatusCode associated with the call response

@@ -72,57 +72,56 @@ namespace Rext
         {
             //todo: review reflection process
 
-            if (header != null)
+            if (header == null) return;
+            // process from a list of objects
+            if (header.IsList())
             {
-                // process from a list of objects
-                if (header.IsList())
+                foreach (var i in header as List<object>)
                 {
-                    foreach (var i in header as List<object>)
-                    {
-                        PropertyInfo headerItem = i.GetType().GetProperties().FirstOrDefault();
-                        string value = headerItem.GetValue(i, null)?.ToString();
+                    PropertyInfo headerItem = i.GetType().GetProperties().FirstOrDefault();
+                    string value = headerItem?.GetValue(i, null)?.ToString();
 
-                        RemoveDuplicate(requestObj, headerItem.Name);
+                    RemoveDuplicate(requestObj, headerItem?.Name);
 
-                        if (!string.IsNullOrEmpty(value)) // prevent adding null header item
-                            requestObj.Headers.Add(headerItem.Name, value);
-                    }
-                }
-
-                // process from a dictionary or key-value-pair
-                else if (header.IsDictionary())
-                {
-                    foreach (var i in header as Dictionary<string, string>)
-                    {
-                        RemoveDuplicate(requestObj, i.Key);
-
-                        if (!string.IsNullOrEmpty(i.Value))  // prevent adding null header item
-                            requestObj.Headers.Add(i.Key, i.Value);
-                    }
-                }
-
-                // process from a single object
-                else
-                {
-                    PropertyInfo headerItem = header.GetType().GetProperties().FirstOrDefault();
-                    string value = headerItem.GetValue(header, null)?.ToString();
-
-                    RemoveDuplicate(requestObj, headerItem.Name);
-
-                    if (!string.IsNullOrEmpty(value))  // prevent adding null header item
+                    if (!string.IsNullOrEmpty(value)) // prevent adding null header item
                         requestObj.Headers.Add(headerItem.Name, value);
                 }
+            }
+
+            // process from a dictionary or key-value-pair
+            else if (header.IsDictionary())
+            {
+                foreach (var i in header as Dictionary<string, string>)
+                {
+                    RemoveDuplicate(requestObj, i.Key);
+
+                    if (!string.IsNullOrEmpty(i.Value))  // prevent adding null header item
+                        requestObj.Headers.Add(i.Key, i.Value);
+                }
+            }
+
+            // process from a single object
+            else
+            {
+                PropertyInfo headerItem = header.GetType().GetProperties().FirstOrDefault();
+                string value = headerItem?.GetValue(header, null)?.ToString();
+
+                RemoveDuplicate(requestObj, headerItem?.Name);
+
+                if (!string.IsNullOrEmpty(value))  // prevent adding null header item
+                    requestObj.Headers.Add(headerItem?.Name, value);
             }
         }
 
         internal static void SetHeader(this HttpRequestMessage requestObj, string key, string value)
         {
+            // prevent adding null header item
             if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
             {
                 RemoveDuplicate(requestObj, key);
 
-                if (!string.IsNullOrEmpty(value))  // prevent adding null header item
-                    requestObj.Headers.Add(key, value);
+
+                requestObj.Headers.Add(key, value);
             }
         }
 
