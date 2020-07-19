@@ -120,6 +120,11 @@ namespace Rext
         /// Add a X509Certificate to the HttpClient
         /// </summary>
         public CertificateInfo Certificate { get; set; }
+
+        /// <summary>
+        /// Set the global HttpClient HttpCompletionOption call for every call. Default value is HttpCompletionOption.ResponseContentRead
+        /// </summary>
+        public HttpCompletionOption HttpCompletionOption { get; set; }
     }
 
     /// <summary>
@@ -175,5 +180,10 @@ namespace Rext
         internal bool IsForm { get; set; }
 
         internal bool IsUrlEncoded { get; set; }
+
+        /// <summary>
+        /// Set the HttpClient HttpCompletionOption call. Default value is HttpCompletionOption.ResponseContentRead
+        /// </summary>
+        public HttpCompletionOption? HttpCompletionOption { get; set; }
     }
 }

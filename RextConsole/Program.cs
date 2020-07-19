@@ -1,6 +1,7 @@
 ﻿using Rext;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Xml.Serialization;
 
@@ -10,8 +11,33 @@ namespace RextConsole
     {
         static IRextHttpClient _rext;
 
-
         static void Main(string[] args)
+        {
+            Console.WriteLine("Checking Rext performance to GET postman-echo.com/get?foo1=bar1&foo2=bar2 \n============================");
+            _rext = new RextHttpClient();
+           
+        restart:
+            var s = new Stopwatch();
+            s.Start();
+
+            for (int i = 0; i < 10; i++)
+            {
+                var r = _rext.GetString(new RextOptions
+                {
+                    Url = "https://postman-echo.com/get?foo1=bar1&foo2=bar2",
+                    ContentType = "application/json"
+                }).Result;
+                Console.WriteLine($"{i + 1}. {r.StatusCode} {_rext.Stopwatch.ElapsedMilliseconds.ToString("N4")}ms");
+            }
+
+            s.Stop();
+            Console.WriteLine($"Total time: {s.ElapsedMilliseconds.ToString("N4")}ms");
+            if (Console.ReadLine() == "R") goto restart;
+            Console.ReadKey();
+
+        }
+
+        static void Main2(string[] args)
         {
             try
             {
