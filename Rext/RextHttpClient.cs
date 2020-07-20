@@ -13,14 +13,14 @@ namespace Rext
     /// <summary>
     /// Rext HttpClient wrapper implementation
     /// </summary>
-    public class RextHttpClient : IRextHttpClient
+    public class RextHttpClient : IRextHttpClient, IDisposable
     {
         //bool disposed = false;
 
         /// <summary>
         /// Default HttpClient object
         /// </summary>
-        public HttpClient Client { get; set; }
+        private readonly HttpClient Client;
 
         /// <summary>
         /// Rext global configuration object
@@ -33,8 +33,7 @@ namespace Rext
         public static int ReturnStatusCode { get; }
 
         public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
-        public Stopwatch Stopwatch => _stopwatch;
-        private Stopwatch _stopwatch;
+        public Stopwatch Stopwatch { get; private set; }
 
         /// <summary>
         /// Initialize class
@@ -180,7 +179,7 @@ namespace Rext
                 Header = header,
                 Payload = payload,
                 ContentType = ContentType.Application_JSON,
-                ExpectedResponseFormat = ContentType.Application_JSON
+                ExpectedResponseFormat = ContentType.Text_Plain
             });
 
             return data;
@@ -190,7 +189,7 @@ namespace Rext
         {
             options.Method = HttpMethod.Post;
             options.ContentType = ContentType.Application_JSON;
-            options.ExpectedResponseFormat = ContentType.Application_JSON;
+            options.ExpectedResponseFormat = ContentType.Text_Plain;
 
             var data = await MakeRequest(options);
             return data;
@@ -221,6 +220,7 @@ namespace Rext
             return data;
         }
 
+        #region GET
         public async Task<CustomHttpResponse<string>> GetString(RextOptions options)
         {
             options.Method = HttpMethod.Get;
@@ -291,6 +291,99 @@ namespace Rext
 
             return data;
         }
+        #endregion
+
+        #region DELETE
+        public async Task<CustomHttpResponse<string>> Delete(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Delete,
+                Header = header,
+                Payload = payload,
+                ContentType = ContentType.Text_Plain,
+                ExpectedResponseFormat = ContentType.Application_JSON
+            });
+
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<T>> DeleteJSON<T>(RextOptions options)
+        {
+            options.Method = HttpMethod.Delete;
+            options.ExpectedResponseFormat = ContentType.Application_JSON;
+
+            var data = await MakeRequest<T>(options);
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<T>> DeleteJSON<T>(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest<T>(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Delete,
+                Header = header,
+                Payload = payload,
+                ContentType = ContentType.Text_Plain,
+                ExpectedResponseFormat = ContentType.Application_JSON
+            });
+
+            return data;
+        }
+        #endregion
+
+        #region PUT
+        public async Task<CustomHttpResponse<T>> PutJSON<T>(RextOptions options)
+        {
+            options.Method = HttpMethod.Put;
+            options.ExpectedResponseFormat = ContentType.Application_JSON;
+
+            var data = await MakeRequest<T>(options);
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<T>> PutJSON<T>(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest<T>(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Put,
+                Header = header,
+                Payload = payload,
+                ContentType = ContentType.Application_JSON,
+                ExpectedResponseFormat = ContentType.Application_JSON
+            });
+
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<string>> PutJSONForString(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Put,
+                Header = header,
+                Payload = payload,
+                ContentType = ContentType.Application_JSON,
+                ExpectedResponseFormat = ContentType.Text_Plain
+            });
+
+            return data;
+        }
+
+        public async Task<CustomHttpResponse<string>> PutJSONForString(RextOptions options)
+        {
+            options.Method = HttpMethod.Put;
+            options.ContentType = ContentType.Application_JSON;
+            options.ExpectedResponseFormat = ContentType.Text_Plain;
+
+            var data = await MakeRequest(options);
+            return data;
+        }
+        #endregion
 
         public async Task<CustomHttpResponse<string>> MakeRequest(RextOptions options)
         {
@@ -343,6 +436,8 @@ namespace Rext
 
         private async Task<CustomHttpResponse<string>> ProcessRequest(RextOptions options)
         {
+            if (this.Client == null) throw new ArgumentNullException("HttpClient object cannot be null");
+
             // validate essential params
             if (string.IsNullOrEmpty(options.Url))
             {
@@ -375,7 +470,6 @@ namespace Rext
                 if (uri == null)
                     throw new UriFormatException("Invalid request Uri");
 
-
                 var requestMsg = new HttpRequestMessage(options.Method, uri);
 
                 // set header if object has value
@@ -389,7 +483,7 @@ namespace Rext
                     requestMsg.SetHeader("Accept", options.ExpectedResponseFormat);
 
                 // POST request
-                if (options.Method == HttpMethod.Post & options.Payload != null)
+                if ((options.Method == HttpMethod.Post || options.Method == HttpMethod.Put) & options.Payload != null)
                 {
                     string strPayload = string.Empty;
 
@@ -436,8 +530,8 @@ namespace Rext
                 // use stopwatch to monitor httpcall duration
                 if (ConfigurationBundle.EnableStopwatch)
                 {
-                    _stopwatch = new Stopwatch();
-                    _stopwatch.Start();
+                    Stopwatch = new Stopwatch();
+                    Stopwatch.Start();
                 }
 
                 // check if HttpCompletionOption option is used
@@ -448,10 +542,10 @@ namespace Rext
                         httpCompletionOption = options.HttpCompletionOption.Value;
                 }
 
-                response = await this.Send(requestMsg, httpCompletionOption, CancellationToken.None);
-
+                response = await this.Client.SendAsync(requestMsg, httpCompletionOption, CancellationToken.None);
+                
                 // set watch value to public member
-                if (ConfigurationBundle.EnableStopwatch) _stopwatch.Stop();
+                if (ConfigurationBundle.EnableStopwatch) Stopwatch.Stop();
 
                 rsp.StatusCode = response.StatusCode;
 
@@ -486,7 +580,7 @@ namespace Rext
 
                     // handle code specific error from user
                     int code = (int)response.StatusCode;
-                    if (code > 0 && ConfigurationBundle.StatusCodesToHandle.Contains(code))
+                    if (code > 0 && ConfigurationBundle.StatusCodesToHandle != null && ConfigurationBundle.StatusCodesToHandle.Contains(code))
                         ConfigurationBundle.OnStatusCode?.Invoke(ReturnStatusCode);
                 }
 
@@ -517,29 +611,25 @@ namespace Rext
             }
         }
 
-        private async Task<HttpResponseMessage> Send(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken)
+        private bool _disposed = false;
+        public void Dispose()
         {
-            if (this.Client == null) throw new ArgumentNullException("HttpClient object cannot be null");
-            HttpResponseMessage response = await this.Client.SendAsync(request, completionOption, cancellationToken);
-            return response;
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    this.Client.Dispose();
+                    this.Stopwatch = null;
+                }
 
-        //public void Dispose()
-        //{
-        //    Dispose(true);
-        //}
-
-        //protected void Dispose(bool disposing)
-        //{
-        //    if (disposed) return;
-
-        //    if (disposing)
-        //    {
-        //        // cleanup objects
-        //    }
-
-        //    GC.SuppressFinalize(this);
-        //}
+                _disposed = true;
+            }
+        }
     }
 }

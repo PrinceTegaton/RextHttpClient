@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rext", "Rext\Rext.csproj", "{F8E99A94-8273-4264-957B-D2EB6D631628}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RextConsole", "RextConsole\RextConsole.csproj", "{22364D7D-C6C2-4A0C-8B6C-F0CB90782B1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RextConsole", "RextConsole\RextConsole.csproj", "{22364D7D-C6C2-4A0C-8B6C-F0CB90782B1B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RextAPISimulator", "RextAPISimulator\RextAPISimulator.csproj", "{B15D26D7-4807-4169-8E33-A1CA07CED34C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{22364D7D-C6C2-4A0C-8B6C-F0CB90782B1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22364D7D-C6C2-4A0C-8B6C-F0CB90782B1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22364D7D-C6C2-4A0C-8B6C-F0CB90782B1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B15D26D7-4807-4169-8E33-A1CA07CED34C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B15D26D7-4807-4169-8E33-A1CA07CED34C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B15D26D7-4807-4169-8E33-A1CA07CED34C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B15D26D7-4807-4169-8E33-A1CA07CED34C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

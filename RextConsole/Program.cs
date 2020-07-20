@@ -12,9 +12,25 @@ namespace RextConsole
 
         static void Main(string[] args)
         {
+            Console.WriteLine("Rext Console");
+
+        restart:
+            using (var _rext = new RextHttpClient())
+            {
+                var r = _rext.DeleteJSON<dynamic>("https://localhost:44365/api/user/put", new { id = 1001, name = "john.doe" }).Result;
+                Console.WriteLine($"{r.StatusCode} - {r.Message} \n{r.Content} {_rext.Stopwatch.ElapsedMilliseconds.ToString("N4")}ms");
+            }
+
+            if (Console.ReadLine() == "R") goto restart;
+            Console.ReadKey();
+        }
+
+
+        static void Main3(string[] args)
+        {
             Console.WriteLine("Checking Rext performance to GET postman-echo.com/get?foo1=bar1&foo2=bar2 \n============================");
             _rext = new RextHttpClient();
-           
+
         restart:
             var s = new Stopwatch();
             s.Start();
@@ -26,6 +42,7 @@ namespace RextConsole
                     Url = "https://postman-echo.com/get?foo1=bar1&foo2=bar2",
                     ContentType = "application/json"
                 }).Result;
+
                 Console.WriteLine($"{i + 1}. {r.StatusCode} {_rext.Stopwatch.ElapsedMilliseconds.ToString("N4")}ms");
             }
 
@@ -33,7 +50,6 @@ namespace RextConsole
             Console.WriteLine($"Total time: {s.ElapsedMilliseconds.ToString("N4")}ms");
             if (Console.ReadLine() == "R") goto restart;
             Console.ReadKey();
-
         }
 
         static void Main2(string[] args)

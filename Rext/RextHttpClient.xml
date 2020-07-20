@@ -53,6 +53,21 @@
             Get execution time of the http call
             </summary>
         </member>
+        <member name="M:Rext.IRextHttpClient.MakeRequest(Rext.RextOptions)">
+            <summary>
+            Make http request and receive result as string
+            </summary>
+            <param name="options">RextOption to configure http call</param>
+            <returns>String content for your consumption as required</returns>
+        </member>
+        <member name="M:Rext.IRextHttpClient.MakeRequest``1(Rext.RextOptions)">
+            <summary>
+            Make http request and receive result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
         <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.GetXML``1(System.String,System.Object,System.Object)" -->
         <member name="M:Rext.IRextHttpClient.GetXML``1(Rext.RextOptions)">
             <summary>
@@ -78,21 +93,6 @@
             </summary>
             <param name="options">RextOption to configure http call</param>
             <returns>String response</returns>
-        </member>
-        <member name="M:Rext.IRextHttpClient.MakeRequest(Rext.RextOptions)">
-            <summary>
-            Make http request and receive result as string
-            </summary>
-            <param name="options">RextOption to configure http call</param>
-            <returns>String content for your consumption as required</returns>
-        </member>
-        <member name="M:Rext.IRextHttpClient.MakeRequest``1(Rext.RextOptions)">
-            <summary>
-            Make http request and receive result deserialized to custom type
-            </summary>
-            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
-            <param name="options">RextOption to configure http call</param>
-            <returns>Deserialized response of T</returns>
         </member>
         <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostJSON``1(System.String,System.Object,System.Object)" -->
         <member name="M:Rext.IRextHttpClient.PostJSON``1(Rext.RextOptions)">
@@ -357,7 +357,7 @@
             Rext HttpClient wrapper implementation
             </summary>
         </member>
-        <member name="P:Rext.RextHttpClient.Client">
+        <member name="F:Rext.RextHttpClient.Client">
             <summary>
             Default HttpClient object
             </summary>
