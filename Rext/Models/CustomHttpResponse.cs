@@ -8,7 +8,7 @@ namespace Rext
     public class CustomHttpResponse
     {
         /// <summary>
-        /// This is true if the http repsonse code is 200
+        /// This is true if the http repsonse code is 2xx
         /// </summary>
         public bool IsSuccess => StatusCode == HttpStatusCode.OK;
 
