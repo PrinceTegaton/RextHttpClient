@@ -73,6 +73,7 @@ namespace Rext
             //todo: review reflection process
 
             if (header == null) return;
+
             // process from a list of objects
             if (header.IsList())
             {
@@ -119,8 +120,6 @@ namespace Rext
             if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
             {
                 RemoveDuplicate(requestObj, key);
-
-
                 requestObj.Headers.Add(key, value);
             }
         }
