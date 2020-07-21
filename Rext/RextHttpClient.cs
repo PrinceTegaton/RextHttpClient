@@ -12,7 +12,7 @@ namespace Rext
 {
     ///<inheritdoc />
     /// <summary>
-    /// Initializes a new instance of the <see cref="RextHttpClient"/> class for <see cref="IRextHttpClient"/>
+    /// Implementation of <see cref="IRextHttpClient"/>
     /// </summary>
     public class RextHttpClient : IRextHttpClient, IDisposable
     {

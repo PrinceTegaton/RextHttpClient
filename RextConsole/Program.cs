@@ -15,11 +15,8 @@ namespace RextConsole
             Console.WriteLine("Rext Console");
             
         restart:
-            using (var _rext = new RextHttpClient())
-            {
-                var r = _rext.DeleteJSON<dynamic>("https://localhost:44365/api/user/put", new { id = 1001, name = "john.doe" }).Result;
-                Console.WriteLine($"{r.StatusCode} - {r.Message} \n{r.Content} {_rext.Stopwatch.ElapsedMilliseconds.ToString("N4")}ms");
-            }
+            var r = _rext.DeleteJSON<dynamic>("https://localhost:44365/api/user/put", new { id = 1001, name = "john.doe" }).Result;
+            Console.WriteLine($"{r.StatusCode} - {r.Message} \n{r.Content} {_rext.Stopwatch.ElapsedMilliseconds.ToString("N4")}ms");
 
             if (Console.ReadLine() == "R") goto restart;
             Console.ReadKey();

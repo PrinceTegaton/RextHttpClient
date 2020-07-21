@@ -4,7 +4,7 @@ using System.Net;
 namespace Rext
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="RextException"/> class
+    /// Custom Rext Exception class
     /// </summary>
     public class RextException : Exception
     {
@@ -14,7 +14,7 @@ namespace Rext
         public HttpStatusCode StatusCode { get; set; }
 
         /// <summary>
-        /// Init
+        /// Initializes a new instance of the <see cref="RextException"/> class
         /// </summary>
         /// <param name="message"></param>
         public RextException(string message) : base(message)

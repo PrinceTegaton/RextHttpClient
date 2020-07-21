@@ -503,7 +503,7 @@
         </member>
         <member name="T:Rext.RextException">
             <summary>
-            Initializes a new instance of the <see cref="T:Rext.RextException"/> class
+            Custom Rext Exception class
             </summary>
         </member>
         <member name="P:Rext.RextException.StatusCode">
@@ -513,7 +513,7 @@
         </member>
         <member name="M:Rext.RextException.#ctor(System.String)">
             <summary>
-            Init
+            Initializes a new instance of the <see cref="T:Rext.RextException"/> class
             </summary>
             <param name="message"></param>
         </member>
@@ -527,7 +527,7 @@
         <member name="T:Rext.RextHttpClient">
             <inheritdoc />
              <summary>
-             Initializes a new instance of the <see cref="T:Rext.RextHttpClient"/> class for <see cref="T:Rext.IRextHttpClient"/>
+             Implementation of <see cref="T:Rext.IRextHttpClient"/>
              </summary>
         </member>
         <member name="F:Rext.RextHttpClient.Client">
