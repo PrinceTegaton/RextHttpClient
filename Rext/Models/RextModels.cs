@@ -3,6 +3,9 @@ using System.Net.Http;
 
 namespace Rext
 {
+    /// <summary>
+    /// Certificate model class
+    /// </summary>
     public class CertificateInfo
     {
         /// <summary>

@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Rext
 {
+    /// <summary>
+    /// Header extension
+    /// </summary>
     public static class HeaderExtension
     {
         /// <summary>

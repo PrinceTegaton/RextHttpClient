@@ -15,20 +15,19 @@ namespace Rext
         IDictionary<string, string> Headers { get; }
 
         /// <summary>
-        /// Get execution time of the http call
+        /// Get execution time of the http call when configured to run
         /// </summary>
         Stopwatch Stopwatch { get; }
 
-
         /// <summary>
-        /// Make http request and receive result as string
+        /// Put JSON content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
         /// </summary>
-        /// <param name="options">RextOption to configure http call</param>
-        /// <returns>String content for your consumption as required</returns>
+        /// <param name="options">RextOption to configure http call using <see cref="RextOptions"/> object</param>
+        /// <returns>Deserialized response of T</returns>
         Task<CustomHttpResponse<string>> MakeRequest(RextOptions options);
 
         /// <summary>
-        /// Make http request and receive result deserialized to custom type
+        /// Process direct request with plain string response. This method is called by all verb actions
         /// </summary>
         /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="options">RextOption to configure http call</param>
@@ -43,13 +42,13 @@ namespace Rext
         /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="url">Request url in full</param>
         /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
-        /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
         /// <returns>Deserialized response of T</returns>
         Task<CustomHttpResponse<T>> GetXML<T>(string url, object payload = null, object header = null);
 
 
         /// <summary>
-        /// Get XML result deserialized to custom type. Accepts advanced options
+        /// Get XML result deserialized to custom type. Accepts advanced options using <see cref="RextOptions"/> object
         /// </summary>
         /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="options">RextOption to configure http call</param>
@@ -62,12 +61,12 @@ namespace Rext
         /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="url">Request url in full</param>
         /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
-        /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
         /// <returns>Deserialized response of T</returns>
         Task<CustomHttpResponse<T>> GetJSON<T>(string url, object payload = null, object header = null);
 
         /// <summary>
-        /// Get JSON result deserialized to custom type. Accepts advanced options.
+        /// Get JSON result deserialized to custom type. Accepts advanced options using <see cref="RextOptions"/> object.
         /// </summary>
         /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="options">RextOption to configure http call</param>
@@ -79,12 +78,12 @@ namespace Rext
         /// </summary>
         /// <param name="url">Request url in full</param>
         /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
-        /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
         /// <returns>String response</returns>
         Task<CustomHttpResponse<string>> GetString(string url, object payload = null, object header = null);
 
         /// <summary>
-        /// Get plain string result. Accepts advanced options
+        /// Get plain string result. Accepts advanced options using <see cref="RextOptions"/> object
         /// </summary>
         /// <param name="options">RextOption to configure http call</param>
         /// <returns>String response</returns>
@@ -98,12 +97,12 @@ namespace Rext
         /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="url">Request url in full</param>
         /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
-        /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
         /// <returns>Deserialized response of T</returns>
         Task<CustomHttpResponse<T>> PostJSON<T>(string url, object payload = null, object header = null);
 
         /// <summary>
-        /// Post JSON content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// Post JSON content for JSON result deserialized to custom type. Accepts advanced options using <see cref="RextOptions"/> object. You can change request format with RextOptions.ContentType
         /// </summary>
         /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="options">RextOption to configure http call</param>
@@ -115,12 +114,12 @@ namespace Rext
         /// </summary>
         /// <param name="url">Request url in full</param>
         /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
-        /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
         /// <returns>Deserialized response of T</returns>
         Task<CustomHttpResponse<string>> PostJSONForString(string url, object payload = null, object header = null);
 
         /// <summary>
-        /// Post JSON content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// Post JSON content for string result. Accepts advanced options using <see cref="RextOptions"/> object. You can change request format with RextOptions.ContentType
         /// </summary>
         /// <param name="options">RextOption to configure http call</param>
         /// <returns>Deserialized response of T</returns>
@@ -132,12 +131,12 @@ namespace Rext
         /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="url">Request url in full</param>
         /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
-        /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
         /// <returns>Deserialized response of T</returns>
         Task<CustomHttpResponse<T>> PostXML<T>(string url, object payload = null, object header = null);
 
         /// <summary>
-        /// Post XML content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// Post XML content for JSON result deserialized to custom type. Accepts advanced options using <see cref="RextOptions"/> object. You can change request format with RextOptions.ContentType
         /// </summary>
         /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="options">RextOption to configure http call</param>
@@ -149,12 +148,12 @@ namespace Rext
         /// </summary>
         /// <param name="url">Request url in full</param>
         /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
-        /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
         /// <returns>Deserialized response of T</returns>
         Task<CustomHttpResponse<string>> PostXMLForString(string url, object payload = null, object header = null);
 
         /// <summary>
-        /// Post XML content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// Post XML content for string result. Accepts advanced options using <see cref="RextOptions"/> object. You can change request format with RextOptions.ContentType
         /// </summary>
         /// <param name="options">RextOption to configure http call</param>
         /// <returns>Deserialized response of T</returns>
@@ -165,12 +164,12 @@ namespace Rext
         /// </summary>
         /// <param name="url">Request url in full</param>
         /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
-        /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
         /// <returns>Plain string response</returns>
         Task<CustomHttpResponse<string>> PostString(string url, object payload = null, object header = null);
 
         /// <summary>
-        /// Post plain string content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// Post plain string content for string result. Accepts advanced options using <see cref="RextOptions"/> object. You can change request format with RextOptions.ContentType
         /// </summary>
         /// <param name="options">RextOption to configure http call</param>
         /// <returns>Plain string response</returns>
@@ -182,7 +181,7 @@ namespace Rext
         /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="url">Request url in full</param>
         /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
-        /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
         /// <param name="isUrlEncoded">Set to true to send as application/x-www-form-urlencoded</param>
         /// <returns>Deserialized response of T</returns>
         Task<CustomHttpResponse<T>> PostForm<T>(string url, object payload = null, object header = null, bool isUrlEncoded = false);
@@ -201,10 +200,9 @@ namespace Rext
         /// <summary>
         /// Delete for string result deserialized to custom type
         /// </summary>
-        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="url">Request url in full</param>
         /// <param name="payload">Content to send will be serialized to querystring</param>
-        /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
         /// <returns>Deserialized response of T</returns>
         Task<CustomHttpResponse<string>> Delete(string url, object payload = null, object header = null);
 
@@ -214,12 +212,12 @@ namespace Rext
         /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="url">Request url in full</param>
         /// <param name="payload">Content to send will be serialized to querystring</param>
-        /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
         /// <returns>Deserialized response of T</returns>
         Task<CustomHttpResponse<T>> DeleteJSON<T>(string url, object payload = null, object header = null);
 
         /// <summary>
-        /// Delete for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// Delete for JSON result deserialized to custom type. Accepts advanced options using <see cref="RextOptions"/> object. You can change request format with RextOptions.ContentType
         /// </summary>
         /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="options">RextOption to configure http call. Payload will be serialized to querystring</param>
@@ -228,18 +226,19 @@ namespace Rext
         #endregion
 
         #region PUT
+        
         /// <summary>
         /// Put JSON content for JSON result deserialized to custom type
         /// </summary>
         /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="url">Request url in full</param>
         /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
-        /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
         /// <returns>Deserialized response of T</returns>
         Task<CustomHttpResponse<T>> PutJSON<T>(string url, object payload = null, object header = null);
 
         /// <summary>
-        /// Put JSON content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// Put JSON content for JSON result deserialized to custom type. Accepts advanced options using <see cref="RextOptions"/> object. You can change request format with RextOptions.ContentType
         /// </summary>
         /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
         /// <param name="options">RextOption to configure http call</param>
@@ -251,12 +250,12 @@ namespace Rext
         /// </summary>
         /// <param name="url">Request url in full</param>
         /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
-        /// <param name="header">Set a default header for every http call via IDictionary<string, string>, IList<string, string> or key-value object (new { Authorization = "xxxx" }</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
         /// <returns>Deserialized response of T</returns>
         Task<CustomHttpResponse<string>> PutJSONForString(string url, object payload = null, object header = null);
 
         /// <summary>
-        /// Put JSON content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// Put JSON content for string result. Accepts advanced options using <see cref="RextOptions"/> object. You can change request format with RextOptions.ContentType
         /// </summary>
         /// <param name="options">RextOption to configure http call</param>
         /// <returns>Deserialized response of T</returns>

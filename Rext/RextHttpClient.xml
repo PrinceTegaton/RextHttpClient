@@ -4,6 +4,11 @@
         <name>RextHttpClient</name>
     </assembly>
     <members>
+        <member name="T:Rext.HeaderExtension">
+            <summary>
+            Header extension
+            </summary>
+        </member>
         <member name="M:Rext.HeaderExtension.AddHeader(Rext.IRextHttpClient,System.String,System.String)">
             <summary>
             Add a single header item with key and value
@@ -50,93 +55,171 @@
         </member>
         <member name="P:Rext.IRextHttpClient.Stopwatch">
             <summary>
-            Get execution time of the http call
+            Get execution time of the http call when configured to run
             </summary>
         </member>
         <member name="M:Rext.IRextHttpClient.MakeRequest(Rext.RextOptions)">
             <summary>
-            Make http request and receive result as string
+            Put JSON content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
             </summary>
-            <param name="options">RextOption to configure http call</param>
-            <returns>String content for your consumption as required</returns>
+            <param name="options">RextOption to configure http call using <see cref="T:Rext.RextOptions"/> object</param>
+            <returns>Deserialized response of T</returns>
         </member>
         <member name="M:Rext.IRextHttpClient.MakeRequest``1(Rext.RextOptions)">
             <summary>
-            Make http request and receive result deserialized to custom type
+            Process direct request with plain string response. This method is called by all verb actions
             </summary>
             <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
             <param name="options">RextOption to configure http call</param>
             <returns>Deserialized response of T</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.GetXML``1(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.GetXML``1(System.String,System.Object,System.Object)">
+            <summary>
+            Get XML result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
         <member name="M:Rext.IRextHttpClient.GetXML``1(Rext.RextOptions)">
             <summary>
-            Get XML result deserialized to custom type. Accepts advanced options
+            Get XML result deserialized to custom type. Accepts advanced options using <see cref="T:Rext.RextOptions"/> object
             </summary>
             <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
             <param name="options">RextOption to configure http call</param>
             <returns>Deserialized response of T</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.GetJSON``1(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.GetJSON``1(System.String,System.Object,System.Object)">
+            <summary>
+            Get JSON result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
         <member name="M:Rext.IRextHttpClient.GetJSON``1(Rext.RextOptions)">
             <summary>
-            Get JSON result deserialized to custom type. Accepts advanced options.
+            Get JSON result deserialized to custom type. Accepts advanced options using <see cref="T:Rext.RextOptions"/> object.
             </summary>
             <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
             <param name="options">RextOption to configure http call</param>
             <returns>Deserialized response of T</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.GetString(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.GetString(System.String,System.Object,System.Object)">
+            <summary>
+            get plain string result
+            </summary>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>String response</returns>
+        </member>
         <member name="M:Rext.IRextHttpClient.GetString(Rext.RextOptions)">
             <summary>
-            Get plain string result. Accepts advanced options
+            Get plain string result. Accepts advanced options using <see cref="T:Rext.RextOptions"/> object
             </summary>
             <param name="options">RextOption to configure http call</param>
             <returns>String response</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostJSON``1(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.PostJSON``1(System.String,System.Object,System.Object)">
+            <summary>
+            Post JSON content for JSON result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
         <member name="M:Rext.IRextHttpClient.PostJSON``1(Rext.RextOptions)">
             <summary>
-            Post JSON content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+            Post JSON content for JSON result deserialized to custom type. Accepts advanced options using <see cref="T:Rext.RextOptions"/> object. You can change request format with RextOptions.ContentType
             </summary>
             <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
             <param name="options">RextOption to configure http call</param>
             <returns>Deserialized response of T</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostJSONForString(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.PostJSONForString(System.String,System.Object,System.Object)">
+            <summary>
+            Post JSON content for string result
+            </summary>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
         <member name="M:Rext.IRextHttpClient.PostJSONForString(Rext.RextOptions)">
             <summary>
-            Post JSON content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+            Post JSON content for string result. Accepts advanced options using <see cref="T:Rext.RextOptions"/> object. You can change request format with RextOptions.ContentType
             </summary>
             <param name="options">RextOption to configure http call</param>
             <returns>Deserialized response of T</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostXML``1(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.PostXML``1(System.String,System.Object,System.Object)">
+            <summary>
+            Post XML content for XML result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
         <member name="M:Rext.IRextHttpClient.PostXML``1(Rext.RextOptions)">
             <summary>
-            Post XML content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+            Post XML content for JSON result deserialized to custom type. Accepts advanced options using <see cref="T:Rext.RextOptions"/> object. You can change request format with RextOptions.ContentType
             </summary>
             <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
             <param name="options">RextOption to configure http call</param>
             <returns>Deserialized response of T</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostXMLForString(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.PostXMLForString(System.String,System.Object,System.Object)">
+            <summary>
+            Post XML content for string result
+            </summary>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
         <member name="M:Rext.IRextHttpClient.PostXMLForString(Rext.RextOptions)">
             <summary>
-            Post XML content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+            Post XML content for string result. Accepts advanced options using <see cref="T:Rext.RextOptions"/> object. You can change request format with RextOptions.ContentType
             </summary>
             <param name="options">RextOption to configure http call</param>
             <returns>Deserialized response of T</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostString(System.String,System.Object,System.Object)" -->
+        <member name="M:Rext.IRextHttpClient.PostString(System.String,System.Object,System.Object)">
+            <summary>
+            Post plain string content for string result
+            </summary>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Plain string response</returns>
+        </member>
         <member name="M:Rext.IRextHttpClient.PostString(Rext.RextOptions)">
             <summary>
-            Post plain string content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+            Post plain string content for string result. Accepts advanced options using <see cref="T:Rext.RextOptions"/> object. You can change request format with RextOptions.ContentType
             </summary>
             <param name="options">RextOption to configure http call</param>
             <returns>Plain string response</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Rext.IRextHttpClient.PostForm``1(System.String,System.Object,System.Object,System.Boolean)" -->
+        <member name="M:Rext.IRextHttpClient.PostForm``1(System.String,System.Object,System.Object,System.Boolean)">
+            <summary>
+            Post content as form-data for JSON result deserialized to custom type. Uses multipart/form-data by default
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <param name="isUrlEncoded">Set to true to send as application/x-www-form-urlencoded</param>
+            <returns>Deserialized response of T</returns>
+        </member>
         <member name="M:Rext.IRextHttpClient.PostForm``1(Rext.RextOptions,System.Boolean)">
             <summary>
             Post content as form-data for JSON result deserialized to custom type. Uses multipart/form-data by default
@@ -144,6 +227,67 @@
             <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
             <param name="options">RextOption to configure http call</param>
             <param name="isUrlEncoded">Set to true to send as application/x-www-form-urlencoded</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.IRextHttpClient.Delete(System.String,System.Object,System.Object)">
+            <summary>
+            Delete for string result deserialized to custom type
+            </summary>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send will be serialized to querystring</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.IRextHttpClient.DeleteJSON``1(System.String,System.Object,System.Object)">
+            <summary>
+            Delete for JSON result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send will be serialized to querystring</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.IRextHttpClient.DeleteJSON``1(Rext.RextOptions)">
+            <summary>
+            Delete for JSON result deserialized to custom type. Accepts advanced options using <see cref="T:Rext.RextOptions"/> object. You can change request format with RextOptions.ContentType
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call. Payload will be serialized to querystring</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.IRextHttpClient.PutJSON``1(System.String,System.Object,System.Object)">
+            <summary>
+            Put JSON content for JSON result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.IRextHttpClient.PutJSON``1(Rext.RextOptions)">
+            <summary>
+            Put JSON content for JSON result deserialized to custom type. Accepts advanced options using <see cref="T:Rext.RextOptions"/> object. You can change request format with RextOptions.ContentType
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.IRextHttpClient.PutJSONForString(System.String,System.Object,System.Object)">
+            <summary>
+            Put JSON content for string result
+            </summary>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.IRextHttpClient.PutJSONForString(Rext.RextOptions)">
+            <summary>
+            Put JSON content for string result. Accepts advanced options using <see cref="T:Rext.RextOptions"/> object. You can change request format with RextOptions.ContentType
+            </summary>
+            <param name="options">RextOption to configure http call</param>
             <returns>Deserialized response of T</returns>
         </member>
         <member name="T:Rext.CustomHttpResponse">
@@ -180,6 +324,11 @@
         <member name="P:Rext.CustomHttpResponse`1.Data">
             <summary>
             Generic type of T for response to be deserialized
+            </summary>
+        </member>
+        <member name="T:Rext.CertificateInfo">
+            <summary>
+            Certificate model class
             </summary>
         </member>
         <member name="P:Rext.CertificateInfo.FilePath">
@@ -352,10 +501,34 @@
             Set the HttpClient HttpCompletionOption call. Default value is HttpCompletionOption.ResponseContentRead
             </summary>
         </member>
-        <member name="T:Rext.RextHttpClient">
+        <member name="T:Rext.RextException">
             <summary>
-            Rext HttpClient wrapper implementation
+            Custom Rext Exception class
             </summary>
+        </member>
+        <member name="P:Rext.RextException.StatusCode">
+            <summary>
+            Status code
+            </summary>
+        </member>
+        <member name="M:Rext.RextException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Rext.RextException"/> class
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:Rext.RextException.#ctor(System.String,System.Net.HttpStatusCode)">
+            <summary>
+            Rext custom error handler
+            </summary>
+            <param name="message">Custom error message</param>
+            <param name="statusCode">HTTP status code</param>
+        </member>
+        <member name="T:Rext.RextHttpClient">
+            <inheritdoc />
+             <summary>
+             Implementation of <see cref="T:Rext.IRextHttpClient"/>
+             </summary>
         </member>
         <member name="F:Rext.RextHttpClient.Client">
             <summary>
@@ -372,17 +545,270 @@
             Last http call statuscode
             </summary>
         </member>
+        <member name="P:Rext.RextHttpClient.Headers">
+            <summary>
+            List of headers appended from HeaderExtension
+            </summary>
+        </member>
+        <member name="P:Rext.RextHttpClient.Stopwatch">
+            <summary>
+            Get execution time of the http call when configured to run
+            </summary>
+        </member>
         <member name="M:Rext.RextHttpClient.#ctor(Rext.RextHttpCongifuration)">
             <summary>
-            Initialize class
+            Initializes a new instance of the <see cref="T:Rext.RextHttpClient"/> class
             </summary>
             <param name="configuration"></param>
         </member>
         <member name="M:Rext.RextHttpClient.Setup(System.Action{Rext.RextConfigurationBundle})">
             <summary>
-            Global setup for Rext behaviors and actions
+            Global setup for Rext behaviors and actions using <see cref="T:Rext.RextConfigurationBundle"/> object
             </summary>
             <param name="config"></param>
+        </member>
+        <member name="M:Rext.RextHttpClient.PostForm``1(Rext.RextOptions,System.Boolean)">
+            <summary>
+            Post content as form-data for JSON result deserialized to custom type. Uses multipart/form-data by default
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <param name="isUrlEncoded">Set to true to send as application/x-www-form-urlencoded</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PostForm``1(System.String,System.Object,System.Object,System.Boolean)">
+            <summary>
+            Post content as form-data for JSON result deserialized to custom type. Uses multipart/form-data by default
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <param name="isUrlEncoded">Set to true to send as application/x-www-form-urlencoded</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PostXML``1(Rext.RextOptions)">
+            <summary>
+            Post XML content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PostXML``1(System.String,System.Object,System.Object)">
+            <summary>
+            Post XML content for XML result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PostXMLForString(System.String,System.Object,System.Object)">
+            <summary>
+            Post XML content for string result
+            </summary>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PostXMLForString(Rext.RextOptions)">
+            <summary>
+            Post XML content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+            </summary>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PostJSON``1(Rext.RextOptions)">
+            <summary>
+            Post JSON content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PostJSON``1(System.String,System.Object,System.Object)">
+            <summary>
+            Post JSON content for JSON result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PostJSONForString(System.String,System.Object,System.Object)">
+            <summary>
+            Post JSON content for string result
+            </summary>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PostJSONForString(Rext.RextOptions)">
+            <summary>
+            Post JSON content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+            </summary>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PostString(System.String,System.Object,System.Object)">
+            <summary>
+            Post plain string content for string result
+            </summary>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Plain string response</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PostString(Rext.RextOptions)">
+            <summary>
+            Post plain string content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+            </summary>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Plain string response</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.GetString(Rext.RextOptions)">
+            <summary>
+            Get plain string result. Accepts advanced options
+            </summary>
+            <param name="options">RextOption to configure http call</param>
+            <returns>String response</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.GetString(System.String,System.Object,System.Object)">
+            <summary>
+            get plain string result
+            </summary>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>String response</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.GetXML``1(Rext.RextOptions)">
+            <summary>
+            Get XML result deserialized to custom type. Accepts advanced options
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.GetXML``1(System.String,System.Object,System.Object)">
+            <summary>
+            Get XML result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.GetJSON``1(Rext.RextOptions)">
+            <summary>
+            Get JSON result deserialized to custom type. Accepts advanced options.
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.GetJSON``1(System.String,System.Object,System.Object)">
+            <summary>
+            Get JSON result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.Delete(System.String,System.Object,System.Object)">
+            <summary>
+            Delete for string result deserialized to custom type
+            </summary>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send will be serialized to querystring</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.DeleteJSON``1(Rext.RextOptions)">
+            <summary>
+            Delete for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call. Payload will be serialized to querystring</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.DeleteJSON``1(System.String,System.Object,System.Object)">
+            <summary>
+            Delete for JSON result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send will be serialized to querystring</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PutJSON``1(Rext.RextOptions)">
+            <summary>
+            Put JSON content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PutJSON``1(System.String,System.Object,System.Object)">
+            <summary>
+            Put JSON content for JSON result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PutJSONForString(System.String,System.Object,System.Object)">
+            <summary>
+            Put JSON content for string result
+            </summary>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PutJSONForString(Rext.RextOptions)">
+            <summary>
+            Put JSON content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+            </summary>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.MakeRequest(Rext.RextOptions)">
+            <summary>
+            Process direct request with plain string response. This method is called by all verb actions
+            </summary>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.MakeRequest``1(Rext.RextOptions)">
+            <summary>
+            Process direct request with deserialized generic response. This method is called by all verb actions
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.Dispose">
+            <summary>
+            Dispose current instance of RextHttpClient
+            </summary>
+        </member>
+        <member name="M:Rext.RextHttpClient.Dispose(System.Boolean)">
+            <summary>
+            ...
+            </summary>
+            <param name="disposing"></param>
         </member>
     </members>
 </doc>
