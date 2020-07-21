@@ -108,7 +108,7 @@ namespace Rext
                     return (true, "OK", (T)obj);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 string msg = string.Format(StaticMessages.DeserializationFailure, typeof(T).Name);
                 if (throwExceptionOnDeserializationFailure)

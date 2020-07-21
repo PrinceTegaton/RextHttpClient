@@ -10,8 +10,9 @@ using System.Threading.Tasks;
 
 namespace Rext
 {
+    ///<inheritdoc />
     /// <summary>
-    /// Rext HttpClient wrapper implementation
+    /// Initializes a new instance of the <see cref="RextHttpClient"/> class for <see cref="IRextHttpClient"/>
     /// </summary>
     public class RextHttpClient : IRextHttpClient, IDisposable
     {
@@ -32,11 +33,18 @@ namespace Rext
         /// </summary>
         public static int ReturnStatusCode { get; }
 
+        /// <summary>
+        /// List of headers appended from HeaderExtension
+        /// </summary>
         public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Get execution time of the http call when configured to run
+        /// </summary>
         public Stopwatch Stopwatch { get; private set; }
 
         /// <summary>
-        /// Initialize class
+        /// Initializes a new instance of the <see cref="RextHttpClient"/> class
         /// </summary>
         /// <param name="configuration"></param>
         public RextHttpClient(RextHttpCongifuration configuration = null)
@@ -58,7 +66,7 @@ namespace Rext
         }
 
         /// <summary>
-        /// Global setup for Rext behaviors and actions
+        /// Global setup for Rext behaviors and actions using <see cref="RextConfigurationBundle"/> object
         /// </summary>
         /// <param name="config"></param>
         public static void Setup(Action<RextConfigurationBundle> config)
@@ -68,6 +76,15 @@ namespace Rext
 
         #region Interface Implementations
 
+        #region POST
+
+        /// <summary>
+        /// Post content as form-data for JSON result deserialized to custom type. Uses multipart/form-data by default
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <param name="isUrlEncoded">Set to true to send as application/x-www-form-urlencoded</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> PostForm<T>(RextOptions options, bool isUrlEncoded = false)
         {
             options.Method = HttpMethod.Post;
@@ -79,6 +96,15 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Post content as form-data for JSON result deserialized to custom type. Uses multipart/form-data by default
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <param name="isUrlEncoded">Set to true to send as application/x-www-form-urlencoded</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> PostForm<T>(string url, object payload = null, object header = null, bool isUrlEncoded = false)
         {
             var data = await MakeRequest<T>(new RextOptions
@@ -96,6 +122,12 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Post XML content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> PostXML<T>(RextOptions options)
         {
             options.Method = HttpMethod.Post;
@@ -106,6 +138,14 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Post XML content for XML result deserialized to custom type
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> PostXML<T>(string url, object payload = null, object header = null)
         {
             var data = await MakeRequest<T>(new RextOptions
@@ -121,6 +161,13 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Post XML content for string result
+        /// </summary>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<string>> PostXMLForString(string url, object payload = null, object header = null)
         {
             var data = await MakeRequest(new RextOptions
@@ -136,6 +183,11 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Post XML content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// </summary>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<string>> PostXMLForString(RextOptions options)
         {
             options.Method = HttpMethod.Post;
@@ -146,6 +198,12 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Post JSON content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> PostJSON<T>(RextOptions options)
         {
             options.Method = HttpMethod.Post;
@@ -155,6 +213,14 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Post JSON content for JSON result deserialized to custom type
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> PostJSON<T>(string url, object payload = null, object header = null)
         {
             var data = await MakeRequest<T>(new RextOptions
@@ -170,6 +236,13 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Post JSON content for string result
+        /// </summary>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<string>> PostJSONForString(string url, object payload = null, object header = null)
         {
             var data = await MakeRequest(new RextOptions
@@ -185,6 +258,11 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Post JSON content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// </summary>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<string>> PostJSONForString(RextOptions options)
         {
             options.Method = HttpMethod.Post;
@@ -195,6 +273,13 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Post plain string content for string result
+        /// </summary>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Plain string response</returns>
         public async Task<CustomHttpResponse<string>> PostString(string url, object payload = null, object header = null)
         {
             var data = await MakeRequest(new RextOptions
@@ -210,6 +295,11 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Post plain string content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// </summary>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Plain string response</returns>
         public async Task<CustomHttpResponse<string>> PostString(RextOptions options)
         {
             options.Method = HttpMethod.Post;
@@ -220,7 +310,15 @@ namespace Rext
             return data;
         }
 
+        #endregion
+
         #region GET
+
+        /// <summary>
+        /// Get plain string result. Accepts advanced options
+        /// </summary>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>String response</returns>
         public async Task<CustomHttpResponse<string>> GetString(RextOptions options)
         {
             options.Method = HttpMethod.Get;
@@ -230,6 +328,13 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// get plain string result
+        /// </summary>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>String response</returns>
         public async Task<CustomHttpResponse<string>> GetString(string url, object payload = null, object header = null)
         {
             var data = await MakeRequest(new RextOptions
@@ -244,6 +349,12 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Get XML result deserialized to custom type. Accepts advanced options
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> GetXML<T>(RextOptions options)
         {
             options.Method = HttpMethod.Get;
@@ -253,6 +364,14 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Get XML result deserialized to custom type
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> GetXML<T>(string url, object payload = null, object header = null)
         {
             var data = await MakeRequest<T>(new RextOptions
@@ -268,6 +387,12 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Get JSON result deserialized to custom type. Accepts advanced options.
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> GetJSON<T>(RextOptions options)
         {
             options.Method = HttpMethod.Get;
@@ -277,6 +402,14 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Get JSON result deserialized to custom type
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> GetJSON<T>(string url, object payload = null, object header = null)
         {
             var data = await MakeRequest<T>(new RextOptions
@@ -294,6 +427,14 @@ namespace Rext
         #endregion
 
         #region DELETE
+
+        /// <summary>
+        /// Delete for string result deserialized to custom type
+        /// </summary>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send will be serialized to querystring</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<string>> Delete(string url, object payload = null, object header = null)
         {
             var data = await MakeRequest(new RextOptions
@@ -309,6 +450,12 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Delete for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="options">RextOption to configure http call. Payload will be serialized to querystring</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> DeleteJSON<T>(RextOptions options)
         {
             options.Method = HttpMethod.Delete;
@@ -318,6 +465,14 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Delete for JSON result deserialized to custom type
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send will be serialized to querystring</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> DeleteJSON<T>(string url, object payload = null, object header = null)
         {
             var data = await MakeRequest<T>(new RextOptions
@@ -335,6 +490,12 @@ namespace Rext
         #endregion
 
         #region PUT
+        /// <summary>
+        /// Put JSON content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> PutJSON<T>(RextOptions options)
         {
             options.Method = HttpMethod.Put;
@@ -344,6 +505,14 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Put JSON content for JSON result deserialized to custom type
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> PutJSON<T>(string url, object payload = null, object header = null)
         {
             var data = await MakeRequest<T>(new RextOptions
@@ -359,6 +528,13 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Put JSON content for string result
+        /// </summary>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<string>> PutJSONForString(string url, object payload = null, object header = null)
         {
             var data = await MakeRequest(new RextOptions
@@ -374,6 +550,11 @@ namespace Rext
             return data;
         }
 
+        /// <summary>
+        /// Put JSON content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// </summary>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<string>> PutJSONForString(RextOptions options)
         {
             options.Method = HttpMethod.Put;
@@ -385,6 +566,11 @@ namespace Rext
         }
         #endregion
 
+        /// <summary>
+        /// Process direct request with plain string response. This method is called by all verb actions
+        /// </summary>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<string>> MakeRequest(RextOptions options)
         {
             var rsp = await ProcessRequest(options);
@@ -394,6 +580,12 @@ namespace Rext
             return rsp;
         }
 
+        /// <summary>
+        /// Process direct request with deserialized generic response. This method is called by all verb actions
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Deserialized response of T</returns>
         public async Task<CustomHttpResponse<T>> MakeRequest<T>(RextOptions options)
         {
             var rsp = await ProcessRequest(options);
@@ -543,7 +735,7 @@ namespace Rext
                 }
 
                 response = await this.Client.SendAsync(requestMsg, httpCompletionOption, CancellationToken.None);
-                
+
                 // set watch value to public member
                 if (ConfigurationBundle.EnableStopwatch) Stopwatch.Stop();
 
@@ -612,12 +804,20 @@ namespace Rext
         }
 
         private bool _disposed = false;
+
+        /// <summary>
+        /// Dispose current instance of RextHttpClient
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)

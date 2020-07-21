@@ -13,7 +13,7 @@ namespace RextConsole
         static void Main(string[] args)
         {
             Console.WriteLine("Rext Console");
-
+            
         restart:
             using (var _rext = new RextHttpClient())
             {
