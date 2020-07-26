@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Rext\Rext.csproj" />
+    <Reference Include="RextHttpClient">
+      <HintPath>..\Rext\bin\Debug\netstandard2.0\RextHttpClient.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

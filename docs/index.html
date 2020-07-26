@@ -68,11 +68,12 @@
                         <a class="list-group-item list-group-item-action" href="#s2">Basic Usage</a>
                         <a class="list-group-item list-group-item-action" href="#s3">Handling Payloads</a>
                         <a class="list-group-item list-group-item-action" href="#s4">Posting Form Data</a>
-                        <a class="list-group-item list-group-item-action" href="#s5">Using the Header
+                        <a class="list-group-item list-group-item-action" href="#s5">Other HTTP Actions</a>
+                        <a class="list-group-item list-group-item-action" href="#s6">Using the Header
                             Extension</a>
-                        <a class="list-group-item list-group-item-action" href="#s6">Global Configuration</a>
-                        <a class="list-group-item list-group-item-action" href="#s7">Using Server Certificate</a>
-                        <a class="list-group-item list-group-item-action" href="#s8">Troubleshooting Tips</a>
+                        <a class="list-group-item list-group-item-action" href="#s7">Global Configuration</a>
+                        <a class="list-group-item list-group-item-action" href="#s8">Using Server Certificate</a>
+                        <a class="list-group-item list-group-item-action" href="#s9">Troubleshooting Tips</a>
                     </div>
                 </nav>
             </div>
@@ -155,21 +156,21 @@ var rsp = await _rext.PostJSON<@Employee>(new RextOptions
                     <p><strong>Handling XML</strong> payloads and response requires the elements and model properties to match as usual. Arrays requires you to set the element name in most cases. Here is an example</p>
                     <pre><code class="lang-csharp">
 [XmlRoot(ElementName = "ArrayOfPerson")] // match root node name <@ArrayOfperson>...<@/ArrayOfPerson>
-    public class ArrayOfPerson
-    {
-        [XmlElement(ElementName = "Person")]
-        public List<Person> Person { get; set; }
-    }
+public class ArrayOfPerson
+{
+    [XmlElement(ElementName = "Person")]
+    public List<Person> Person { get; set; }
+}
 
-    [XmlRoot(ElementName = "Person")]
-    public class Person
-    {
-        [XmlElement(ElementName = "Name")]
-        public string Name { get; set; }
+[XmlRoot(ElementName = "Person")]
+public class Person
+{
+    [XmlElement(ElementName = "Name")]
+    public string Name { get; set; }
 
-        [XmlElement(ElementName = "Location")]
-        public string Location { get; set; }
-    }
+    [XmlElement(ElementName = "Location")]
+    public string Location { get; set; }
+}
 </code></pre>
                 </div>
 
@@ -191,6 +192,13 @@ var rsp = await _rext.PostForm(url, person, isUrlEncoded : true);
                 </div>
 
                 <div id="s5" class="item-section">
+                    <h4>Other HTTP Actions</h4>
+                    <p><strong>DELETE:</strong> Rext provide overloads for http delete actions which are <code>Delete</code> and <code>DeleteJSON<@T></code></p>
+                    <p><strong>PUT:</strong> Rext also provide overloads for http update (PUT) actions which are <code>PutJSON<@T></code> and <code>PutJSONForString<@T></code></p>
+                    
+                </div>
+
+                <div id="s6" class="item-section">
                     <h4>Using the Header Extension</h4>
                     <p>You can explore the Rext flexible Header Extension when making calls</p>
                     <pre><code class="lang-csharp">
@@ -213,7 +221,7 @@ var rsp = _rext.AddHeader(headers)
                                                 </code></pre>
                 </div>
 
-                <div id="s6" class="item-section">
+                <div id="s7" class="item-section">
                     <h4>Global Configuration</h4>
                     <p>You can setup app wide configuration with various options for once. Some can be overriden on
                         specific calls too.</p>
@@ -279,6 +287,8 @@ static void ErrorCodeHandler(int code)
                         <code>HttpConfiguration.ThrowExceptionOnDeserializationFailure</code> : If set to true, an
                         exception is thrown whenever a response deserialization fails<br>
                         <code>HttpConfiguration.Timeout</code> : Http timeout in seconds
+                        <code>HttpConfiguration.Certificate</code> : Configure X509Certificate Server certificate information<br>
+                        <code>HttpConfiguration.HttpCompletionOption</code> : Set the global HttpClient HttpCompletionOption call for every call. ResponseContentRead | ResponseHeaderRead
                     </p>
                     <p class="mt-3"><strong>Other properties of Rext global configuration are:</strong></p>
                     <p>
@@ -296,7 +306,7 @@ static void ErrorCodeHandler(int code)
                     </p>
                 </div>
 
-                <div id="s7" class="item-section">
+                <div id="s8" class="item-section">
                     <h4>Using Server Certificate</h4>
                     <p>Rext allow you to attach a Certificate[.pfx] file when making calls to secure services that requires such.</p>
                     <p>
@@ -331,7 +341,7 @@ RextHttpClient.Setup(opt =>
                         </p>
                 </div>
 
-                <div id="s8" class="item-section">
+                <div id="s9" class="item-section">
                     <h4>Troubleshooting Tips</h4>
                     <ul>
                         <li><strong>Deserialization Failure:</strong> Simply download the response as string to analyse the incoming fields if they matches the model you want to deserialize it to. You can use <code>GetString</code>, <code>PostJSONForString</code> or <code>PostXMLForString</code>. After confirmation you can then use the methods with instant deserialization.</li>

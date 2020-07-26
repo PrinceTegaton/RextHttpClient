@@ -9,7 +9,7 @@ namespace RextConsole
     class Program
     {
         static IRextHttpClient _rext;
-
+        
         static void Main(string[] args)
         {
             Console.WriteLine("Rext Console");

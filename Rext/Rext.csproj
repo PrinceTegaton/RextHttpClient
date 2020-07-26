@@ -12,14 +12,15 @@
     <Description>Rext is a simple HttpClient wrapper to speed up your api projects. Just plug and play.
 Safely handles request with JSON, XML and Form Data.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>First ever version of this package release. Beta build. Pls send feedback on github.</PackageReleaseNotes>
-    <PackageTags>json, xml, form-data, encoded-form, api</PackageTags>
+    <PackageReleaseNotes>UPDATE and DELETE added, performance and documentation enhanced. Minor tweaks. See change-log and send feedback on github.</PackageReleaseNotes>
+    <PackageTags>httplient, web-client, json, xml, form-data, encoded-form, api, http</PackageTags>
     <PackageIconUrl>https://lh4.googleusercontent.com/YAGKZGub7P1vfgZY4yRoQhZSdqdWM06zXaOjw--7y7nD1O9rTvNPwvyC6wg7zRpx3w59E7sgd38seljRRdg=w1366-h365</PackageIconUrl>
+    <PackageIcon>rext_logo.png</PackageIcon>
     <PackageProjectUrl>https://princetegaton.github.io/RextHttpClient</PackageProjectUrl>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
-    <AssemblyVersion>1.0.4</AssemblyVersion>
-    <FileVersion>1.0.4</FileVersion>
-    <Version>1.0.4</Version>
+    <AssemblyVersion>1.0.6</AssemblyVersion>
+    <FileVersion>1.0.6</FileVersion>
+    <Version>1.0.6</Version>
     <AssemblyName>RextHttpClient</AssemblyName>
   </PropertyGroup>
 
@@ -27,9 +28,14 @@ Safely handles request with JSON, XML and Form Data.</Description>
     <DocumentationFile>C:\Users\otega.ovie\Projects\Playground\RextHttpClient\Rext\RextHttpClient.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\otega.ovie\Projects\Playground\RextHttpClient\Rext\RextHttpClient.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="License.txt" />
     <None Remove="ReadMe.txt" />
+    <None Include="rext_logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
