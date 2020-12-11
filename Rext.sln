@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rext", "Rext\Rext.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RextConsole", "RextConsole\RextConsole.csproj", "{22364D7D-C6C2-4A0C-8B6C-F0CB90782B1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RextAPISimulator", "RextAPISimulator\RextAPISimulator.csproj", "{B15D26D7-4807-4169-8E33-A1CA07CED34C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RextAPISimulator", "RextAPISimulator\RextAPISimulator.csproj", "{B15D26D7-4807-4169-8E33-A1CA07CED34C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RextUnitTests", "RextUnitTests\RextUnitTests.csproj", "{35300C75-2A06-43B6-A1FF-C8F82BD834EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{B15D26D7-4807-4169-8E33-A1CA07CED34C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B15D26D7-4807-4169-8E33-A1CA07CED34C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B15D26D7-4807-4169-8E33-A1CA07CED34C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35300C75-2A06-43B6-A1FF-C8F82BD834EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35300C75-2A06-43B6-A1FF-C8F82BD834EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35300C75-2A06-43B6-A1FF-C8F82BD834EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35300C75-2A06-43B6-A1FF-C8F82BD834EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
