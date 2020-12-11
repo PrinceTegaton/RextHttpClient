@@ -671,6 +671,9 @@ namespace Rext
                 if (options.Header != null)
                     requestMsg.SetHeader(options.Header);
 
+                if (ConfigurationBundle.HttpConfiguration.Header != null)
+                    requestMsg.SetHeader(ConfigurationBundle.HttpConfiguration.Header);
+
                 if (!string.IsNullOrEmpty(options.ContentType))
                     requestMsg.SetHeader("Accept", options.ExpectedResponseFormat);
 
@@ -734,7 +737,7 @@ namespace Rext
                         httpCompletionOption = options.HttpCompletionOption.Value;
                 }
 
-                response = await this.Client.SendAsync(requestMsg, httpCompletionOption, CancellationToken.None);
+                response = await this.Client.SendAsync(requestMsg, httpCompletionOption, CancellationToken.None).ConfigureAwait(false);
 
                 // set watch value to public member
                 if (ConfigurationBundle.EnableStopwatch) Stopwatch.Stop();
