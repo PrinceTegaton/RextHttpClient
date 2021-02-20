@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -20,7 +20,7 @@
         <div class="container">
             <a class="navbar-brand" href="#">RextHttpClient Docs</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
@@ -50,8 +50,10 @@
                 </div>
                 <div class="col-12 col-md-8 col-sm-9 text-center text-md-left text-sm-left">
                     <h3>Rext Documentation</h3>
-                    <p>A simple smart HttpClient wrapper library for dotnet. Just plug and play.<br>
-                        Safely handles request with JSON, XML and Form Data</p>
+                    <p>
+                        A simple smart HttpClient wrapper library for dotnet. Just plug and play.<br>
+                        Safely handles request with JSON, XML and Form Data
+                    </p>
                     <p><span class="small">A project by <a href="https://twitter.com/princetegaton">Prince Tegaton</a></span></p>
                 </div>
             </div>
@@ -69,8 +71,10 @@
                         <a class="list-group-item list-group-item-action" href="#s3">Handling Payloads</a>
                         <a class="list-group-item list-group-item-action" href="#s4">Posting Form Data</a>
                         <a class="list-group-item list-group-item-action" href="#s5">Other HTTP Actions</a>
-                        <a class="list-group-item list-group-item-action" href="#s6">Using the Header
-                            Extension</a>
+                        <a class="list-group-item list-group-item-action" href="#s6">
+                            Using the Header
+                            Extension
+                        </a>
                         <a class="list-group-item list-group-item-action" href="#s7">Global Configuration</a>
                         <a class="list-group-item list-group-item-action" href="#s8">Using Server Certificate</a>
                         <a class="list-group-item list-group-item-action" href="#s9">Troubleshooting Tips</a>
@@ -81,21 +85,25 @@
             <div class="col-lg-9" data-spy="scroll" data-target="#navbar-side" data-offset="0">
                 <div class="item-section" id="s1">
                     <h4>Installation</h4>
-                    <p>RextHttpClient is built for (dotnet) NetStandard projects only and is NOT compatible with NetFramework. It is available via nuget for Visual Studio. You can install from the CLI with
-                        the below command.</p>
+                    <p>
+                        RextHttpClient is built for (dotnet) NetStandard projects only and is NOT compatible with NetFramework. It is available via nuget for Visual Studio. You can install from the CLI with
+                        the below command.
+                    </p>
                     <pre><code class="lang-csharp">Install-Package RextHttpClient</code></pre>
                 </div>
 
                 <div id="s2" class="item-section">
                     <h4>Basic Usage</h4>
-                    <p>All basic API operations have been made available for quick access via IRextHttpClient. If you
+                    <p>
+                        All basic API operations have been made available for quick access via IRextHttpClient. If you
                         wish to make a direct call and handle deserialization yourself, then call <code>_rext.MakeRequest</code>
-                        method.</p>
+                        method.
+                    </p>
                     <pre><code class="lang-csharp">
 IRextHttpClient _rext = new RextHttpClient(); // create new instance via new or DI
                     </code></pre>
 
-                    <p>Make http call with result deserialized to object</p>
+                    <p>Make http call with result deserialized to object.</p>
                     <pre><code class="lang-csharp">
 string url = "http://myapp.com/api/employee/getemployee";
 var rsp = await _rext.GetJSON<@Person>(url); // download json
@@ -106,10 +114,15 @@ Console.WriteLine($"{rsp.StatusCode} - {rsp.Message} -
 Duration: {_rext.Stopwatch?.ElapsedMilliseconds}ms"); // get duration of http call
 Console.WriteLine(rsp?.Data); // get deserialized result as object
                     </code></pre>
-                    <p>All Rext methods for http call have overloads for adding more options to suit your need. You
+                    <p>
+                        All Rext methods for http call have overloads for adding more options to suit your need. You
                         supply a type of <code>T</code> and the result from the call is deserialized into it. To
                         retrieve the result you have to check if the call was successful with <code>_rext.IsSuccess</code>,
-                        if the value is <code>true</code> then access the data with <code>_rext.Data</code>.</p>
+                        if the value is <code>true</code> then access the data with <code>_rext.Data</code>.
+                    </p>
+                    <p>
+                        <span class="text-danger">Note:</span> Only successful response (200) are deserialized by default. to allow deserialization for all response types, set <code>RextOptions.DeserializeSuccessResponseOnly = false</code> or from the <a href="#s7">global configuration section</a>
+                    </p>
 
                 </div>
                 <div id="s3" class="item-section">
@@ -155,7 +168,7 @@ var rsp = await _rext.PostJSON<@Employee>(new RextOptions
                     <br>
                     <p><strong>Handling XML</strong> payloads and response requires the elements and model properties to match as usual. Arrays requires you to set the element name in most cases. Here is an example</p>
                     <pre><code class="lang-csharp">
-[XmlRoot(ElementName = "ArrayOfPerson")] // match root node name <@ArrayOfperson>...<@/ArrayOfPerson>
+[XmlRoot(ElementName = "ArrayOfPerson")] // match root node name <@ArrayOfperson>...<@ /ArrayOfPerson>
 public class ArrayOfPerson
 {
     [XmlElement(ElementName = "Person")]
@@ -176,9 +189,11 @@ public class Person
 
                 <div id="s4" class="item-section">
                     <h4>Posting Form Data</h4>
-                    <p>Rext make it easy to submit form data to APIs. You just feed the object to the method. By
+                    <p>
+                        Rext make it easy to submit form data to APIs. You just feed the object to the method. By
                         default Rext uses <code>multipart/form-data</code> content-type when submitting content. You
-                        can change it to <code>application/x-www-form-urlencoded</code> by setting <code>isUrlEncoded=true</code></p>
+                        can change it to <code>application/x-www-form-urlencoded</code> by setting <code>isUrlEncoded=true</code>
+                    </p>
                     <pre><code class="lang-csharp">
 var person = new Person
 {
@@ -195,7 +210,7 @@ var rsp = await _rext.PostForm(url, person, isUrlEncoded : true);
                     <h4>Other HTTP Actions</h4>
                     <p><strong>DELETE:</strong> Rext provide overloads for http delete actions which are <code>Delete</code> and <code>DeleteJSON<@T></code></p>
                     <p><strong>PUT:</strong> Rext also provide overloads for http update (PUT) actions which are <code>PutJSON<@T></code> and <code>PutJSONForString<@T></code></p>
-                    
+
                 </div>
 
                 <div id="s6" class="item-section">
@@ -223,8 +238,10 @@ var rsp = _rext.AddHeader(headers)
 
                 <div id="s7" class="item-section">
                     <h4>Global Configuration</h4>
-                    <p>You can setup app wide configuration with various options for once. Some can be overriden on
-                        specific calls too.</p>
+                    <p>
+                        You can setup app wide configuration with various options for once. Some can be overriden on
+                        specific calls too.
+                    </p>
                     <p>
                         <pre><code class="lang-csharp">
 static void Main(string[] args)
@@ -236,7 +253,8 @@ static void Main(string[] args)
             BaseUrl = "http://myapp.com/api",
             ProxyAddress = "http://127.0.0.1:80",
             ThrowExceptionOnDeserializationFailure = false,
-            ThrowExceptionIfNotSuccessResponse = true
+            ThrowExceptionIfNotSuccessResponse = true,
+            DeserializeSuccessResponseOnly = true
             //Timeout = 60
         };
         opt.SuppressRextExceptions = false;
@@ -286,6 +304,7 @@ static void ErrorCodeHandler(int code)
                         exception is thrown whenever httpclient returns a statuscode other than 200<br>
                         <code>HttpConfiguration.ThrowExceptionOnDeserializationFailure</code> : If set to true, an
                         exception is thrown whenever a response deserialization fails<br>
+                        <code>HttpConfiguration.DeserializeSuccessResponseOnly</code> : If set to true, generic response will be deserialized only when status code is 200*. Default value is true<br>
                         <code>HttpConfiguration.Timeout</code> : Http timeout in seconds
                         <code>HttpConfiguration.Certificate</code> : Configure X509Certificate Server certificate information<br>
                         <code>HttpConfiguration.HttpCompletionOption</code> : Set the global HttpClient HttpCompletionOption call for every call. ResponseContentRead | ResponseHeaderRead
@@ -323,8 +342,8 @@ RextHttpClient.Setup(opt =>
                         </code></pre>
                     </p>
                     <p>
-                            <strong>Read certificate file content as bytes</strong>
-                            <pre><code class="lang-csharp">
+                        <strong>Read certificate file content as bytes</strong>
+                        <pre><code class="lang-csharp">
 byte[] cert_bytes = System.IO.File.ReadAllBytes("server_appstore.pfx");
 RextHttpClient.Setup(opt =>
 {
@@ -335,10 +354,10 @@ RextHttpClient.Setup(opt =>
     };
 });
                             </code></pre>
-                        </p>
-                        <p>
-                            If you specify both a FilePath and CertificateBytes, Rext will use the file only.
-                        </p>
+                    </p>
+                    <p>
+                        If you specify both a FilePath and CertificateBytes, Rext will use the file only.
+                    </p>
                 </div>
 
                 <div id="s9" class="item-section">

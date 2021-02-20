@@ -597,7 +597,9 @@ namespace Rext
                 Content = rsp.Content
             };
 
-            if (newRsp.StatusCode == System.Net.HttpStatusCode.OK)
+            bool deserializeSuccessOnly = options?.DeserializeSuccessResponseOnly ?? ConfigurationBundle.HttpConfiguration.DeserializeSuccessResponseOnly;
+
+            if (newRsp.StatusCode == System.Net.HttpStatusCode.OK || !deserializeSuccessOnly)
             {
                 if (!string.IsNullOrEmpty(rsp.Content))
                 {
@@ -616,8 +618,24 @@ namespace Rext
                     if (output.status)
                         newRsp.Data = output.result;
                     else
-                        newRsp.Message = output.message;
+                    {
+                        if (newRsp.StatusCode != System.Net.HttpStatusCode.OK && !deserializeSuccessOnly)
+                        {
+                            newRsp.Message = $"Type deserialization failed: To prevent deserialization of unsuccessful response types, set DeserializeSuccessResponseOnly=true";
+
+                            if (throwExOnFail)
+                                throw new RextException(newRsp.Message + " ---> To prevent deserialization of unsuccessful response types, set DeserializeSuccessResponseOnly = true");
+
+                            return newRsp;
+                        }
+                        else
+                            newRsp.Message = output.message;
+                    }
                 }
+            }
+            else
+            {
+                newRsp.Message += " --> To allow deserialization even when response status code is not successful, set DeserializeSuccessResponseOnly = false";
             }
 
             return newRsp;
@@ -764,7 +782,7 @@ namespace Rext
                 else
                 {
                     // this will always run before custom error-code actions
-                    // always to ThrowExceptionIfNotSuccessResponse=false if you will use custom error-code actions
+                    // always set ThrowExceptionIfNotSuccessResponse=false if you will use custom error-code actions
                     // perform checks for neccessary override
                     bool throwExIfNotSuccessRsp = options.ThrowExceptionIfNotSuccessResponse ?? ConfigurationBundle.HttpConfiguration.ThrowExceptionIfNotSuccessResponse;
                     if (throwExIfNotSuccessRsp)
