@@ -1,7 +1,6 @@
-﻿
-namespace Rext
+﻿namespace Rext
 {
-    internal class ContentType
+    public class ContentType
     {
         public const string Text_Plain = "text/plain";
         public const string Text_XML = "text/xml";

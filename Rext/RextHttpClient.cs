@@ -481,7 +481,7 @@ namespace Rext
                 Method = HttpMethod.Delete,
                 Header = header,
                 Payload = payload,
-                ContentType = ContentType.Text_Plain,
+                ContentType = ContentType.Application_JSON,
                 ExpectedResponseFormat = ContentType.Application_JSON
             });
 
@@ -565,6 +565,84 @@ namespace Rext
             return data;
         }
         #endregion
+
+        #region PATCH
+        /// <summary>
+        /// Patch JSON content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Deserialized response of T</returns>
+        public async Task<CustomHttpResponse<T>> PatchJSON<T>(RextOptions options)
+        {
+            options.Method = HttpMethod.Patch;
+            options.ExpectedResponseFormat = ContentType.Application_JSON;
+
+            var data = await MakeRequest<T>(options);
+            return data;
+        }
+
+        /// <summary>
+        /// Patch JSON content for JSON result deserialized to custom type
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Deserialized response of T</returns>
+        public async Task<CustomHttpResponse<T>> PatchJSON<T>(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest<T>(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Patch,
+                Header = header,
+                Payload = payload,
+                ContentType = ContentType.Application_JSON,
+                ExpectedResponseFormat = ContentType.Application_JSON
+            });
+
+            return data;
+        }
+
+        /// <summary>
+        /// Patch JSON content for string result
+        /// </summary>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Deserialized response of T</returns>
+        public async Task<CustomHttpResponse<string>> PatchJSONForString(string url, object payload = null, object header = null)
+        {
+            var data = await MakeRequest(new RextOptions
+            {
+                Url = url,
+                Method = HttpMethod.Patch,
+                Header = header,
+                Payload = payload,
+                ContentType = ContentType.Application_JSON,
+                ExpectedResponseFormat = ContentType.Text_Plain
+            });
+
+            return data;
+        }
+
+        /// <summary>
+        /// Patch JSON content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+        /// </summary>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Deserialized response of T</returns>
+        public async Task<CustomHttpResponse<string>> PatchJSONForString(RextOptions options)
+        {
+            options.Method = HttpMethod.Put;
+            options.ContentType = ContentType.Application_JSON;
+            options.ExpectedResponseFormat = ContentType.Text_Plain;
+
+            var data = await MakeRequest(options);
+            return data;
+        }
+        #endregion
+
 
         /// <summary>
         /// Process direct request with plain string response. This method is called by all verb actions
@@ -696,7 +774,7 @@ namespace Rext
                     requestMsg.SetHeader("Accept", options.ExpectedResponseFormat);
 
                 // POST request
-                if ((options.Method == HttpMethod.Post || options.Method == HttpMethod.Put) & options.Payload != null)
+                if (options.Method != HttpMethod.Get && options.Payload != null)
                 {
                     string strPayload = string.Empty;
 
