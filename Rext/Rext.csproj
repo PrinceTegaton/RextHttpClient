@@ -21,18 +21,18 @@ Safely handles request with JSON, XML and Form Data.</Description>
     <PackageIcon>rext_logo.png</PackageIcon>
     <PackageProjectUrl>https://princetegaton.github.io/RextHttpClient</PackageProjectUrl>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
-    <AssemblyVersion>1.0.8</AssemblyVersion>
-    <FileVersion>1.0.8</FileVersion>
-    <Version>1.0.8</Version>
+    <AssemblyVersion>1.0.9</AssemblyVersion>
+    <FileVersion>1.0.9</FileVersion>
+    <Version>1.0.9</Version>
     <AssemblyName>RextHttpClient</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\otega.ovie\Projects\Playground\RextHttpClient\Rext\RextHttpClient.xml</DocumentationFile>
+    <DocumentationFile>C:\Projects\r2\RextHttpClient\Rext\RextHttpClient.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\Users\otega.ovie\Projects\Playground\RextHttpClient\Rext\RextHttpClient.xml</DocumentationFile>
+    <DocumentationFile>C:\Projects\r2\RextHttpClient\Rext\RextHttpClient.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

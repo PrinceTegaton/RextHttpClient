@@ -50,7 +50,8 @@ namespace Rext
         /// <returns></returns>
         public static IRextHttpClient UseBearerAuthentication(this IRextHttpClient client, string token)
         {
-            client.Headers.Add("Authorization", $"Bearer {token}");
+            if (!string.IsNullOrEmpty(token))
+                client.Headers.Add("Authorization", $"Bearer {token}");
 
             return client;
         }
@@ -65,8 +66,11 @@ namespace Rext
         public static IRextHttpClient UseBasicAuthentication(this IRextHttpClient client, string username, string password)
         {
             // encode credentials
-            string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
-            client.Headers.Add("Authorization", $"Basic {credentials}");
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+            {
+                string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
+                client.Headers.Add("Authorization", $"Basic {credentials}");
+            }
 
             return client;
         }

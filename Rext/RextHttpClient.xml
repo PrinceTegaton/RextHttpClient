@@ -290,6 +290,40 @@
             <param name="options">RextOption to configure http call</param>
             <returns>Deserialized response of T</returns>
         </member>
+        <member name="M:Rext.IRextHttpClient.PatchJSON``1(System.String,System.Object,System.Object)">
+            <summary>
+            Patch JSON content for JSON result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.IRextHttpClient.PatchJSON``1(Rext.RextOptions)">
+            <summary>
+            Patch JSON content for JSON result deserialized to custom type. Accepts advanced options using <see cref="T:Rext.RextOptions"/> object. You can change request format with RextOptions.ContentType
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.IRextHttpClient.PatchJSONForString(System.String,System.Object,System.Object)">
+            <summary>
+            Patch JSON content for string result
+            </summary>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.IRextHttpClient.PatchJSONForString(Rext.RextOptions)">
+            <summary>
+            Patch JSON content for string result. Accepts advanced options using <see cref="T:Rext.RextOptions"/> object. You can change request format with RextOptions.ContentType
+            </summary>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
         <member name="T:Rext.CustomHttpResponse">
             <summary>
             Custom Rext response for every http call
@@ -431,6 +465,11 @@
             If set to true, an exception is thrown whenever a response deserialization fails
             </summary>
         </member>
+        <member name="P:Rext.RextHttpCongifuration.DeserializeSuccessResponseOnly">
+            <summary>
+            If set to true, generic response will be deserialized only when status code is 200*. Default value is true
+            </summary>
+        </member>
         <member name="P:Rext.RextHttpCongifuration.Timeout">
             <summary>
             Http timeout in seconds
@@ -489,6 +528,11 @@
         <member name="P:Rext.RextOptions.ThrowExceptionOnDeserializationFailure">
             <summary>
             If set to true, an exception is thrown whenever a response deserialization fails
+            </summary>
+        </member>
+        <member name="P:Rext.RextOptions.DeserializeSuccessResponseOnly">
+            <summary>
+            If set to true, generic response will be deserialized only when status code is 200*. Default global configuration value is true
             </summary>
         </member>
         <member name="P:Rext.RextOptions.IsStreamResponse">
@@ -780,6 +824,40 @@
         <member name="M:Rext.RextHttpClient.PutJSONForString(Rext.RextOptions)">
             <summary>
             Put JSON content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
+            </summary>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PatchJSON``1(Rext.RextOptions)">
+            <summary>
+            Patch JSON content for JSON result deserialized to custom type. Accepts advanced options. You can change request format with RextOptions.ContentType
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="options">RextOption to configure http call</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PatchJSON``1(System.String,System.Object,System.Object)">
+            <summary>
+            Patch JSON content for JSON result deserialized to custom type
+            </summary>
+            <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PatchJSONForString(System.String,System.Object,System.Object)">
+            <summary>
+            Patch JSON content for string result
+            </summary>
+            <param name="url">Request url in full</param>
+            <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+            <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+            <returns>Deserialized response of T</returns>
+        </member>
+        <member name="M:Rext.RextHttpClient.PatchJSONForString(Rext.RextOptions)">
+            <summary>
+            Patch JSON content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
             </summary>
             <param name="options">RextOption to configure http call</param>
             <returns>Deserialized response of T</returns>
