@@ -21,9 +21,9 @@ Safely handles request with JSON, XML and Form Data.</Description>
     <PackageIcon>rext_logo.png</PackageIcon>
     <PackageProjectUrl>https://princetegaton.github.io/RextHttpClient</PackageProjectUrl>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
-    <AssemblyVersion>1.0.9</AssemblyVersion>
+    <AssemblyVersion>1.0.10</AssemblyVersion>
     <FileVersion>1.0.9</FileVersion>
-    <Version>1.0.9</Version>
+    <Version>1.0.10</Version>
     <AssemblyName>RextHttpClient</AssemblyName>
   </PropertyGroup>
 

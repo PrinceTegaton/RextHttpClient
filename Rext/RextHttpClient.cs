@@ -866,7 +866,10 @@ namespace Rext
                     if (throwExIfNotSuccessRsp)
                         throw new RextException($"Server response is {rsp.StatusCode}");
 
-                    rsp.Content = responseString;
+                    if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                        rsp.Content = $"Url not found: {requestMsg.RequestUri}";
+                    else
+                        rsp.Content = responseString;
                     rsp.Message = "Http call completed but not successful";
 
                     // handle code specific error from user
