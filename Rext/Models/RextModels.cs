@@ -112,6 +112,11 @@ namespace Rext
         public bool ThrowExceptionOnDeserializationFailure { get; set; }
 
         /// <summary>
+        /// If set to true, generic response will be deserialized only when status code is 200*. Default value is true
+        /// </summary>
+        public bool DeserializeSuccessResponseOnly { get; set; } = true;
+
+        /// <summary>
         /// Http timeout in seconds
         /// </summary>
         public int Timeout { get; set; }
@@ -171,6 +176,11 @@ namespace Rext
         /// If set to true, an exception is thrown whenever a response deserialization fails
         /// </summary>
         public bool? ThrowExceptionOnDeserializationFailure { get; set; }
+
+        /// <summary>
+        /// If set to true, generic response will be deserialized only when status code is 200*. Default global configuration value is true
+        /// </summary>
+        public bool? DeserializeSuccessResponseOnly { get; set; }
 
         /// <summary>
         /// Set to true if you are expecting Http response

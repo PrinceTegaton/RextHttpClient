@@ -21,7 +21,10 @@ namespace Rext
         /// <returns></returns>
         public static IRextHttpClient AddHeader(this IRextHttpClient client, string key, string value)
         {
-            client.Headers.Add(key, value);
+            if (client.Headers.ContainsKey(key))
+                client.Headers.Remove(key);
+
+            client.Headers.TryAdd(key, value);
 
             return client;
         }
@@ -36,7 +39,10 @@ namespace Rext
         {
             foreach (var i in headers)
             {
-                client.Headers.Add(i.Key, i.Value);
+                if (client.Headers.ContainsKey(i.Key))
+                    client.Headers.Remove(i.Key);
+
+                client.Headers.TryAdd(i.Key, i.Value);
             }
 
             return client;
@@ -50,7 +56,8 @@ namespace Rext
         /// <returns></returns>
         public static IRextHttpClient UseBearerAuthentication(this IRextHttpClient client, string token)
         {
-            client.Headers.Add("Authorization", $"Bearer {token}");
+            if (!string.IsNullOrEmpty(token))
+                client.Headers.TryAdd("Authorization", $"Bearer {token}");
 
             return client;
         }
@@ -65,8 +72,11 @@ namespace Rext
         public static IRextHttpClient UseBasicAuthentication(this IRextHttpClient client, string username, string password)
         {
             // encode credentials
-            string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
-            client.Headers.Add("Authorization", $"Basic {credentials}");
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+            {
+                string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
+                client.Headers.TryAdd("Authorization", $"Basic {credentials}");
+            }
 
             return client;
         }
@@ -85,10 +95,10 @@ namespace Rext
                     PropertyInfo headerItem = i.GetType().GetProperties().FirstOrDefault();
                     string value = headerItem?.GetValue(i, null)?.ToString();
 
-                    RemoveDuplicate(requestObj, headerItem?.Name);
+                    RemoveDuplicate(requestObj, headerItem?.Name, value);
 
                     if (!string.IsNullOrEmpty(value)) // prevent adding null header item
-                        requestObj.Headers.Add(headerItem.Name, value);
+                        requestObj.Headers.TryAddWithoutValidation(headerItem.Name, value);
                 }
             }
 
@@ -97,10 +107,10 @@ namespace Rext
             {
                 foreach (var i in header as Dictionary<string, string>)
                 {
-                    RemoveDuplicate(requestObj, i.Key);
+                    RemoveDuplicate(requestObj, i.Key, i.Value);
 
                     if (!string.IsNullOrEmpty(i.Value))  // prevent adding null header item
-                        requestObj.Headers.Add(i.Key, i.Value);
+                        requestObj.Headers.TryAddWithoutValidation(i.Key, i.Value);
                 }
             }
 
@@ -110,28 +120,40 @@ namespace Rext
                 PropertyInfo headerItem = header.GetType().GetProperties().FirstOrDefault();
                 string value = headerItem?.GetValue(header, null)?.ToString();
 
-                RemoveDuplicate(requestObj, headerItem?.Name);
+                RemoveDuplicate(requestObj, headerItem?.Name, value);
 
                 if (!string.IsNullOrEmpty(value))  // prevent adding null header item
-                    requestObj.Headers.Add(headerItem?.Name, value);
+                    requestObj.Headers.TryAddWithoutValidation(headerItem?.Name, value);
             }
         }
 
         internal static void SetHeader(this HttpRequestMessage requestObj, string key, string value)
         {
             // prevent adding null header item
-            if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
+            try
             {
-                RemoveDuplicate(requestObj, key);
-                requestObj.Headers.Add(key, value);
+                if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
+                {
+                    RemoveDuplicate(requestObj, key, value);
+                    requestObj.Headers.TryAddWithoutValidation(key, value);
+                }
+            }
+            catch (Exception)
+            {
             }
         }
 
-        private static void RemoveDuplicate(HttpRequestMessage requestObj, string headerKey)
+        private static void RemoveDuplicate(HttpRequestMessage requestObj, string key, string value)
         {
             // prevent duplicate header item
-            if (requestObj.Headers.Contains(headerKey))
-                requestObj.Headers.Remove(headerKey);
+            try
+            {
+                if (requestObj.Headers.Contains(key))
+                    requestObj.Headers.Remove(key);
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }

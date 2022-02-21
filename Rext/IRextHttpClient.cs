@@ -261,5 +261,42 @@ namespace Rext
         /// <returns>Deserialized response of T</returns>
         Task<CustomHttpResponse<string>> PutJSONForString(RextOptions options);
         #endregion
+
+        #region PATCH
+
+        /// <summary>
+        /// Patch JSON content for JSON result deserialized to custom type
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Deserialized response of T</returns>
+        Task<CustomHttpResponse<T>> PatchJSON<T>(string url, object payload = null, object header = null);
+
+        /// <summary>
+        /// Patch JSON content for JSON result deserialized to custom type. Accepts advanced options using <see cref="RextOptions"/> object. You can change request format with RextOptions.ContentType
+        /// </summary>
+        /// <typeparam name="T">Generic return type to deserialize response data in to</typeparam>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Deserialized response of T</returns>
+        Task<CustomHttpResponse<T>> PatchJSON<T>(RextOptions options);
+
+        /// <summary>
+        /// Patch JSON content for string result
+        /// </summary>
+        /// <param name="url">Request url in full</param>
+        /// <param name="payload">Content to send. Can be a single/complex object, list, keyvalue pair or more, depending on the api request</param>
+        /// <param name="header">Set a default header for every http call via IDictionary of strings, IList of string or key-value object (new { Authorization = "xxxx" }</param>
+        /// <returns>Deserialized response of T</returns>
+        Task<CustomHttpResponse<string>> PatchJSONForString(string url, object payload = null, object header = null);
+
+        /// <summary>
+        /// Patch JSON content for string result. Accepts advanced options using <see cref="RextOptions"/> object. You can change request format with RextOptions.ContentType
+        /// </summary>
+        /// <param name="options">RextOption to configure http call</param>
+        /// <returns>Deserialized response of T</returns>
+        Task<CustomHttpResponse<string>> PatchJSONForString(RextOptions options);
+        #endregion
     }
 }

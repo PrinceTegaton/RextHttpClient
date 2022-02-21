@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -49,7 +50,7 @@ namespace Rext
 
             return uri;
         }
-       
+
         public static bool IsList(this object obj)
         {
             if (obj == null) return false;
@@ -63,7 +64,7 @@ namespace Rext
             if (obj == null) return false;
 
             Type type = obj.GetType();
-            return obj is IDictionary && type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>));
+            return obj is IDictionary && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>));
         }
 
         public static string ToQueryString(this object obj)
@@ -117,7 +118,7 @@ namespace Rext
                     return (false, msg, default(T)); // return failure message as required
             }
         }
-        
+
         public static string ToJson(this object value)
         {
             if (value == null) return "{ }";
