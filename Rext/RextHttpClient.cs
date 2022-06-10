@@ -810,7 +810,7 @@ namespace Rext
                         if (options.ContentType == ContentType.Application_JSON)
                             strPayload = options.Payload.ToJson();
                         else if (options.ContentType == ContentType.Application_XML)
-                            strPayload = options.Payload.ToXml();
+                            strPayload = options.Payload.ToXml(ConfigurationBundle.HttpConfiguration?.DefaultXmlEncoding);
                         else
                             strPayload = options.Payload.ToString();
 

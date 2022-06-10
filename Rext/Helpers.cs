@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -130,34 +131,27 @@ namespace Rext
             return JsonConvert.SerializeObject(value, Newtonsoft.Json.Formatting.Indented, settings);
         }
 
-        public static string ToXml(this object value)
+        public static string ToXml(this object value, string encoding = "utf-8")
         {
-            using (var writer = new StringWriter())
+            // create a blank namespace
+            XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+            ns.Add("", "");
+
+            var serializer = new XmlSerializer(value.GetType());
+            var sb = new StringBuilder();
+
+            using XmlWriter xw = XmlWriter.Create(sb);
+            serializer.Serialize(xw, value, ns);
+            xw.Flush();
+
+            string xml = sb.ToString();
+
+            if (encoding.ToLower() == "utf-8" && xml.Contains("utf-16"))
             {
-                // empty default xml namespace
-                // from the generated string
-
-                var ns = new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty });
-
-                var serializer = new XmlSerializer(value.GetType());
-                serializer.Serialize(writer, value, ns);
-
-                // remove first xml line <?xml version="1.0" encoding="utf-16"?>
-                // which is usually the first line but makes the request to contain 2 nodes
-
-                if (!string.IsNullOrEmpty(writer.ToString()))
-                {
-                    var lines = writer.ToString().Split(Environment.NewLine.ToCharArray());
-                    string xml = string.Empty;
-
-                    for (int i = 1; i < lines.Length; i++) // i = 1 to skip <?xml on line 0
-                        xml += lines[i]; // + Environment.NewLine;
-
-                    return xml;
-                }
-
-                return string.Empty;
+                xml = xml.Replace("encoding=\"utf-16\"", "encoding=\"utf-8\"");
             }
+
+            return xml;
         }
     }
 }
