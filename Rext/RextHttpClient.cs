@@ -44,7 +44,34 @@ namespace Rext
         public Stopwatch Stopwatch { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RextHttpClient"/> class
+        /// Initialize a default instance of the <see cref="RextHttpClient"/> class
+        /// </summary>
+        public RextHttpClient()
+        {
+
+        }
+
+        /// <summary>
+        /// Initialize a new instance of the <see cref="RextHttpClient"/> class
+        /// </summary>
+        /// <param name="useGlobalConfiguration"></param>
+        public RextHttpClient(bool useGlobalConfiguration = true)
+        {
+            if (useGlobalConfiguration)
+            {
+                // create httpclient from proxy handler
+                HttpClientHandler httpClientHandler = CustomHttpClientHandler.CreateHandler(ConfigurationBundle.HttpConfiguration.ProxyAddress, ConfigurationBundle.HttpConfiguration.RelaxSslCertValidation, ConfigurationBundle.HttpConfiguration.Certificate);
+
+                this.Client = ConfigurationBundle.HttpClient ?? new HttpClient(httpClientHandler);
+            }
+            else
+            {
+                ConfigurationBundle.HttpConfiguration = new RextHttpCongifuration();
+            }
+        }
+
+        /// <summary>
+        /// Initialize a new instance of the <see cref="RextHttpClient"/> class with configuration
         /// </summary>
         /// <param name="configuration"></param>
         public RextHttpClient(RextHttpCongifuration configuration = null)
@@ -810,7 +837,7 @@ namespace Rext
                         if (options.ContentType == ContentType.Application_JSON)
                             strPayload = options.Payload.ToJson();
                         else if (options.ContentType == ContentType.Application_XML)
-                            strPayload = options.Payload.ToXml();
+                            strPayload = options.Payload.ToXml(ConfigurationBundle.HttpConfiguration?.DefaultXmlEncoding);
                         else
                             strPayload = options.Payload.ToString();
 

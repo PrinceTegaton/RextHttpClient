@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text;
 
 namespace Rext
 {
@@ -130,6 +131,11 @@ namespace Rext
         /// Set the global HttpClient HttpCompletionOption call for every call. Default value is HttpCompletionOption.ResponseContentRead
         /// </summary>
         public HttpCompletionOption HttpCompletionOption { get; set; }
+
+        /// <summary>
+        /// Change the default XML encoding format. Default is UTF-8
+        /// </summary>
+        public string DefaultXmlEncoding { get; set; } = "UTF-8";
     }
 
     /// <summary>
