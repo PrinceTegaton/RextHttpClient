@@ -6,19 +6,19 @@ namespace Rext
 {
     internal class CustomHttpClientHandler
     {
-        public static HttpClientHandler CreateHandler(string address = null, bool relaxSslCertValidation = false, CertificateInfo certificateInfo = null)
+        public static HttpClientHandler CreateHandler(string proxyAddress = null, bool relaxSslCertValidation = false, CertificateInfo certificateInfo = null)
         {
             HttpClientHandler customHandler = new HttpClientHandler();
 
-            if (!string.IsNullOrEmpty(address))
+            if (!string.IsNullOrEmpty(proxyAddress))
             {
-                if (Uri.IsWellFormedUriString(address, UriKind.Absolute))
+                if (Uri.IsWellFormedUriString(proxyAddress, UriKind.Absolute))
                 {
                     customHandler = new HttpClientHandler
                     {
-                        Proxy = new WebProxy(new Uri(address), BypassOnLocal: false),
+                        Proxy = new WebProxy(new Uri(proxyAddress), BypassOnLocal: false),
                         UseProxy = true,
-                        DefaultProxyCredentials = System.Net.CredentialCache.DefaultNetworkCredentials
+                        DefaultProxyCredentials = CredentialCache.DefaultNetworkCredentials
                     };
                 }
                 else

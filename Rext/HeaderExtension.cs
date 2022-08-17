@@ -95,7 +95,7 @@ namespace Rext
                     PropertyInfo headerItem = i.GetType().GetProperties().FirstOrDefault();
                     string value = headerItem?.GetValue(i, null)?.ToString();
 
-                    RemoveDuplicate(requestObj, headerItem?.Name, value);
+                    RemoveDuplicate(requestObj, headerItem?.Name);
 
                     if (!string.IsNullOrEmpty(value)) // prevent adding null header item
                         requestObj.Headers.TryAddWithoutValidation(headerItem.Name, value);
@@ -107,7 +107,7 @@ namespace Rext
             {
                 foreach (var i in header as Dictionary<string, string>)
                 {
-                    RemoveDuplicate(requestObj, i.Key, i.Value);
+                    RemoveDuplicate(requestObj, i.Key);
 
                     if (!string.IsNullOrEmpty(i.Value))  // prevent adding null header item
                         requestObj.Headers.TryAddWithoutValidation(i.Key, i.Value);
@@ -120,7 +120,7 @@ namespace Rext
                 PropertyInfo headerItem = header.GetType().GetProperties().FirstOrDefault();
                 string value = headerItem?.GetValue(header, null)?.ToString();
 
-                RemoveDuplicate(requestObj, headerItem?.Name, value);
+                RemoveDuplicate(requestObj, headerItem?.Name);
 
                 if (!string.IsNullOrEmpty(value))  // prevent adding null header item
                     requestObj.Headers.TryAddWithoutValidation(headerItem?.Name, value);
@@ -134,7 +134,7 @@ namespace Rext
             {
                 if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
                 {
-                    RemoveDuplicate(requestObj, key, value);
+                    RemoveDuplicate(requestObj, key);
                     requestObj.Headers.TryAddWithoutValidation(key, value);
                 }
             }
@@ -143,7 +143,7 @@ namespace Rext
             }
         }
 
-        private static void RemoveDuplicate(HttpRequestMessage requestObj, string key, string value)
+        private static void RemoveDuplicate(HttpRequestMessage requestObj, string key)
         {
             // prevent duplicate header item
             try
