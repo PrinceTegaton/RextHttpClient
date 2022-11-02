@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Net.Http;
 using System.Text;
 
@@ -136,6 +137,11 @@ namespace Rext
         /// Change the default XML encoding format. Default is UTF-8
         /// </summary>
         public string DefaultXmlEncoding { get; set; } = "UTF-8";
+
+        /// <summary>
+        /// Configure JSON serializer settings
+        /// </summary>
+        public JsonSerializerSettings JsonSerializerSettings { get; set; }
     }
 
     /// <summary>

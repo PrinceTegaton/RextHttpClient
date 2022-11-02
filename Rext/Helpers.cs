@@ -120,15 +120,15 @@ namespace Rext
             }
         }
 
-        public static string ToJson(this object value)
+        public static string ToJson(this object value, JsonSerializerSettings jsonSerializerSettings = null)
         {
             if (value == null) return "{ }";
-            var settings = new JsonSerializerSettings
+            jsonSerializerSettings ??= new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
 
-            return JsonConvert.SerializeObject(value, Newtonsoft.Json.Formatting.Indented, settings);
+            return JsonConvert.SerializeObject(value, Newtonsoft.Json.Formatting.Indented, jsonSerializerSettings);
         }
 
         public static string ToXml(this object value, string encoding = "utf-8")

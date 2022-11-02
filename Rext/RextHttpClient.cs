@@ -808,7 +808,7 @@ namespace Rext
                     {
                         // convert object to specified content-type
                         if (options.ContentType == ContentType.Application_JSON)
-                            strPayload = options.Payload.ToJson();
+                            strPayload = options.Payload.ToJson(ConfigurationBundle.HttpConfiguration?.JsonSerializerSettings);
                         else if (options.ContentType == ContentType.Application_XML)
                             strPayload = options.Payload.ToXml(ConfigurationBundle.HttpConfiguration?.DefaultXmlEncoding);
                         else
