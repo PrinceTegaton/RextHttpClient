@@ -213,5 +213,15 @@ namespace Rext
         /// Set the HttpClient HttpCompletionOption call. Default value is HttpCompletionOption.ResponseContentRead
         /// </summary>
         public HttpCompletionOption? HttpCompletionOption { get; set; }
+
+        /// <summary>
+        /// Override global resiliency policies
+        /// </summary>
+        public List<ResiliencyPolicy> ResiliencyPolicies { get; set; }
+
+        /// <summary>
+        /// Ignore certain status code set in resiliency policies
+        /// </summary>
+        public int[] IgnoreStatusCodeInResiliencyPolicies { get; set; } = Array.Empty<int>();
     }
 }

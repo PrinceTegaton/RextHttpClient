@@ -724,6 +724,7 @@ namespace Rext
 
         private async Task<CustomHttpResponse<string>> ProcessRequest(RextOptions options)
         {
+            ResiliencyPolicy policy = null;
             int retryCount = 0;
         start:
             if (this.Client == null) throw new ArgumentNullException("HttpClient object cannot be null");
@@ -842,9 +843,13 @@ namespace Rext
 
 
                 // handle resiliency policies
-                if (ConfigurationBundle.ResiliencyPolicies != null && ConfigurationBundle.ResiliencyPolicies.Any())
+                var resiliencyOption = options?.ResiliencyPolicies ?? ConfigurationBundle.ResiliencyPolicies;
+                if (policy != null || (resiliencyOption != null && resiliencyOption.Any()))
                 {
-                    var policy = ConfigurationBundle.ResiliencyPolicies.FirstOrDefault(a => a.StatusCodes.Contains((int)response.StatusCode) || a.StatusCode == (int)response.StatusCode);
+                    policy ??= ConfigurationBundle.ResiliencyPolicies.FirstOrDefault(a => (a.StatusCodes.Contains((int)response.StatusCode) || a.StatusCode == (int)response.StatusCode) &&
+                    (options?.IgnoreStatusCodeInResiliencyPolicies != null &&
+                    !options.IgnoreStatusCodeInResiliencyPolicies.Contains((int)response.StatusCode)));
+
                     if (policy != null)
                     {
                         if (retryCount < policy.Retry)
