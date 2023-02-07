@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 
@@ -76,6 +77,11 @@ namespace Rext
         /// Determine if Rext Stopwatch should be used. Value is True by default
         /// </summary>
         public bool EnableStopwatch { get; set; } = true;
+
+        /// <summary>
+        /// Configure resiliency policies
+        /// </summary>
+        public List<ResiliencyPolicy> ResiliencyPolicies { get; set; }
     }
 
     /// <summary>

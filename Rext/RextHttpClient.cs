@@ -724,6 +724,8 @@ namespace Rext
 
         private async Task<CustomHttpResponse<string>> ProcessRequest(RextOptions options)
         {
+            int retryCount = 0;
+        start:
             if (this.Client == null) throw new ArgumentNullException("HttpClient object cannot be null");
 
             // validate essential params
@@ -838,15 +840,37 @@ namespace Rext
                 // set watch value to public member
                 if (ConfigurationBundle.EnableStopwatch) Stopwatch.Stop();
 
+
+                // handle resiliency policies
+                if (ConfigurationBundle.ResiliencyPolicies != null && ConfigurationBundle.ResiliencyPolicies.Any())
+                {
+                    var policy = ConfigurationBundle.ResiliencyPolicies.FirstOrDefault(a => a.StatusCodes.Contains((int)response.StatusCode) || a.StatusCode == (int)response.StatusCode);
+                    if (policy != null)
+                    {
+                        if (retryCount < policy.Retry)
+                        {
+                            if (policy.Interval.HasValue)
+                            {
+                                await Task.Delay(policy.Interval.Value);
+                            }
+
+                            retryCount++;
+                            goto start;
+                        }
+                    }
+                }
+
+
                 rsp.StatusCode = response.StatusCode;
+                rsp.Retries = retryCount;
 
                 if (options.IsStreamResponse)
                 {
                     var stream = await response.Content.ReadAsStreamAsync();
                     if (stream.Length > 0)
                     {
-                        using (var rd = new StreamReader(stream))
-                            responseString = rd.ReadToEnd();
+                        using var rd = new StreamReader(stream);
+                        responseString = rd.ReadToEnd();
                     }
                 }
                 else
@@ -886,6 +910,11 @@ namespace Rext
             {
                 // execute all user actions on error
                 ConfigurationBundle.OnError?.Invoke();
+
+                if (ex is UriFormatException)
+                {
+                    throw;
+                }
 
                 if (ConfigurationBundle.SuppressRextExceptions)
                 {

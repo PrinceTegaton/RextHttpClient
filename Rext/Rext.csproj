@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Authors>Prince Tegaton</Authors>
+    <Authors>Otega Ovie</Authors>
     <Company>Dynamic Brain Systems</Company>
     <Product>Rext HttpClient Utility</Product>
     <RepositoryUrl>https://github.com/princetegaton/RextHttpClient</RepositoryUrl>
