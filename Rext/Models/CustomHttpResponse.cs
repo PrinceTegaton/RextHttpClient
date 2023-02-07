@@ -26,6 +26,11 @@ namespace Rext
         /// Rext message on the status of the request and also shows handled exception messages
         /// </summary>
         public string Message { get; set; }
+
+        /// <summary>
+        /// Number of retries performed for the request
+        /// </summary>
+        public int Retries { get; set; }
     }
 
     /// <summary>

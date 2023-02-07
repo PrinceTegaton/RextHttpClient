@@ -44,33 +44,6 @@ namespace Rext
         public Stopwatch Stopwatch { get; private set; }
 
         /// <summary>
-        /// Initialize a default instance of the <see cref="RextHttpClient"/> class
-        /// </summary>
-        public RextHttpClient()
-        {
-
-        }
-
-        /// <summary>
-        /// Initialize a new instance of the <see cref="RextHttpClient"/> class
-        /// </summary>
-        /// <param name="useGlobalConfiguration"></param>
-        public RextHttpClient(bool useGlobalConfiguration = true)
-        {
-            if (useGlobalConfiguration)
-            {
-                // create httpclient from proxy handler
-                HttpClientHandler httpClientHandler = CustomHttpClientHandler.CreateHandler(ConfigurationBundle.HttpConfiguration.ProxyAddress, ConfigurationBundle.HttpConfiguration.RelaxSslCertValidation, ConfigurationBundle.HttpConfiguration.Certificate);
-
-                this.Client = ConfigurationBundle.HttpClient ?? new HttpClient(httpClientHandler);
-            }
-            else
-            {
-                ConfigurationBundle.HttpConfiguration = new RextHttpCongifuration();
-            }
-        }
-
-        /// <summary>
         /// Initialize a new instance of the <see cref="RextHttpClient"/> class with configuration
         /// </summary>
         /// <param name="configuration"></param>
@@ -751,6 +724,8 @@ namespace Rext
 
         private async Task<CustomHttpResponse<string>> ProcessRequest(RextOptions options)
         {
+            int retryCount = 0;
+        start:
             if (this.Client == null) throw new ArgumentNullException("HttpClient object cannot be null");
 
             // validate essential params
@@ -835,7 +810,7 @@ namespace Rext
                     {
                         // convert object to specified content-type
                         if (options.ContentType == ContentType.Application_JSON)
-                            strPayload = options.Payload.ToJson();
+                            strPayload = options.Payload.ToJson(ConfigurationBundle.HttpConfiguration?.JsonSerializerSettings);
                         else if (options.ContentType == ContentType.Application_XML)
                             strPayload = options.Payload.ToXml(ConfigurationBundle.HttpConfiguration?.DefaultXmlEncoding);
                         else
@@ -865,15 +840,37 @@ namespace Rext
                 // set watch value to public member
                 if (ConfigurationBundle.EnableStopwatch) Stopwatch.Stop();
 
+
+                // handle resiliency policies
+                if (ConfigurationBundle.ResiliencyPolicies != null && ConfigurationBundle.ResiliencyPolicies.Any())
+                {
+                    var policy = ConfigurationBundle.ResiliencyPolicies.FirstOrDefault(a => a.StatusCodes.Contains((int)response.StatusCode) || a.StatusCode == (int)response.StatusCode);
+                    if (policy != null)
+                    {
+                        if (retryCount < policy.Retry)
+                        {
+                            if (policy.Interval.HasValue)
+                            {
+                                await Task.Delay(policy.Interval.Value);
+                            }
+
+                            retryCount++;
+                            goto start;
+                        }
+                    }
+                }
+
+
                 rsp.StatusCode = response.StatusCode;
+                rsp.Retries = retryCount;
 
                 if (options.IsStreamResponse)
                 {
                     var stream = await response.Content.ReadAsStreamAsync();
                     if (stream.Length > 0)
                     {
-                        using (var rd = new StreamReader(stream))
-                            responseString = rd.ReadToEnd();
+                        using var rd = new StreamReader(stream);
+                        responseString = rd.ReadToEnd();
                     }
                 }
                 else
@@ -913,6 +910,11 @@ namespace Rext
             {
                 // execute all user actions on error
                 ConfigurationBundle.OnError?.Invoke();
+
+                if (ex is UriFormatException)
+                {
+                    throw;
+                }
 
                 if (ConfigurationBundle.SuppressRextExceptions)
                 {

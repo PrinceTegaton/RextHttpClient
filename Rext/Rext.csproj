@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Authors>Prince Tegaton</Authors>
+    <Authors>Otega Ovie</Authors>
     <Company>Dynamic Brain Systems</Company>
     <Product>Rext HttpClient Utility</Product>
     <RepositoryUrl>https://github.com/princetegaton/RextHttpClient</RepositoryUrl>
@@ -12,18 +12,15 @@
     <Description>Rext is a simple HttpClient wrapper to speed up your api projects. Just plug and play.
 Safely handles request with JSON, XML and Form Data.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>- Included option to deserialise response of success or failures, this is useful when the generic response of an api has same body for success and failure.
-- Include http-patch methods
-- Fixed delete response type
-- Upgraded to NetStandard 2.1</PackageReleaseNotes>
+    <PackageReleaseNotes>Http resiliency to retry certain statuscodes at intervals</PackageReleaseNotes>
     <PackageTags>httplient, web-client, json, xml, form-data, encoded-form, api, http</PackageTags>
     <PackageIconUrl>https://lh4.googleusercontent.com/YAGKZGub7P1vfgZY4yRoQhZSdqdWM06zXaOjw--7y7nD1O9rTvNPwvyC6wg7zRpx3w59E7sgd38seljRRdg=w1366-h365</PackageIconUrl>
     <PackageIcon>rext_logo.png</PackageIcon>
     <PackageProjectUrl>https://princetegaton.github.io/RextHttpClient</PackageProjectUrl>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
-    <AssemblyVersion>1.0.12</AssemblyVersion>
-    <FileVersion>1.0.12</FileVersion>
-    <Version>1.0.12</Version>
+    <AssemblyVersion>1.0.15</AssemblyVersion>
+    <FileVersion>1.0.15</FileVersion>
+    <Version>1.0.15</Version>
     <AssemblyName>RextHttpClient</AssemblyName>
   </PropertyGroup>
 
