@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
@@ -23,7 +22,9 @@ namespace Rext
             if (!string.IsNullOrEmpty(baseUrl))
             {
                 if (options.Url.StartsWith("http://") || options.Url.StartsWith("https://"))
+                {
                     throw new UriFormatException("Invalid url format. When using BaseUrl you only have to supply the url part");
+                }
 
                 // trim / from end and start to avoid double / in url
                 url = $"{baseUrl.TrimEnd('/')}/{options.Url.TrimStart('/')}";
@@ -35,17 +36,23 @@ namespace Rext
             }
 
             if (!url.StartsWith("http"))
+            {
                 throw new UriFormatException("Invalid url format. Url scheme is required e.g. HTTP or HTTPS");
+            }
 
             // generate querystring from object if GET
             if (options.Method == HttpMethod.Get && options.Payload != null)
+            {
                 queryString = options.Payload.ToQueryString();
+            }
 
             Uri uri = new Uri(url);
 
             string port = uri.Port > 0 ? ":" + uri.Port : string.Empty;
             if (!string.IsNullOrEmpty(uri.Query) && !string.IsNullOrEmpty(queryString))
+            {
                 queryString = $"&{queryString?.TrimStart('?')}";
+            }
 
             uri = new Uri($"{uri.Scheme}://{uri.Host}{port}{uri.PathAndQuery}{queryString}");
 
@@ -54,7 +61,10 @@ namespace Rext
 
         public static bool IsList(this object obj)
         {
-            if (obj == null) return false;
+            if (obj == null)
+            {
+                return false;
+            }
 
             Type type = obj.GetType();
             return obj is IList && type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(IList<>));
@@ -62,7 +72,10 @@ namespace Rext
 
         public static bool IsDictionary(this object obj)
         {
-            if (obj == null) return false;
+            if (obj == null)
+            {
+                return false;
+            }
 
             Type type = obj.GetType();
             return obj is IDictionary && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>));
@@ -70,7 +83,10 @@ namespace Rext
 
         public static string ToQueryString(this object obj)
         {
-            if (obj == null) return string.Empty;
+            if (obj == null)
+            {
+                return string.Empty;
+            }
 
             Type type = obj.GetType();
             var props = type.GetProperties();
@@ -92,9 +108,13 @@ namespace Rext
             {
                 string msg = string.Format(StaticMessages.DeserializationFailure, typeof(T).Name);
                 if (throwExceptionOnDeserializationFailure)
+                {
                     throw new RextException(msg); // throw exception as required
+                }
                 else
+                {
                     return (false, msg, default(T)); // return failure message as required
+                }
             }
         }
 
@@ -114,15 +134,23 @@ namespace Rext
             {
                 string msg = string.Format(StaticMessages.DeserializationFailure, typeof(T).Name);
                 if (throwExceptionOnDeserializationFailure)
+                {
                     throw new RextException(msg); // throw exception as required
+                }
                 else
+                {
                     return (false, msg, default(T)); // return failure message as required
+                }
             }
         }
 
         public static string ToJson(this object value, JsonSerializerSettings jsonSerializerSettings = null)
         {
-            if (value == null) return "{ }";
+            if (value == null)
+            {
+                return "{ }";
+            }
+
             jsonSerializerSettings ??= new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 
 namespace Rext
 {
@@ -82,6 +81,11 @@ namespace Rext
         /// Configure resiliency policies
         /// </summary>
         public List<ResiliencyPolicy> ResiliencyPolicies { get; set; }
+
+        /// <summary>
+        /// If true, policies added via extension will be merged with global configuration
+        /// </summary>
+        public bool MergeResiliencyPoliciesAddedFromExtension { get; set; } = true;
     }
 
     /// <summary>
@@ -213,5 +217,10 @@ namespace Rext
         /// Set the HttpClient HttpCompletionOption call. Default value is HttpCompletionOption.ResponseContentRead
         /// </summary>
         public HttpCompletionOption? HttpCompletionOption { get; set; }
+
+        /// <summary>
+        /// Ignore certain status code set in resiliency policies
+        /// </summary>
+        public int[] IgnoreStatusCodeInResiliencyPolicies { get; set; } = Array.Empty<int>();
     }
 }

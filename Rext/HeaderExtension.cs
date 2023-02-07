@@ -22,7 +22,9 @@ namespace Rext
         public static IRextHttpClient AddHeader(this IRextHttpClient client, string key, string value)
         {
             if (client.Headers.ContainsKey(key))
+            {
                 client.Headers.Remove(key);
+            }
 
             client.Headers.TryAdd(key, value);
 
@@ -40,7 +42,9 @@ namespace Rext
             foreach (var i in headers)
             {
                 if (client.Headers.ContainsKey(i.Key))
+                {
                     client.Headers.Remove(i.Key);
+                }
 
                 client.Headers.TryAdd(i.Key, i.Value);
             }
@@ -57,7 +61,9 @@ namespace Rext
         public static IRextHttpClient UseBearerAuthentication(this IRextHttpClient client, string token)
         {
             if (!string.IsNullOrEmpty(token))
+            {
                 client.Headers.TryAdd("Authorization", $"Bearer {token}");
+            }
 
             return client;
         }
@@ -85,7 +91,10 @@ namespace Rext
         {
             //todo: review reflection process
 
-            if (header == null) return;
+            if (header == null)
+            {
+                return;
+            }
 
             // process from a list of objects
             if (header.IsList())
@@ -98,7 +107,9 @@ namespace Rext
                     RemoveDuplicate(requestObj, headerItem?.Name);
 
                     if (!string.IsNullOrEmpty(value)) // prevent adding null header item
+                    {
                         requestObj.Headers.TryAddWithoutValidation(headerItem.Name, value);
+                    }
                 }
             }
 
@@ -110,7 +121,9 @@ namespace Rext
                     RemoveDuplicate(requestObj, i.Key);
 
                     if (!string.IsNullOrEmpty(i.Value))  // prevent adding null header item
+                    {
                         requestObj.Headers.TryAddWithoutValidation(i.Key, i.Value);
+                    }
                 }
             }
 
@@ -123,7 +136,9 @@ namespace Rext
                 RemoveDuplicate(requestObj, headerItem?.Name);
 
                 if (!string.IsNullOrEmpty(value))  // prevent adding null header item
+                {
                     requestObj.Headers.TryAddWithoutValidation(headerItem?.Name, value);
+                }
             }
         }
 
@@ -149,7 +164,9 @@ namespace Rext
             try
             {
                 if (requestObj.Headers.Contains(key))
+                {
                     requestObj.Headers.Remove(key);
+                }
             }
             catch (Exception)
             {

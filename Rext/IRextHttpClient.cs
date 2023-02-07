@@ -15,6 +15,11 @@ namespace Rext
         IDictionary<string, string> Headers { get; }
 
         /// <summary>
+        /// List of resiliency policies
+        /// </summary>
+        List<ResiliencyPolicy> ResiliencyPolicies { get; }
+
+        /// <summary>
         /// Get execution time of the http call when configured to run
         /// </summary>
         Stopwatch Stopwatch { get; }
@@ -226,7 +231,7 @@ namespace Rext
         #endregion
 
         #region PUT
-        
+
         /// <summary>
         /// Put JSON content for JSON result deserialized to custom type
         /// </summary>

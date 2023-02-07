@@ -28,7 +28,9 @@ namespace Rext
             }
 
             if (relaxSslCertValidation)
+            {
                 customHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return relaxSslCertValidation; };
+            }
 
             // add certificate
             if (certificateInfo != null)
@@ -39,9 +41,13 @@ namespace Rext
                 if (!string.IsNullOrEmpty(certificateInfo.FilePath))
                 {
                     if (string.IsNullOrEmpty(certificateInfo.Password))
+                    {
                         cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateInfo.FilePath);
+                    }
                     else
+                    {
                         cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateInfo.FilePath, certificateInfo.Password);
+                    }
 
                     customHandler.ClientCertificates.Add(cert);
                     customHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
@@ -53,9 +59,13 @@ namespace Rext
                 if (certificateInfo.CertificateBytes.Length > 0)
                 {
                     if (string.IsNullOrEmpty(certificateInfo.Password))
+                    {
                         cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateInfo.CertificateBytes);
+                    }
                     else
+                    {
                         cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateInfo.CertificateBytes, certificateInfo.Password);
+                    }
 
                     customHandler.ClientCertificates.Add(cert);
                     customHandler.ClientCertificateOptions = ClientCertificateOption.Manual;

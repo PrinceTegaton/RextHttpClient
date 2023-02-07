@@ -1,6 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rext;
-using RextAPISimulator.Controllers;
 
 namespace RextUnitTests
 {
