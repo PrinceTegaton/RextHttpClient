@@ -9,16 +9,20 @@ namespace RextConsole
     class Program
     {
         static IRextHttpClient _rext;
-        
+
         static void Main(string[] args)
         {
             Console.WriteLine("Rext Console");
-            
+
         restart:
             var r = _rext.DeleteJSON<dynamic>("https://localhost:44365/api/user/put", new { id = 1001, name = "john.doe" }).Result;
             Console.WriteLine($"{r.StatusCode} - {r.Message} \n{r.Content} {_rext.Stopwatch.ElapsedMilliseconds.ToString("N4")}ms");
 
-            if (Console.ReadLine() == "R") goto restart;
+            if (Console.ReadLine() == "R")
+            {
+                goto restart;
+            }
+
             Console.ReadKey();
         }
 
@@ -45,7 +49,11 @@ namespace RextConsole
 
             s.Stop();
             Console.WriteLine($"Total time: {s.ElapsedMilliseconds.ToString("N4")}ms");
-            if (Console.ReadLine() == "R") goto restart;
+            if (Console.ReadLine() == "R")
+            {
+                goto restart;
+            }
+
             Console.ReadKey();
         }
 
@@ -92,7 +100,6 @@ namespace RextConsole
                     Console.WriteLine("Hello Rext!");
 
                     string url1 = "https://fudhubapi.dynamicbra.in/api/product/getall";
-                    string url2 = "http://httpstat.us/500";
                     var header = new Dictionary<string, string>
                     {
                        { "client_secret", "xxx12345" },
@@ -202,17 +209,27 @@ namespace RextConsole
         static void ErrorCodeHandler()
         {
             if (RextHttpClient.ReturnStatusCode == 401)
+            {
                 Console.WriteLine($"---handling Unauthorized Error");
+            }
+
             if (RextHttpClient.ReturnStatusCode == 500)
+            {
                 Console.WriteLine($"---handling Internal Server Error");
+            }
         }
 
         static void ErrorCodeHandler(int code)
         {
             if (code == 401)
+            {
                 Console.WriteLine($"---handling Unauthorized Error");
+            }
+
             if (code == 500)
+            {
                 Console.WriteLine($"---handling Internal Server Error");
+            }
         }
     }
 

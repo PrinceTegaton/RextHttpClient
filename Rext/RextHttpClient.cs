@@ -39,6 +39,11 @@ namespace Rext
         public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
 
         /// <summary>
+        /// List of resiliency policies
+        /// </summary>
+        public List<ResiliencyPolicy> ResiliencyPolicies { get; set; } = new List<ResiliencyPolicy>();
+
+        /// <summary>
         /// Get execution time of the http call when configured to run
         /// </summary>
         public Stopwatch Stopwatch { get; private set; }
@@ -50,7 +55,9 @@ namespace Rext
         public RextHttpClient(RextHttpCongifuration configuration = null)
         {
             if (configuration != null)
+            {
                 ConfigurationBundle.HttpConfiguration = configuration;
+            }
 
             // create httpclient from proxy handler
             HttpClientHandler httpClientHandler = new HttpClientHandler();
@@ -62,7 +69,9 @@ namespace Rext
             this.Client = ConfigurationBundle.HttpClient ?? new HttpClient(httpClientHandler);
 
             if (ConfigurationBundle.HttpConfiguration.Timeout > 0)
+            {
                 this.Client.Timeout = TimeSpan.FromSeconds(ConfigurationBundle.HttpConfiguration.Timeout);
+            }
         }
 
         /// <summary>
@@ -694,7 +703,9 @@ namespace Rext
                     }
 
                     if (output.status)
+                    {
                         newRsp.Data = output.result;
+                    }
                     else
                     {
                         if (newRsp.StatusCode != System.Net.HttpStatusCode.OK && !deserializeSuccessOnly)
@@ -702,12 +713,16 @@ namespace Rext
                             newRsp.Message = $"Type deserialization failed: To prevent deserialization of unsuccessful response types, set DeserializeSuccessResponseOnly=true";
 
                             if (throwExOnFail)
+                            {
                                 throw new RextException(newRsp.Message + " ---> To prevent deserialization of unsuccessful response types, set DeserializeSuccessResponseOnly = true");
+                            }
 
                             return newRsp;
                         }
                         else
+                        {
                             newRsp.Message = output.message;
+                        }
                     }
                 }
             }
@@ -727,25 +742,38 @@ namespace Rext
             ResiliencyPolicy policy = null;
             int retryCount = 0;
         start:
-            if (this.Client == null) throw new ArgumentNullException("HttpClient object cannot be null");
+            if (this.Client == null)
+            {
+                throw new ArgumentNullException("HttpClient object cannot be null");
+            }
 
             // validate essential params
             if (string.IsNullOrEmpty(options.Url))
             {
                 if (string.IsNullOrEmpty(ConfigurationBundle.HttpConfiguration.BaseUrl))
+                {
                     throw new ArgumentNullException(nameof(options.Url), $"{nameof(options.Url)} is required. Provide fully qualified api endpoint.");
+                }
                 else
+                {
                     throw new ArgumentNullException(nameof(options.Url), $"{nameof(options.Url)} is required. Provide the other part of api endpoint to match the BaseUrl.");
+                }
             }
 
             if (options.Method == null)
+            {
                 throw new ArgumentNullException(nameof(options.Method), $"{nameof(options.Method)} is required. Use GET, POST etc..");
+            }
 
             if (string.IsNullOrEmpty(options.ContentType))
+            {
                 throw new ArgumentNullException(nameof(options.ContentType), $"{nameof(options.ContentType) } is required. Use application/json, text.plain etc..");
+            }
 
             if (string.IsNullOrEmpty(options.ExpectedResponseFormat))
+            {
                 throw new ArgumentNullException(nameof(options.ExpectedResponseFormat), $"{nameof(options.ExpectedResponseFormat)} is required. Use application/json, text.plain etc..");
+            }
 
 
             // execute all user actions pre-call
@@ -759,22 +787,32 @@ namespace Rext
             {
                 Uri uri = options.CreateUri(ConfigurationBundle.HttpConfiguration.BaseUrl);
                 if (uri == null)
+                {
                     throw new UriFormatException("Invalid request Uri");
+                }
 
                 var requestMsg = new HttpRequestMessage(options.Method, uri);
 
                 // set header if object has value
                 if (this.Headers != null)
+                {
                     requestMsg.SetHeader(this.Headers);
+                }
 
                 if (options.Header != null)
+                {
                     requestMsg.SetHeader(options.Header);
+                }
 
                 if (ConfigurationBundle.HttpConfiguration.Header != null)
+                {
                     requestMsg.SetHeader(ConfigurationBundle.HttpConfiguration.Header);
+                }
 
                 if (!string.IsNullOrEmpty(options.ContentType))
+                {
                     requestMsg.SetHeader("Accept", options.ExpectedResponseFormat);
+                }
 
                 // POST request
                 if (options.Method != HttpMethod.Get && options.Payload != null)
@@ -796,7 +834,9 @@ namespace Rext
                             {
                                 var row = i.Split('=');
                                 if (row.Length == 2) // check index to avoid null
+                                {
                                     mpfDataBucket.Add(new StringContent(row[1]), row[0]);
+                                }
                             }
 
                             requestMsg.Content = mpfDataBucket;
@@ -811,11 +851,17 @@ namespace Rext
                     {
                         // convert object to specified content-type
                         if (options.ContentType == ContentType.Application_JSON)
+                        {
                             strPayload = options.Payload.ToJson(ConfigurationBundle.HttpConfiguration?.JsonSerializerSettings);
+                        }
                         else if (options.ContentType == ContentType.Application_XML)
+                        {
                             strPayload = options.Payload.ToXml(ConfigurationBundle.HttpConfiguration?.DefaultXmlEncoding);
+                        }
                         else
+                        {
                             strPayload = options.Payload.ToString();
+                        }
 
                         requestMsg.Content = new StringContent(strPayload, Encoding.UTF8, options.ContentType);
                     }
@@ -833,18 +879,38 @@ namespace Rext
                 if (options.HttpCompletionOption.HasValue)
                 {
                     if (ConfigurationBundle.HttpConfiguration.HttpCompletionOption != options.HttpCompletionOption.Value)
+                    {
                         httpCompletionOption = options.HttpCompletionOption.Value;
+                    }
                 }
 
                 response = await this.Client.SendAsync(requestMsg, httpCompletionOption, CancellationToken.None).ConfigureAwait(false);
 
                 // set watch value to public member
-                if (ConfigurationBundle.EnableStopwatch) Stopwatch.Stop();
+                if (ConfigurationBundle.EnableStopwatch)
+                {
+                    Stopwatch.Stop();
+                }
 
 
-                // handle resiliency policies
-                var resiliencyOption = options?.ResiliencyPolicies ?? ConfigurationBundle.ResiliencyPolicies;
-                if (policy != null || (resiliencyOption != null && resiliencyOption.Any()))
+                #region handle resiliency policies
+                List<ResiliencyPolicy> resiliencyPolicies = null;
+                if (ConfigurationBundle.MergeResiliencyPoliciesAddedFromExtension)
+                {
+                    // merge global and local policies
+                    if (this.ResiliencyPolicies != null && this.ResiliencyPolicies.Any())
+                    {
+                        resiliencyPolicies = ConfigurationBundle.ResiliencyPolicies;
+                        resiliencyPolicies.AddRange(ResiliencyPolicies);
+                    }
+                }
+                else
+                {
+                    // override global policies
+                    resiliencyPolicies = ResiliencyPolicies ?? ConfigurationBundle.ResiliencyPolicies;
+                }
+
+                if (policy != null || (resiliencyPolicies != null && resiliencyPolicies.Any()))
                 {
                     policy ??= ConfigurationBundle.ResiliencyPolicies.FirstOrDefault(a => (a.StatusCodes.Contains((int)response.StatusCode) || a.StatusCode == (int)response.StatusCode) &&
                     (options?.IgnoreStatusCodeInResiliencyPolicies != null &&
@@ -864,7 +930,7 @@ namespace Rext
                         }
                     }
                 }
-
+                #endregion
 
                 rsp.StatusCode = response.StatusCode;
                 rsp.Retries = retryCount;
@@ -879,7 +945,9 @@ namespace Rext
                     }
                 }
                 else
+                {
                     responseString = await response.Content.ReadAsStringAsync();
+                }
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -893,18 +961,27 @@ namespace Rext
                     // perform checks for neccessary override
                     bool throwExIfNotSuccessRsp = options.ThrowExceptionIfNotSuccessResponse ?? ConfigurationBundle.HttpConfiguration.ThrowExceptionIfNotSuccessResponse;
                     if (throwExIfNotSuccessRsp)
+                    {
                         throw new RextException($"Server response is {rsp.StatusCode}");
+                    }
 
                     if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
                         rsp.Content = $"Url not found: {requestMsg.RequestUri}";
+                    }
                     else
+                    {
                         rsp.Content = responseString;
+                    }
+
                     rsp.Message = "Http call completed but not successful";
 
                     // handle code specific error from user
                     int code = (int)response.StatusCode;
                     if (code > 0 && ConfigurationBundle.StatusCodesToHandle != null && ConfigurationBundle.StatusCodesToHandle.Contains(code))
+                    {
                         ConfigurationBundle.OnStatusCode?.Invoke(ReturnStatusCode);
+                    }
                 }
 
                 // execute all user actions post-call
@@ -924,11 +1001,17 @@ namespace Rext
                 if (ConfigurationBundle.SuppressRextExceptions)
                 {
                     if (ex?.Message.ToLower().Contains("a socket operation was attempted to an unreachable host") == true)
+                    {
                         rsp.Message = "Network connection error";
+                    }
                     else if (ex?.Message.ToLower().Contains("the character set provided in contenttype is invalid") == true)
+                    {
                         rsp.Message = "Invald response ContentType. If you are expecting a Stream response then set RextOptions.IsStreamResponse=true";
+                    }
                     else
+                    {
                         rsp.Message = ex?.Message; //{ex?.InnerException?.Message ?? ex?.InnerException?.Message}";
+                    }
 
                     return rsp;
                 }
