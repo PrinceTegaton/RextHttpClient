@@ -985,7 +985,7 @@ namespace Rext
                 }
 
                 // execute all user actions post-call
-                ConfigurationBundle.AfterCall?.Invoke();
+                ConfigurationBundle.AfterCall?.Invoke(uri.ToString(), rsp);
                 return rsp;
             }
             catch (Exception ex)
