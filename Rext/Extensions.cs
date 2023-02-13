@@ -35,7 +35,10 @@ namespace Rext
         /// <returns></returns>
         public static IRextHttpClient SetTimeout(this IRextHttpClient client, int timeoutInSeconds)
         {
-            client.Timeout = TimeSpan.FromSeconds(timeoutInSeconds);
+            if (timeoutInSeconds > 0)
+            {
+                client.Timeout = TimeSpan.FromSeconds(timeoutInSeconds);
+            }
             return client;
         }
 
@@ -47,7 +50,10 @@ namespace Rext
         /// <returns></returns>
         public static IRextHttpClient SetTimeout(this IRextHttpClient client, TimeSpan timeout)
         {
-            client.Timeout = timeout;
+            if (timeout.TotalSeconds > 0)
+            {
+                client.Timeout = timeout;
+            }
             return client;
         }
     }
