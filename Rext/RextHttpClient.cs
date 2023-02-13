@@ -16,12 +16,13 @@ namespace Rext
     /// </summary>
     public class RextHttpClient : IRextHttpClient, IDisposable
     {
+        #region LOCAL PROPS
         //bool disposed = false;
 
         /// <summary>
         /// Default HttpClient object
         /// </summary>
-        private readonly HttpClient Client;
+        private HttpClient Client;
 
         /// <summary>
         /// Rext global configuration object
@@ -49,6 +50,14 @@ namespace Rext
         public Stopwatch Stopwatch { get; private set; }
 
         /// <summary>
+        /// Set request timeout
+        /// </summary>
+        public TimeSpan? Timeout { get; set; }
+        #endregion
+
+
+
+        /// <summary>
         /// Initialize a new instance of the <see cref="RextHttpClient"/> class with configuration
         /// </summary>
         /// <param name="configuration"></param>
@@ -71,6 +80,12 @@ namespace Rext
             if (ConfigurationBundle.HttpConfiguration.Timeout > 0)
             {
                 this.Client.Timeout = TimeSpan.FromSeconds(ConfigurationBundle.HttpConfiguration.Timeout);
+            }
+
+            // override from extension
+            if (this.Timeout.HasValue)
+            {
+                this.Client.Timeout = this.Timeout.Value;
             }
         }
 
