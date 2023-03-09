@@ -55,7 +55,8 @@ namespace Rext
         /// <summary>
         /// Execute action after any http call
         /// </summary>
-        public Action AfterCall { get; set; }
+        /// <remarks>Url and Response are available</remarks>
+        public Action<string, CustomHttpResponse> AfterCall { get; set; }
 
         /// <summary>
         /// Execute action when an exception is thrown by RextHttpClient

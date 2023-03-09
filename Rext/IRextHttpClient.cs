@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -23,6 +24,13 @@ namespace Rext
         /// Get execution time of the http call when configured to run
         /// </summary>
         Stopwatch Stopwatch { get; }
+
+        /// <summary>
+        /// Set request timeout
+        /// </summary>
+        TimeSpan? Timeout { get; set; }
+
+
 
         /// <summary>
         /// Put JSON content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType

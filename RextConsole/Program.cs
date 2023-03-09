@@ -77,7 +77,7 @@ namespace RextConsole
                     {
                         Console.WriteLine("---About to initiate http task");
                     };
-                    opt.AfterCall = delegate ()
+                    opt.AfterCall = delegate (string url, CustomHttpResponse rsp)
                     {
                         Console.WriteLine("---End of http task");
                     };
