@@ -72,7 +72,6 @@ namespace Rext
 
                     return customHandler;
                 }
-
             }
 
             return customHandler;

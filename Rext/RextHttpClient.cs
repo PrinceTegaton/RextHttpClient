@@ -22,7 +22,7 @@ namespace Rext
         /// <summary>
         /// Default HttpClient object
         /// </summary>
-        private HttpClient Client;
+        private readonly HttpClient Client;
 
         /// <summary>
         /// Rext global configuration object
@@ -61,7 +61,8 @@ namespace Rext
         /// Initialize a new instance of the <see cref="RextHttpClient"/> class with configuration
         /// </summary>
         /// <param name="configuration"></param>
-        public RextHttpClient(RextHttpCongifuration configuration = null)
+        /// <param name="httpClient"></param>
+        public RextHttpClient(RextHttpCongifuration configuration = null, HttpClient httpClient = null)
         {
             if (configuration != null)
             {
@@ -75,7 +76,7 @@ namespace Rext
                 httpClientHandler = CustomHttpClientHandler.CreateHandler(configuration.ProxyAddress, configuration.RelaxSslCertValidation, configuration.Certificate);
             }
 
-            this.Client = ConfigurationBundle.HttpClient ?? new HttpClient(httpClientHandler);
+            this.Client ??= httpClient ?? ConfigurationBundle.HttpClient ?? new HttpClient(httpClientHandler);
 
             if (ConfigurationBundle.HttpConfiguration.Timeout > 0)
             {
@@ -723,20 +724,23 @@ namespace Rext
                     }
                     else
                     {
-                        if (newRsp.StatusCode != System.Net.HttpStatusCode.OK && !deserializeSuccessOnly)
+                        if(newRsp.StatusCode != System.Net.HttpStatusCode.NotFound)
                         {
-                            newRsp.Message = $"Type deserialization failed: To prevent deserialization of unsuccessful response types, set DeserializeSuccessResponseOnly=true";
-
-                            if (throwExOnFail)
+                            if (newRsp.StatusCode != System.Net.HttpStatusCode.OK && !deserializeSuccessOnly)
                             {
-                                throw new RextException(newRsp.Message + " ---> To prevent deserialization of unsuccessful response types, set DeserializeSuccessResponseOnly = true");
-                            }
+                                newRsp.Message = $"Type deserialization failed: To prevent deserialization of unsuccessful response types, set DeserializeSuccessResponseOnly=true";
 
-                            return newRsp;
-                        }
-                        else
-                        {
-                            newRsp.Message = output.message;
+                                if (throwExOnFail)
+                                {
+                                    throw new RextException(newRsp.Message + " --> To prevent deserialization of unsuccessful response types, set DeserializeSuccessResponseOnly = true");
+                                }
+
+                                return newRsp;
+                            }
+                            else
+                            {
+                                newRsp.Message = output.message;
+                            }
                         }
                     }
                 }
