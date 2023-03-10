@@ -69,25 +69,24 @@ namespace Rext
             // prevent global override from local instance configuration values
             _localConfigurationBundle = new RextConfigurationBundle
             {
-                HttpClient = _localConfigurationBundle.HttpClient,
-                HttpConfiguration = configuration ?? _localConfigurationBundle.HttpConfiguration ?? new RextHttpCongifuration(),
-                EnableStopwatch = _localConfigurationBundle.EnableStopwatch,
-                BeforeCall = _localConfigurationBundle.BeforeCall,
-                AfterCall = _localConfigurationBundle.AfterCall,
-                MergeResiliencyPoliciesAddedFromExtension = _localConfigurationBundle.MergeResiliencyPoliciesAddedFromExtension,
-                OnStatusCode = _localConfigurationBundle.OnStatusCode,
-                StatusCodesToHandle = _localConfigurationBundle.StatusCodesToHandle,
-                ResiliencyPolicies = _localConfigurationBundle.ResiliencyPolicies,
-                OnError = _localConfigurationBundle.OnError,
-                SuppressRextExceptions = _localConfigurationBundle.SuppressRextExceptions
+                HttpClient = ConfigurationBundle.HttpClient,
+                HttpConfiguration = configuration ?? ConfigurationBundle.HttpConfiguration ?? new RextHttpCongifuration(),
+                EnableStopwatch = ConfigurationBundle.EnableStopwatch,
+                BeforeCall = ConfigurationBundle.BeforeCall,
+                AfterCall = ConfigurationBundle.AfterCall,
+                MergeResiliencyPoliciesAddedFromExtension = ConfigurationBundle.MergeResiliencyPoliciesAddedFromExtension,
+                OnStatusCode = ConfigurationBundle.OnStatusCode,
+                StatusCodesToHandle = ConfigurationBundle.StatusCodesToHandle,
+                ResiliencyPolicies = ConfigurationBundle.ResiliencyPolicies,
+                OnError = ConfigurationBundle.OnError,
+                SuppressRextExceptions = ConfigurationBundle.SuppressRextExceptions
             };
 
             // create httpclient from proxy handler
-            HttpClientHandler httpClientHandler = new HttpClientHandler();
-            if (configuration != null)
-            {
-                httpClientHandler = CustomHttpClientHandler.CreateHandler(configuration.ProxyAddress, configuration.RelaxSslCertValidation, configuration.Certificate);
-            }
+            HttpClientHandler httpClientHandler = CustomHttpClientHandler.CreateHandler(
+                    _localConfigurationBundle.HttpConfiguration.ProxyAddress,
+                    _localConfigurationBundle.HttpConfiguration.RelaxSslCertValidation,
+                    _localConfigurationBundle.HttpConfiguration.Certificate);
 
             this.Client ??= httpClient ?? _localConfigurationBundle.HttpClient ?? new HttpClient(httpClientHandler);
 
