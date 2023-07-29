@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text.Json;
 
 namespace Rext
 {
@@ -152,7 +152,7 @@ namespace Rext
         /// <summary>
         /// Configure JSON serializer settings
         /// </summary>
-        public JsonSerializerSettings JsonSerializerSettings { get; set; }
+        public JsonSerializerOptions JsonSerializerSettings { get; set; }
     }
 
     /// <summary>
