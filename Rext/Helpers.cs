@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -92,7 +91,7 @@ namespace Rext
             try
             {
                 // deserialize object to type T
-                var obj = JsonSerializer.Deserialize<T>(content);
+                var obj = JsonConvert.DeserializeObject<T>(content);
                 return (true, "OK", obj);
             }
             catch (Exception)
@@ -135,20 +134,19 @@ namespace Rext
             }
         }
 
-        public static string ToJson(this object value, JsonSerializerOptions jsonSerializerSettings = null)
+        public static string ToJson(this object value, JsonSerializerSettings jsonSerializerSettings = null)
         {
             if (value == null)
             {
                 return "{ }";
             }
 
-            jsonSerializerSettings ??= new JsonSerializerOptions
+            jsonSerializerSettings ??= new JsonSerializerSettings
             {
-                WriteIndented = true,
-                ReferenceHandler = ReferenceHandler.IgnoreCycles
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
 
-            return JsonSerializer.Serialize(value, jsonSerializerSettings);
+            return JsonConvert.SerializeObject(value, Newtonsoft.Json.Formatting.Indented, jsonSerializerSettings);
         }
 
         public static string ToXml(this object value, string encoding = "utf-8")

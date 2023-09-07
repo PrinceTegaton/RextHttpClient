@@ -27,16 +27,25 @@ namespace Rext
             if (relaxSslCertValidation)
                 customHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return relaxSslCertValidation; };
 
-
             // add certificate
+            if (certificateInfo != null)
+            {
+                return customHandler;
+            }
+
             System.Security.Cryptography.X509Certificates.X509Certificate2 cert;
 
             // create cert from certificate filepath.pfx
             if (!string.IsNullOrEmpty(certificateInfo.FilePath))
             {
-                cert = (!string.IsNullOrEmpty(certificateInfo.FilePath))
-                        ? new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateInfo.FilePath)
-                        : new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateInfo.FilePath, certificateInfo.Password);
+                if (string.IsNullOrEmpty(certificateInfo.Password))
+                {
+                    cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateInfo.FilePath);
+                }
+                else
+                {
+                    cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateInfo.FilePath, certificateInfo.Password);
+                }
 
                 customHandler.ClientCertificates.Add(cert);
             }
@@ -44,15 +53,22 @@ namespace Rext
             // create cert from certificate content bytes
             if (certificateInfo.CertificateBytes.Length > 0)
             {
-                cert = (string.IsNullOrEmpty(certificateInfo.Password))
-                    ? new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateInfo.CertificateBytes)
-                    : new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateInfo.CertificateBytes, certificateInfo.Password);
+                if (string.IsNullOrEmpty(certificateInfo.Password))
+                {
+                    cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateInfo.CertificateBytes);
+                }
+                else
+                {
+                    cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateInfo.CertificateBytes, certificateInfo.Password);
+                }
 
                 customHandler.ClientCertificates.Add(cert);
+
             }
 
             customHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
             return customHandler;
+
         }
     }
 }
