@@ -8,7 +8,7 @@ namespace Rext
     {
         public static HttpClientHandler CreateHandler(string proxyAddress = null, bool relaxSslCertValidation = false, CertificateInfo certificateInfo = null)
         {
-            HttpClientHandler customHandler = new HttpClientHandler();
+            var customHandler = new HttpClientHandler();
 
             if (!string.IsNullOrEmpty(proxyAddress))
             {
