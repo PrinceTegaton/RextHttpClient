@@ -56,6 +56,8 @@ namespace Rext
         #endregion
 
 
+        private readonly RextConfigurationBundle _localConfigurationBundle;
+
 
         /// <summary>
         /// Initialize a new instance of the <see cref="RextHttpClient"/> class with configuration
@@ -64,23 +66,33 @@ namespace Rext
         /// <param name="httpClient"></param>
         public RextHttpClient(RextHttpCongifuration configuration = null, HttpClient httpClient = null)
         {
-            if (configuration != null)
+            // prevent global override from local instance configuration values
+            _localConfigurationBundle = new RextConfigurationBundle
             {
-                ConfigurationBundle.HttpConfiguration = configuration;
-            }
+                HttpClient = ConfigurationBundle.HttpClient,
+                HttpConfiguration = configuration ?? ConfigurationBundle.HttpConfiguration ?? new RextHttpCongifuration(),
+                EnableStopwatch = ConfigurationBundle.EnableStopwatch,
+                BeforeCall = ConfigurationBundle.BeforeCall,
+                AfterCall = ConfigurationBundle.AfterCall,
+                MergeResiliencyPoliciesAddedFromExtension = ConfigurationBundle.MergeResiliencyPoliciesAddedFromExtension,
+                OnStatusCode = ConfigurationBundle.OnStatusCode,
+                StatusCodesToHandle = ConfigurationBundle.StatusCodesToHandle,
+                ResiliencyPolicies = ConfigurationBundle.ResiliencyPolicies,
+                OnError = ConfigurationBundle.OnError,
+                SuppressRextExceptions = ConfigurationBundle.SuppressRextExceptions
+            };
 
             // create httpclient from proxy handler
-            HttpClientHandler httpClientHandler = new HttpClientHandler();
-            if (configuration != null)
-            {
-                httpClientHandler = CustomHttpClientHandler.CreateHandler(configuration.ProxyAddress, configuration.RelaxSslCertValidation, configuration.Certificate);
-            }
+            HttpClientHandler httpClientHandler = CustomHttpClientHandler.CreateHandler(
+                    _localConfigurationBundle.HttpConfiguration.ProxyAddress,
+                    _localConfigurationBundle.HttpConfiguration.RelaxSslCertValidation,
+                    _localConfigurationBundle.HttpConfiguration.Certificate);
 
-            this.Client ??= httpClient ?? ConfigurationBundle.HttpClient ?? new HttpClient(httpClientHandler);
+            this.Client ??= httpClient ?? _localConfigurationBundle.HttpClient ?? new HttpClient(httpClientHandler);
 
-            if (ConfigurationBundle.HttpConfiguration.Timeout > 0)
+            if (_localConfigurationBundle.HttpConfiguration.Timeout > 0)
             {
-                this.Client.Timeout = TimeSpan.FromSeconds(ConfigurationBundle.HttpConfiguration.Timeout);
+                this.Client.Timeout = TimeSpan.FromSeconds(_localConfigurationBundle.HttpConfiguration.Timeout);
             }
 
             // override from extension
@@ -700,7 +712,7 @@ namespace Rext
                 Content = rsp.Content
             };
 
-            bool deserializeSuccessOnly = options?.DeserializeSuccessResponseOnly ?? ConfigurationBundle.HttpConfiguration.DeserializeSuccessResponseOnly;
+            bool deserializeSuccessOnly = options?.DeserializeSuccessResponseOnly ?? _localConfigurationBundle.HttpConfiguration.DeserializeSuccessResponseOnly;
 
             if (!string.IsNullOrEmpty(rsp.Content) && (newRsp.StatusCode == System.Net.HttpStatusCode.OK || !deserializeSuccessOnly))
             {
@@ -754,7 +766,7 @@ namespace Rext
             // validate essential params
             if (string.IsNullOrEmpty(options.Url))
             {
-                if (string.IsNullOrEmpty(ConfigurationBundle.HttpConfiguration.BaseUrl))
+                if (string.IsNullOrEmpty(_localConfigurationBundle.HttpConfiguration.BaseUrl))
                     throw new ArgumentNullException(nameof(options.Url), $"{nameof(options.Url)} is required. Provide fully qualified api endpoint.");
                 else
                     throw new ArgumentNullException(nameof(options.Url), $"{nameof(options.Url)} is required. Provide the other part of api endpoint to match the BaseUrl.");
@@ -771,7 +783,7 @@ namespace Rext
 
 
             // execute all user actions pre-call
-            ConfigurationBundle.BeforeCall?.Invoke();
+            _localConfigurationBundle.BeforeCall?.Invoke();
 
             var rsp = new CustomHttpResponse<string>();
             var response = new HttpResponseMessage();
@@ -779,7 +791,7 @@ namespace Rext
 
             try
             {
-                Uri uri = options.CreateUri(ConfigurationBundle.HttpConfiguration.BaseUrl);
+                Uri uri = options.CreateUri(_localConfigurationBundle.HttpConfiguration.BaseUrl);
                 if (uri == null)
                     throw new UriFormatException("Invalid request Uri");
 
@@ -792,9 +804,9 @@ namespace Rext
                 if (options.Header != null)
                     requestMsg.SetHeader(options.Header);
 
-                if (ConfigurationBundle.HttpConfiguration.Header != null)
-                    requestMsg.SetHeader(ConfigurationBundle.HttpConfiguration.Header);
-
+                if (_localConfigurationBundle.HttpConfiguration.Header != null)
+                   requestMsg.SetHeader(_localConfigurationBundle.HttpConfiguration.Header);
+                
                 if (!string.IsNullOrEmpty(options.ContentType))
                     requestMsg.SetHeader("Accept", options.ExpectedResponseFormat);
 
@@ -832,11 +844,11 @@ namespace Rext
                         // convert object to specified content-type
                         if (options.ContentType == ContentType.Application_JSON)
                         {
-                            strPayload = options.Payload.ToJson(ConfigurationBundle.HttpConfiguration?.JsonSerializerSettings);
+                            strPayload = options.Payload.ToJson(_localConfigurationBundle.HttpConfiguration?.JsonSerializerSettings);
                         }
                         else if (options.ContentType == ContentType.Application_XML)
                         {
-                            strPayload = options.Payload.ToXml(ConfigurationBundle.HttpConfiguration?.DefaultXmlEncoding);
+                            strPayload = options.Payload.ToXml(_localConfigurationBundle.HttpConfiguration?.DefaultXmlEncoding);
                         }
                         else
                         {
@@ -848,21 +860,21 @@ namespace Rext
                 }
 
                 // use stopwatch to monitor httpcall duration
-                if (ConfigurationBundle.EnableStopwatch)
+                if (_localConfigurationBundle.EnableStopwatch)
                 {
                     Stopwatch = new Stopwatch();
                     Stopwatch.Start();
                 }
 
                 // check if HttpCompletionOption option is used
-                HttpCompletionOption httpCompletionOption = ConfigurationBundle.HttpConfiguration.HttpCompletionOption;
-                if (options.HttpCompletionOption.HasValue && ConfigurationBundle.HttpConfiguration.HttpCompletionOption != options.HttpCompletionOption.Value)
+                HttpCompletionOption httpCompletionOption = _localConfigurationBundle.HttpConfiguration.HttpCompletionOption;
+                if (options.HttpCompletionOption.HasValue && _localConfigurationBundle.HttpConfiguration.HttpCompletionOption != options.HttpCompletionOption.Value)
                     httpCompletionOption = options.HttpCompletionOption.Value;
 
                 response = await this.Client.SendAsync(requestMsg, httpCompletionOption, CancellationToken.None).ConfigureAwait(false);
 
                 // set watch value to public member
-                if (ConfigurationBundle.EnableStopwatch)
+                if (_localConfigurationBundle.EnableStopwatch)
                 {
                     Stopwatch.Stop();
                 }
@@ -870,24 +882,24 @@ namespace Rext
 
                 #region handle resiliency policies
                 List<ResiliencyPolicy> resiliencyPolicies = null;
-                if (ConfigurationBundle.MergeResiliencyPoliciesAddedFromExtension)
+                if (_localConfigurationBundle.MergeResiliencyPoliciesAddedFromExtension)
                 {
                     // merge global and local policies
                     if (this.ResiliencyPolicies != null && this.ResiliencyPolicies.Any())
                     {
-                        resiliencyPolicies = ConfigurationBundle.ResiliencyPolicies;
+                        resiliencyPolicies = _localConfigurationBundle.ResiliencyPolicies;
                         resiliencyPolicies.AddRange(ResiliencyPolicies);
                     }
                 }
                 else
                 {
                     // override global policies
-                    resiliencyPolicies = ResiliencyPolicies ?? ConfigurationBundle.ResiliencyPolicies;
+                    resiliencyPolicies = ResiliencyPolicies ?? _localConfigurationBundle.ResiliencyPolicies;
                 }
 
                 if (policy != null || (resiliencyPolicies != null && resiliencyPolicies.Any()))
                 {
-                    policy ??= ConfigurationBundle.ResiliencyPolicies.FirstOrDefault(a => (a.StatusCodes.Contains((int)response.StatusCode) || a.StatusCode == (int)response.StatusCode) &&
+                    policy ??= _localConfigurationBundle.ResiliencyPolicies.FirstOrDefault(a => (a.StatusCodes.Contains((int)response.StatusCode) || a.StatusCode == (int)response.StatusCode) &&
                     (options?.IgnoreStatusCodeInResiliencyPolicies != null &&
                     !options.IgnoreStatusCodeInResiliencyPolicies.Contains((int)response.StatusCode)));
 
@@ -932,7 +944,7 @@ namespace Rext
                     // this will always run before custom error-code actions
                     // always set ThrowExceptionIfNotSuccessResponse=false if you will use custom error-code actions
                     // perform checks for neccessary override
-                    bool throwExIfNotSuccessRsp = options.ThrowExceptionIfNotSuccessResponse ?? ConfigurationBundle.HttpConfiguration.ThrowExceptionIfNotSuccessResponse;
+                    bool throwExIfNotSuccessRsp = options.ThrowExceptionIfNotSuccessResponse ?? _localConfigurationBundle.HttpConfiguration.ThrowExceptionIfNotSuccessResponse;
                     if (throwExIfNotSuccessRsp)
                         throw new RextException($"Server response is {rsp.StatusCode}");
 
@@ -946,18 +958,18 @@ namespace Rext
 
                     // handle code specific error from user
                     int code = (int)response.StatusCode;
-                    if (code > 0 && ConfigurationBundle.StatusCodesToHandle != null && ConfigurationBundle.StatusCodesToHandle.Contains(code))
-                        ConfigurationBundle.OnStatusCode?.Invoke(ReturnStatusCode);
+                    if (code > 0 && _localConfigurationBundle.StatusCodesToHandle != null && _localConfigurationBundle.StatusCodesToHandle.Contains(code))
+                        _localConfigurationBundle.OnStatusCode?.Invoke(ReturnStatusCode);
                 }
 
                 // execute all user actions post-call
-                ConfigurationBundle.AfterCall?.Invoke(uri.ToString(), rsp);
+                _localConfigurationBundle.AfterCall?.Invoke(uri.ToString(), rsp);
                 return rsp;
             }
             catch (Exception ex)
             {
                 // execute all user actions on error
-                ConfigurationBundle.OnError?.Invoke();
+                _localConfigurationBundle.OnError?.Invoke();
 
                 if (ex is UriFormatException)
                     throw;
