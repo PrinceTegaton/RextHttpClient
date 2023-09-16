@@ -39,15 +39,15 @@ Safely handles request with JSON, XML and Form Data.</Description>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="ReadMe.txt">
       <PackagePath>\</PackagePath>
       <Pack>true</Pack>
     </Content>
     <None Include="License.txt" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
 </Project>

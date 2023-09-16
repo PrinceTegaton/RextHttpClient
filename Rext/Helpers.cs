@@ -13,47 +13,37 @@ namespace Rext
 {
     internal static class Helpers
     {
+
         public static Uri CreateUri(this RextOptions options, string baseUrl = null)
         {
-            // construct uri
-            string url = string.Empty;
-            string queryString = string.Empty;
-
+            // Validate the URL format if baseUrl is provided
             if (!string.IsNullOrEmpty(baseUrl))
             {
                 if (options.Url.StartsWith("http://") || options.Url.StartsWith("https://"))
-                {
-                    throw new UriFormatException("Invalid url format. When using BaseUrl you only have to supply the url part");
-                }
-
-                // trim / from end and start to avoid double / in url
-                url = $"{baseUrl.TrimEnd('/')}/{options.Url.TrimStart('/')}";
+                    throw new UriFormatException("Invalid URL format. When using baseUrl, only supply the URL part.");
+                
+                options.Url = $"{baseUrl.TrimEnd('/')}/{options.Url.TrimStart('/')}";
             }
-            else
+
+            // Validate the URL scheme
+            if (!options.Url.StartsWith("http://") && !options.Url.StartsWith("https://"))
             {
-                // use options.Url
-                url = options.Url;
+                throw new UriFormatException("Invalid URL format. URL scheme is required, e.g., HTTP or HTTPS.");
             }
 
-            if (!url.StartsWith("http"))
-            {
-                throw new UriFormatException("Invalid url format. Url scheme is required e.g. HTTP or HTTPS");
-            }
-
-            // generate querystring from object if GET
+            // Generate the query string for GET requests
+            string queryString = string.Empty;
             if (options.Method == HttpMethod.Get && options.Payload != null)
-            {
                 queryString = options.Payload.ToQueryString();
-            }
 
-            Uri uri = new Uri(url);
+
+            // Combine the base URL and query string to create the final URI
+            Uri uri = new Uri(options.Url);
 
             string port = uri.Port > 0 ? ":" + uri.Port : string.Empty;
             if (!string.IsNullOrEmpty(uri.Query) && !string.IsNullOrEmpty(queryString))
-            {
                 queryString = $"&{queryString?.TrimStart('?')}";
-            }
-
+           
             uri = new Uri($"{uri.Scheme}://{uri.Host}{port}{uri.PathAndQuery}{queryString}");
 
             return uri;

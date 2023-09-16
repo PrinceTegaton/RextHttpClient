@@ -714,53 +714,40 @@ namespace Rext
 
             bool deserializeSuccessOnly = options?.DeserializeSuccessResponseOnly ?? _localConfigurationBundle.HttpConfiguration.DeserializeSuccessResponseOnly;
 
-            if (newRsp.StatusCode == System.Net.HttpStatusCode.OK || !deserializeSuccessOnly)
+            if (!string.IsNullOrEmpty(rsp.Content) && (newRsp.StatusCode == System.Net.HttpStatusCode.OK || !deserializeSuccessOnly))
             {
-                if (!string.IsNullOrEmpty(rsp.Content))
+                bool throwExOnFail = options.ThrowExceptionOnDeserializationFailure ?? ConfigurationBundle.HttpConfiguration.ThrowExceptionOnDeserializationFailure;
+                (bool status, string message, T result) output = (false, null, default(T));
+
+                if (options.ExpectedResponseFormat == ContentType.Application_JSON)
                 {
-                    bool throwExOnFail = options.ThrowExceptionOnDeserializationFailure ?? _localConfigurationBundle.HttpConfiguration.ThrowExceptionOnDeserializationFailure;
-                    (bool status, string message, T result) output = (false, null, default(T));
+                    output = Helpers.DeserializeJSON<T>(rsp.Content, throwExOnFail);
+                }
+                else if (options.ExpectedResponseFormat == ContentType.Application_XML)
+                {
+                    output = Helpers.DeserializeXML<T>(rsp.Content, throwExOnFail);
+                }
 
-                    if (options.ExpectedResponseFormat == ContentType.Application_JSON)
-                    {
-                        output = Helpers.DeserializeJSON<T>(rsp.Content, throwExOnFail);
-                    }
-                    else if (options.ExpectedResponseFormat == ContentType.Application_XML)
-                    {
-                        output = Helpers.DeserializeXML<T>(rsp.Content, throwExOnFail);
-                    }
+                if (output.status)
+                    newRsp.Data = output.result;
+                else
+                    if (newRsp.StatusCode != System.Net.HttpStatusCode.OK && !deserializeSuccessOnly)
+                {
+                    newRsp.Message = $"Type deserialization failed: To prevent deserialization of unsuccessful response types, set DeserializeSuccessResponseOnly=true";
 
-                    if (output.status)
-                    {
-                        newRsp.Data = output.result;
-                    }
-                    else
-                    {
-                        if (newRsp.StatusCode != System.Net.HttpStatusCode.NotFound)
-                        {
-                            if (newRsp.StatusCode != System.Net.HttpStatusCode.OK && !deserializeSuccessOnly)
-                            {
-                                newRsp.Message = $"Type deserialization failed: To prevent deserialization of unsuccessful response types, set DeserializeSuccessResponseOnly=true";
+                    if (throwExOnFail)
+                        throw new RextException(newRsp.Message + " --> To prevent deserialization of unsuccessful response types, set DeserializeSuccessResponseOnly = true");
 
-                                if (throwExOnFail)
-                                {
-                                    throw new RextException(newRsp.Message + " --> To prevent deserialization of unsuccessful response types, set DeserializeSuccessResponseOnly = true");
-                                }
-
-                                return newRsp;
-                            }
-                            else
-                            {
-                                newRsp.Message = output.message;
-                            }
-                        }
-                    }
+                    return newRsp;
+                }
+                else
+                {
+                    newRsp.Message = output.message;
                 }
             }
             else
-            {
                 newRsp.Message += " --> To allow deserialization even when response status code is not successful, set DeserializeSuccessResponseOnly = false";
-            }
+
 
             return newRsp;
         }
@@ -774,37 +761,25 @@ namespace Rext
             int retryCount = 0;
         start:
             if (this.Client == null)
-            {
                 throw new ArgumentNullException("HttpClient object cannot be null");
-            }
 
             // validate essential params
             if (string.IsNullOrEmpty(options.Url))
             {
                 if (string.IsNullOrEmpty(_localConfigurationBundle.HttpConfiguration.BaseUrl))
-                {
                     throw new ArgumentNullException(nameof(options.Url), $"{nameof(options.Url)} is required. Provide fully qualified api endpoint.");
-                }
                 else
-                {
                     throw new ArgumentNullException(nameof(options.Url), $"{nameof(options.Url)} is required. Provide the other part of api endpoint to match the BaseUrl.");
-                }
             }
 
             if (options.Method == null)
-            {
                 throw new ArgumentNullException(nameof(options.Method), $"{nameof(options.Method)} is required. Use GET, POST etc..");
-            }
 
             if (string.IsNullOrEmpty(options.ContentType))
-            {
-                throw new ArgumentNullException(nameof(options.ContentType), $"{nameof(options.ContentType) } is required. Use application/json, text.plain etc..");
-            }
+                throw new ArgumentNullException(nameof(options.ContentType), $"{nameof(options.ContentType)} is required. Use application/json, text.plain etc..");
 
             if (string.IsNullOrEmpty(options.ExpectedResponseFormat))
-            {
                 throw new ArgumentNullException(nameof(options.ExpectedResponseFormat), $"{nameof(options.ExpectedResponseFormat)} is required. Use application/json, text.plain etc..");
-            }
 
 
             // execute all user actions pre-call
@@ -818,65 +793,51 @@ namespace Rext
             {
                 Uri uri = options.CreateUri(_localConfigurationBundle.HttpConfiguration.BaseUrl);
                 if (uri == null)
-                {
                     throw new UriFormatException("Invalid request Uri");
-                }
 
                 var requestMsg = new HttpRequestMessage(options.Method, uri);
 
                 // set header if object has value
                 if (this.Headers != null)
-                {
                     requestMsg.SetHeader(this.Headers);
-                }
 
                 if (options.Header != null)
-                {
                     requestMsg.SetHeader(options.Header);
-                }
 
                 if (_localConfigurationBundle.HttpConfiguration.Header != null)
-                {
-                    requestMsg.SetHeader(_localConfigurationBundle.HttpConfiguration.Header);
-                }
-
+                   requestMsg.SetHeader(_localConfigurationBundle.HttpConfiguration.Header);
+                
                 if (!string.IsNullOrEmpty(options.ContentType))
-                {
                     requestMsg.SetHeader("Accept", options.ExpectedResponseFormat);
-                }
 
                 // POST request
                 if (options.Method != HttpMethod.Get && options.Payload != null)
                 {
                     string strPayload = string.Empty;
 
-                    if (options.IsForm)
+                    if (options.IsForm && !options.IsUrlEncoded)
                     {
                         strPayload = options.Payload.ToQueryString()?.TrimStart('?');
 
                         // form-data content post
-                        if (!options.IsUrlEncoded)
-                        {
-                            // handle multipart/form-data
-                            var formData = strPayload.Split('&');
-                            var mpfDataBucket = new MultipartFormDataContent();
-
-                            foreach (var i in formData)
-                            {
-                                var row = i.Split('=');
-                                if (row.Length == 2) // check index to avoid null
-                                {
-                                    mpfDataBucket.Add(new StringContent(row[1]), row[0]);
-                                }
-                            }
-
-                            requestMsg.Content = mpfDataBucket;
-                        }
-                        else
-                        {
+                        if (options.IsUrlEncoded)
                             // handle application/x-www-form-urlencoded
                             requestMsg.Content = new StringContent(strPayload, Encoding.UTF8, "application/x-www-form-urlencoded");
+                        
+                        // handle multipart/form-data
+                        var formData = strPayload.Split('&');
+                        var mpfDataBucket = new MultipartFormDataContent();
+
+                        foreach (var i in formData)
+                        {
+                            var row = i.Split('=');
+                            if (row.Length == 2) // check index to avoid null
+                            {
+                                mpfDataBucket.Add(new StringContent(row[1]), row[0]);
+                            }
                         }
+
+                        requestMsg.Content = mpfDataBucket;
                     }
                     else
                     {
@@ -907,13 +868,8 @@ namespace Rext
 
                 // check if HttpCompletionOption option is used
                 HttpCompletionOption httpCompletionOption = _localConfigurationBundle.HttpConfiguration.HttpCompletionOption;
-                if (options.HttpCompletionOption.HasValue)
-                {
-                    if (_localConfigurationBundle.HttpConfiguration.HttpCompletionOption != options.HttpCompletionOption.Value)
-                    {
-                        httpCompletionOption = options.HttpCompletionOption.Value;
-                    }
-                }
+                if (options.HttpCompletionOption.HasValue && _localConfigurationBundle.HttpConfiguration.HttpCompletionOption != options.HttpCompletionOption.Value)
+                    httpCompletionOption = options.HttpCompletionOption.Value;
 
                 response = await this.Client.SendAsync(requestMsg, httpCompletionOption, CancellationToken.None).ConfigureAwait(false);
 
@@ -947,19 +903,17 @@ namespace Rext
                     (options?.IgnoreStatusCodeInResiliencyPolicies != null &&
                     !options.IgnoreStatusCodeInResiliencyPolicies.Contains((int)response.StatusCode)));
 
-                    if (policy != null)
+                    if (policy != null && retryCount < policy.Retry)
                     {
-                        if (retryCount < policy.Retry)
+                        if (policy.Interval.HasValue)
                         {
-                            if (policy.Interval.HasValue)
-                            {
-                                await Task.Delay(policy.Interval.Value);
-                            }
-
-                            retryCount++;
-                            goto start;
+                            await Task.Delay(policy.Interval.Value);
                         }
+
+                        retryCount++;
+                        goto start;
                     }
+
                 }
                 #endregion
 
@@ -992,27 +946,20 @@ namespace Rext
                     // perform checks for neccessary override
                     bool throwExIfNotSuccessRsp = options.ThrowExceptionIfNotSuccessResponse ?? _localConfigurationBundle.HttpConfiguration.ThrowExceptionIfNotSuccessResponse;
                     if (throwExIfNotSuccessRsp)
-                    {
                         throw new RextException($"Server response is {rsp.StatusCode}");
-                    }
+
 
                     if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                    {
                         rsp.Content = $"Url not found: {requestMsg.RequestUri}";
-                    }
                     else
-                    {
                         rsp.Content = responseString;
-                    }
 
                     rsp.Message = "Http call completed but not successful";
 
                     // handle code specific error from user
                     int code = (int)response.StatusCode;
                     if (code > 0 && _localConfigurationBundle.StatusCodesToHandle != null && _localConfigurationBundle.StatusCodesToHandle.Contains(code))
-                    {
                         _localConfigurationBundle.OnStatusCode?.Invoke(ReturnStatusCode);
-                    }
                 }
 
                 // execute all user actions post-call
@@ -1025,31 +972,19 @@ namespace Rext
                 _localConfigurationBundle.OnError?.Invoke();
 
                 if (ex is UriFormatException)
-                {
                     throw;
-                }
 
-                if (_localConfigurationBundle.SuppressRextExceptions)
-                {
-                    if (ex?.Message.ToLower().Contains("a socket operation was attempted to an unreachable host") == true)
-                    {
-                        rsp.Message = "Network connection error";
-                    }
-                    else if (ex?.Message.ToLower().Contains("the character set provided in contenttype is invalid") == true)
-                    {
-                        rsp.Message = "Invald response ContentType. If you are expecting a Stream response then set RextOptions.IsStreamResponse=true";
-                    }
-                    else
-                    {
-                        rsp.Message = ex?.Message; //{ex?.InnerException?.Message ?? ex?.InnerException?.Message}";
-                    }
-
-                    return rsp;
-                }
-                else
-                {
+                if (!ConfigurationBundle.SuppressRextExceptions)
                     throw ex;
-                }
+
+                if (ex?.Message.ToLower().Contains("a socket operation was attempted to an unreachable host") == true)
+                    rsp.Message = "Network connection error";
+                else if (ex?.Message.ToLower().Contains("the character set provided in contenttype is invalid") == true)
+                    rsp.Message = "Invald response ContentType. If you are expecting a Stream response then set RextOptions.IsStreamResponse=true";
+                else
+                    rsp.Message = ex?.Message; //{ex?.InnerException?.Message ?? ex?.InnerException?.Message}";
+
+                return rsp;
             }
         }
 
