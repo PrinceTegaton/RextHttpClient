@@ -1,0 +1,50 @@
+html {
+    scroll-behavior: smooth;    
+}
+
+body {
+    /* font-size: 14px; */
+    margin-top: 55px !important;
+}
+
+.sidebar {
+    position: relative;
+}
+
+#navbar-side {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 70px;
+}
+
+.list-group-item.active {
+    background-color: orangered;
+    border-color: orangered;
+}
+
+.intro-section {
+    padding: 20px 10px;
+    background: rgb(82, 7, 7);
+    background: linear-gradient(50deg, rgba(82, 7, 7, 1) 0%, rgba(213, 61, 6, 1) 100%);
+    color: #fff;
+}
+
+.intro-section a {
+    color: white;
+}
+
+h4 {
+    border-left: 3px solid orangered;
+    padding-left: 10px;
+    margin: 15px 0;
+}
+
+.item-section {
+    margin: 40px 0;
+}
+
+/* Code blocks */
+
+pre[class*="language-"] {
+    padding: 0 15px;
+}

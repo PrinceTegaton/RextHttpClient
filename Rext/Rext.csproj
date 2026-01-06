@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net8.0;net10.0</TargetFrameworks>
+
+		<Authors>Otega Ovie</Authors>
+		<Company>Dynamic Brain Systems</Company>
+		<Product>Rext HttpClient Utility</Product>
+		<RepositoryUrl>https://github.com/princetegaton/RextHttpClient</RepositoryUrl>
+		<RepositoryType>Git</RepositoryType>
+		<PackageId>RextHttpClient</PackageId>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Description>
+			Rext is a simple HttpClient wrapper to speed up your api projects. Just plug and play.
+			Safely handles request with JSON, XML and Form Data.
+		</Description>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageReleaseNotes>Removed CustomHandler to allow users build and pass in HttpClient object from IHttpClientFactory to better manage lifecycles of connection and benefit from Client Factory upsides. Removed support for netstandard to focus on dotnet only. Allow overrides on all http methods.</PackageReleaseNotes>
+		<PackageTags>httplient, web-client, json, xml, form-data, encoded-form, api, http</PackageTags>
+		<PackageIconUrl>https://lh4.googleusercontent.com/YAGKZGub7P1vfgZY4yRoQhZSdqdWM06zXaOjw--7y7nD1O9rTvNPwvyC6wg7zRpx3w59E7sgd38seljRRdg=w1366-h365</PackageIconUrl>
+		<PackageIcon>rext_logo.png</PackageIcon>
+		<PackageProjectUrl>https://princetegaton.github.io/RextHttpClient</PackageProjectUrl>
+		<PackageLicenseFile>License.txt</PackageLicenseFile>
+		<AssemblyVersion>2.0.0</AssemblyVersion>
+		<FileVersion>2.0.0</FileVersion>
+		<Version>2.0.0-beta.1</Version>
+		<AssemblyName>RextHttpClient</AssemblyName>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="License.txt" />
+		<None Include="rext_logo.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="README.md">
+			<PackagePath>\</PackagePath>
+			<Pack>true</Pack>
+		</Content>
+		<None Include="License.txt" Pack="true" PackagePath="" />
+	</ItemGroup>
+</Project>
