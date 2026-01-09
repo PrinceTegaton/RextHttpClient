@@ -16,7 +16,7 @@ public class RextHttpClient : IRextHttpClient, IDisposable
     /// <summary>
     /// Rext global configuration object
     /// </summary>
-    public static RextConfigurationBundle ConfigurationBundle { get; set; } = new RextConfigurationBundle();
+    public static RextConfigurationBundle ConfigurationBundle { get; set; } = new();
 
     /// <summary>
     /// Last http call statuscode

@@ -82,9 +82,9 @@ namespace Rext.ApiSimulator.Controllers
             }
 
             AppDataset.Users.Remove(u);
-            AppDataset.Users.Add(u);
+            AppDataset.Users.Add(user);
 
-            return Ok(new Result<User>(u, "User updated"));
+            return Ok(new Result<User>(user, "User updated"));
         }
 
         [HttpPatch]
@@ -130,15 +130,15 @@ namespace Rext.ApiSimulator.Controllers
         }
 
         [HttpGet]
-        public IActionResult UnhandledError(int id)
+        public IActionResult HandledError()
         {
-            throw new Exception("This is an unhandled exception");
+            return StatusCode(500, "This is an unhandled exception");
         }
 
         [HttpGet]
-        public IActionResult HandledError(int id)
+        public IActionResult UnhandledError()
         {
-            return StatusCode(500, "This is an unhandled exception");
+            throw new Exception("This is an unhandled exception");
         }
     }
 }
