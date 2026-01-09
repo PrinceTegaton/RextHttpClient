@@ -84,14 +84,34 @@ internal static class Helpers
         return queryString;
     }
 
-    public static (bool status, string message, T result) DeserializeJSON<T>(string content, bool throwExceptionOnDeserializationFailure = false)
+    public static string ToJson(this object value, JsonSerializerOptions jsonSerializerOptions = null)
+    {
+        if (value == null)
+        {
+            return "{ }";
+        }
+
+        jsonSerializerOptions ??= new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            WriteIndented = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
+        return JsonSerializer.Serialize(value, jsonSerializerOptions);
+    }
+
+    public static (bool status, string message, T result) DeserializeJSON<T>(string content, bool throwExceptionOnDeserializationFailure = false, JsonSerializerOptions options = null)
     {
         try
         {
-            var obj = JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var obj = JsonSerializer.Deserialize<T>(content, options ??
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
             return (true, "OK", obj);
         }
         catch (Exception)
@@ -132,24 +152,6 @@ internal static class Helpers
                 return (false, msg, default(T)); // return failure message as required
             }
         }
-    }
-
-    public static string ToJson(this object value, JsonSerializerOptions jsonSerializerOptions = null)
-    {
-        if (value == null)
-        {
-            return "{ }";
-        }
-
-        jsonSerializerOptions ??= new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-
-        return JsonSerializer.Serialize(value, jsonSerializerOptions);
     }
 
     public static string ToXml(this object value, string encoding = "utf-8")

@@ -53,13 +53,13 @@ public class RextHttpClient : IRextHttpClient, IDisposable
     /// </summary>
     /// <param name="configuration"></param>
     /// <param name="httpClient"></param>
-    public RextHttpClient(RextHttpCongifuration configuration = null, HttpClient httpClient = null)
+    public RextHttpClient(RextHttpConfiguration configuration = null, HttpClient httpClient = null)
     {
         // prevent global override from local instance configuration values
         _localConfigurationBundle = new RextConfigurationBundle
         {
             HttpClient = ConfigurationBundle.HttpClient,
-            HttpConfiguration = configuration ?? ConfigurationBundle.HttpConfiguration ?? new RextHttpCongifuration(),
+            HttpConfiguration = configuration ?? ConfigurationBundle.HttpConfiguration ?? new RextHttpConfiguration(),
             EnableStopwatch = ConfigurationBundle.EnableStopwatch,
             BeforeCall = ConfigurationBundle.BeforeCall,
             AfterCall = ConfigurationBundle.AfterCall,
@@ -776,7 +776,7 @@ public class RextHttpClient : IRextHttpClient, IDisposable
 
         try
         {
-            Uri uri = options.CreateUri(_localConfigurationBundle.HttpConfiguration.BaseUrl);
+            Uri uri = options.CreateUri(Client.BaseAddress?.AbsoluteUri ?? _localConfigurationBundle.HttpConfiguration.BaseUrl);
             if (uri == null)
                 throw new UriFormatException("Invalid request Uri");
 

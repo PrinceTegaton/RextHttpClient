@@ -8,7 +8,7 @@ public class RextConfigurationBundle
     /// <summary>
     /// Configure httpclient and actions
     /// </summary>
-    public RextHttpCongifuration HttpConfiguration { get; set; } = new();
+    public RextHttpConfiguration HttpConfiguration { get; set; } = new();
 
     /// <summary>
     /// Create a custom client for usage. This will discard every setting in RextHttpCongifuration.HttpConfiguration
@@ -65,10 +65,10 @@ public class RextConfigurationBundle
 /// <summary>
 /// RextHttpCongifuration class
 /// </summary>
-public class RextHttpCongifuration
+public class RextHttpConfiguration
 {
     /// <summary>
-    /// Set the base url for every http call
+    /// Set the base url for every http call. HttpClient base address is prioritized over this value.
     /// </summary>
     public string BaseUrl { get; set; }
 

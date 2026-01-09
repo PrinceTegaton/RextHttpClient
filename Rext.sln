@@ -7,14 +7,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rext", "Rext\Rext.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RextConsole", "RextConsole\RextConsole.csproj", "{22364D7D-C6C2-4A0C-8B6C-F0CB90782B1B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RextAPISimulator", "RextAPISimulator\RextAPISimulator.csproj", "{B15D26D7-4807-4169-8E33-A1CA07CED34C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{44D923D0-2858-473E-86F7-22E8DECB951C}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rext.UnitTests", "Rext.UnitTests\Rext.UnitTests.csproj", "{9CFBB8AA-3AD0-472C-AF06-A39B3E5B4AA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rext.ApiSimulator", "Rext.ApiSimulator\Rext.ApiSimulator.csproj", "{8317675C-9E9B-4ED9-8B0A-DB66F4E04D31}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,14 +30,14 @@ Global
 		{22364D7D-C6C2-4A0C-8B6C-F0CB90782B1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22364D7D-C6C2-4A0C-8B6C-F0CB90782B1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22364D7D-C6C2-4A0C-8B6C-F0CB90782B1B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B15D26D7-4807-4169-8E33-A1CA07CED34C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B15D26D7-4807-4169-8E33-A1CA07CED34C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B15D26D7-4807-4169-8E33-A1CA07CED34C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B15D26D7-4807-4169-8E33-A1CA07CED34C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9CFBB8AA-3AD0-472C-AF06-A39B3E5B4AA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9CFBB8AA-3AD0-472C-AF06-A39B3E5B4AA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CFBB8AA-3AD0-472C-AF06-A39B3E5B4AA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CFBB8AA-3AD0-472C-AF06-A39B3E5B4AA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8317675C-9E9B-4ED9-8B0A-DB66F4E04D31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8317675C-9E9B-4ED9-8B0A-DB66F4E04D31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8317675C-9E9B-4ED9-8B0A-DB66F4E04D31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8317675C-9E9B-4ED9-8B0A-DB66F4E04D31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
