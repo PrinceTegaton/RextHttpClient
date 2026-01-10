@@ -30,6 +30,8 @@ public class CustomHttpResponse
     /// </summary>
     public int Retries { get; set; }
 
+    public IDictionary<string, string> Headers { get; internal set; }
+
     /// <summary>
     /// Handled exception data
     /// </summary>

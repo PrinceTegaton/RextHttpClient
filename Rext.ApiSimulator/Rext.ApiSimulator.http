@@ -1,0 +1,6 @@
+@Rext.ApiSimulator_HostAddress = http://localhost:5163
+
+GET {{Rext.ApiSimulator_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

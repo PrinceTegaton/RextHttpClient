@@ -26,7 +26,6 @@ public interface IRextHttpClient
     TimeSpan? Timeout { get; set; }
 
 
-
     /// <summary>
     /// Put JSON content for string result. Accepts advanced options. You can change request format with RextOptions.ContentType
     /// </summary>

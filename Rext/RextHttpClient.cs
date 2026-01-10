@@ -16,7 +16,7 @@ public class RextHttpClient : IRextHttpClient, IDisposable
     /// <summary>
     /// Rext global configuration object
     /// </summary>
-    public static RextConfigurationBundle ConfigurationBundle { get; set; } = new RextConfigurationBundle();
+    public static RextConfigurationBundle ConfigurationBundle { get; private set; } = new();
 
     /// <summary>
     /// Last http call statuscode
@@ -53,13 +53,13 @@ public class RextHttpClient : IRextHttpClient, IDisposable
     /// </summary>
     /// <param name="configuration"></param>
     /// <param name="httpClient"></param>
-    public RextHttpClient(RextHttpCongifuration configuration = null, HttpClient httpClient = null)
+    public RextHttpClient(RextHttpConfiguration configuration = null, HttpClient httpClient = null)
     {
         // prevent global override from local instance configuration values
         _localConfigurationBundle = new RextConfigurationBundle
         {
             HttpClient = ConfigurationBundle.HttpClient,
-            HttpConfiguration = configuration ?? ConfigurationBundle.HttpConfiguration ?? new RextHttpCongifuration(),
+            HttpConfiguration = configuration ?? ConfigurationBundle.HttpConfiguration ?? new RextHttpConfiguration(),
             EnableStopwatch = ConfigurationBundle.EnableStopwatch,
             BeforeCall = ConfigurationBundle.BeforeCall,
             AfterCall = ConfigurationBundle.AfterCall,
@@ -692,13 +692,14 @@ public class RextHttpClient : IRextHttpClient, IDisposable
         {
             StatusCode = rsp.StatusCode,
             Message = rsp.Message,
-            Content = rsp.Content
+            Content = rsp.Content,
+            Headers = rsp.Headers
         };
 
         bool deserializeSuccessOnly = options?.DeserializeSuccessResponseOnly ?? _localConfigurationBundle.HttpConfiguration.DeserializeSuccessResponseOnly;
 
-        if (!string.IsNullOrEmpty(rsp.Content) && 
-            (newRsp.StatusCode == HttpStatusCode.OK || 
+        if (!string.IsNullOrEmpty(rsp.Content) &&
+            (newRsp.StatusCode == HttpStatusCode.OK ||
             !deserializeSuccessOnly))
         {
             bool throwExOnFail = options.ThrowExceptionOnDeserializationFailure ?? ConfigurationBundle.HttpConfiguration.ThrowExceptionOnDeserializationFailure;
@@ -776,7 +777,7 @@ public class RextHttpClient : IRextHttpClient, IDisposable
 
         try
         {
-            Uri uri = options.CreateUri(_localConfigurationBundle.HttpConfiguration.BaseUrl);
+            Uri uri = options.CreateUri(Client.BaseAddress?.AbsoluteUri ?? _localConfigurationBundle.HttpConfiguration.BaseUrl);
             if (uri == null)
                 throw new UriFormatException("Invalid request Uri");
 
@@ -915,8 +916,34 @@ public class RextHttpClient : IRextHttpClient, IDisposable
             }
             else
             {
+
                 responseString = await response.Content.ReadAsStringAsync();
             }
+
+
+            // set header before reading body
+            // this allows response headers to be set even for failed requests
+            if (options.ReadResponseHeaders || _localConfigurationBundle.HttpConfiguration.ReadResponseHeaders)
+            {
+                rsp.Headers = new Dictionary<string, string>();
+
+                if (response.Headers.Any())
+                {
+                    foreach (var h in response.Headers)
+                    {
+                        rsp.Headers.TryAdd(h.Key, h.Value.FirstOrDefault());
+                    }
+                }
+
+                if (response.Content != null && response.Content.Headers.Any())
+                {
+                    foreach (var h in response.Content.Headers)
+                    {
+                        rsp.Headers.TryAdd(h.Key, h.Value.FirstOrDefault());
+                    }
+                }
+            }
+
 
             if (response.IsSuccessStatusCode)
             {
@@ -933,7 +960,7 @@ public class RextHttpClient : IRextHttpClient, IDisposable
                     throw new RextException($"Server response is {rsp.StatusCode}");
 
 
-                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                if (response.StatusCode == HttpStatusCode.NotFound)
                     rsp.Content = $"Url not found: {requestMsg.RequestUri}";
                 else
                     rsp.Content = responseString;

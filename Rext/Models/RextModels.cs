@@ -8,7 +8,7 @@ public class RextConfigurationBundle
     /// <summary>
     /// Configure httpclient and actions
     /// </summary>
-    public RextHttpCongifuration HttpConfiguration { get; set; } = new();
+    public RextHttpConfiguration HttpConfiguration { get; set; } = new();
 
     /// <summary>
     /// Create a custom client for usage. This will discard every setting in RextHttpCongifuration.HttpConfiguration
@@ -65,10 +65,10 @@ public class RextConfigurationBundle
 /// <summary>
 /// RextHttpCongifuration class
 /// </summary>
-public class RextHttpCongifuration
+public class RextHttpConfiguration
 {
     /// <summary>
-    /// Set the base url for every http call
+    /// Set the base url for every http call. HttpClient base address is prioritized over this value.
     /// </summary>
     public string BaseUrl { get; set; }
 
@@ -110,7 +110,12 @@ public class RextHttpCongifuration
     /// <summary>
     /// Configure JSON serializer settings
     /// </summary>
-    public System.Text.Json.JsonSerializerOptions JsonSerializerOptions { get; set; }
+    public JsonSerializerOptions JsonSerializerOptions { get; set; }
+
+    /// <summary>
+    /// Set if response headers should be made available for the caller
+    /// </summary>
+    public bool ReadResponseHeaders { get; set; }
 }
 
 /// <summary>
@@ -181,4 +186,9 @@ public class RextOptions
     /// Ignore certain status code set in resiliency policies
     /// </summary>
     public int[] IgnoreStatusCodeInResiliencyPolicies { get; set; } = Array.Empty<int>();
+
+    /// <summary>
+    /// Set if response headers should be made available for the caller
+    /// </summary>
+    public bool ReadResponseHeaders { get; set; }
 }
