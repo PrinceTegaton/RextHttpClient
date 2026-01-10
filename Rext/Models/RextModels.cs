@@ -110,7 +110,12 @@ public class RextHttpConfiguration
     /// <summary>
     /// Configure JSON serializer settings
     /// </summary>
-    public System.Text.Json.JsonSerializerOptions JsonSerializerOptions { get; set; }
+    public JsonSerializerOptions JsonSerializerOptions { get; set; }
+
+    /// <summary>
+    /// Set if response headers should be made available for the caller
+    /// </summary>
+    public bool ReadResponseHeaders { get; set; }
 }
 
 /// <summary>
@@ -181,4 +186,9 @@ public class RextOptions
     /// Ignore certain status code set in resiliency policies
     /// </summary>
     public int[] IgnoreStatusCodeInResiliencyPolicies { get; set; } = Array.Empty<int>();
+
+    /// <summary>
+    /// Set if response headers should be made available for the caller
+    /// </summary>
+    public bool ReadResponseHeaders { get; set; }
 }

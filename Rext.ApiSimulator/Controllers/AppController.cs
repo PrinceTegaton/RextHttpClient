@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Rext.ApiSimulator.Controllers
@@ -111,7 +110,7 @@ namespace Rext.ApiSimulator.Controllers
         }
 
         [HttpDelete]
-        public IActionResult DeleteUser(int id, string note)
+        public IActionResult Delete(int id, string note)
         {
             if (string.IsNullOrEmpty(note))
             {
@@ -139,6 +138,37 @@ namespace Rext.ApiSimulator.Controllers
         public IActionResult UnhandledError()
         {
             throw new Exception("This is an unhandled exception");
+        }
+
+        [HttpGet]
+        public IActionResult GetByHeaderInput([FromHeader]int id, [FromHeader]string fancyHeader)
+        {
+            if (id <= 0 || string.IsNullOrEmpty(fancyHeader))
+            {
+                return BadRequest(new Result("Id and FancyHeader are required"));
+            }
+
+            var u = AppDataset.Users.FirstOrDefault(a => a.Id == id);
+            if (u == null)
+            {
+                return BadRequest(new Result("User not found"));
+            }
+
+            return Ok(new Result<User>(u, fancyHeader));
+        }
+
+        [HttpGet]
+        public IActionResult GetByHeaderOutput(int id, string fancyHeader)
+        {
+            if (id <= 0 || string.IsNullOrEmpty(fancyHeader))
+            {
+                return BadRequest(new Result("Id and FancyHeader are required"));
+            }
+
+            Response.Headers.TryAdd("r-id", id.ToString());
+            Response.Headers.TryAdd("r-fancyHeader", fancyHeader);
+
+            return Ok(new Result("Response written to header"));
         }
     }
 }

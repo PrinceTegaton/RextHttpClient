@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-using Rext.ApiSimulator;
+﻿using Rext.ApiSimulator;
 using System.Net;
 
 namespace Rext.UnitTests
@@ -14,13 +13,27 @@ namespace Rext.UnitTests
             _client = factory.CreateClient();
             _client.BaseAddress = new Uri("https://localhost:7173/api/app");
 
-            _rext = new RextHttpClient(
-                configuration: new()
+            RextHttpClient.Setup(opt => 
+            {
+                opt.EnableStopwatch = true;
+                opt.HttpConfiguration = new()
                 {
                     ThrowExceptionIfNotSuccessResponse = true,
                     ThrowExceptionOnDeserializationFailure = true
-                },
-                httpClient: _client);
+                };
+                opt.HttpClient = _client;
+            });
+
+            _rext = new RextHttpClient();
+        }
+
+        [Fact]
+        public async Task GlobalConfigIntegrity()
+        {
+            Assert.Null(RextHttpClient.ConfigurationBundle.HttpConfiguration.BaseUrl);
+            Assert.True(RextHttpClient.ConfigurationBundle.HttpConfiguration.ThrowExceptionIfNotSuccessResponse);
+            Assert.True(RextHttpClient.ConfigurationBundle.HttpConfiguration.ThrowExceptionOnDeserializationFailure);
+            Assert.True(RextHttpClient.ConfigurationBundle.EnableStopwatch);
         }
 
         [Fact]
@@ -35,8 +48,6 @@ namespace Rext.UnitTests
         [Fact]
         public async Task UnhandledError_500()
         {
-            RextHttpClient.ConfigurationBundle.HttpConfiguration.ThrowExceptionIfNotSuccessResponse = true;
-
             var res = await _rext.GetString("unhandlederror");
             Assert.False(res.IsSuccess);
             Assert.Equal(HttpStatusCode.InternalServerError, res.StatusCode);
