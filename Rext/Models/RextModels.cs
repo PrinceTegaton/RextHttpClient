@@ -60,6 +60,11 @@ public class RextConfigurationBundle
     /// If true, policies added via extension will be merged with global configuration
     /// </summary>
     public bool MergeResiliencyPoliciesAddedFromExtension { get; set; } = true;
+
+    /// <summary>
+    /// Set custom JSON serializer options for this client. If not set, default options in RextHttpCongifuration.HttpConfiguration will be used
+    /// </summary>
+    public JsonSerializerOptions JsonSerializerOptions { get; set; }
 }
 
 /// <summary>
@@ -191,4 +196,9 @@ public class RextOptions
     /// Set if response headers should be made available for the caller
     /// </summary>
     public bool ReadResponseHeaders { get; set; }
+
+    /// <summary>
+    /// Forces the Content-Type header to be set on GET requests. This is not standard practice, but some APIs require it. Use with caution.
+    /// </summary>
+    public bool ForceContentTypeOnGetRequests { get; set; }
 }
