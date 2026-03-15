@@ -23,7 +23,7 @@
 		<PackageLicenseFile>License.txt</PackageLicenseFile>
 		<AssemblyVersion>2.0.0</AssemblyVersion>
 		<FileVersion>2.0.0</FileVersion>
-		<Version>2.0.0-beta.1</Version>
+		<Version>2.0.0-beta.2</Version>
 		<AssemblyName>RextHttpClient</AssemblyName>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
