@@ -71,7 +71,7 @@ public class RextHttpClient : IRextHttpClient, IDisposable
             ResiliencyPolicies = ConfigurationBundle.ResiliencyPolicies,
             OnError = ConfigurationBundle.OnError,
             SuppressRextExceptions = ConfigurationBundle.SuppressRextExceptions,
-            JsonSerializerOptions = configuration.JsonSerializerOptions,
+            JsonSerializerOptions = configuration?.JsonSerializerOptions,
         };
 
         this.Client = httpClient ?? _localConfigurationBundle.HttpClient ?? new HttpClient();
