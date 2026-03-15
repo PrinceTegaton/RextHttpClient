@@ -84,34 +84,21 @@ internal static class Helpers
         return queryString;
     }
 
-    public static string ToJson(this object value, JsonSerializerOptions jsonSerializerOptions = null)
+    public static string ToJson(this object value, JsonSerializerOptions options = null)
     {
         if (value == null)
         {
             return "{ }";
         }
 
-        jsonSerializerOptions ??= new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-
-        return JsonSerializer.Serialize(value, jsonSerializerOptions);
+        return JsonSerializer.Serialize(value, options ?? StaticObjects.JsonSerializerOptionsForRequestObjects);
     }
 
-    public static (bool status, string message, T result) DeserializeJSON<T>(string content, bool throwExceptionOnDeserializationFailure = false, JsonSerializerOptions options = null)
+    public static (bool status, string message, T result) DeserializeJson<T>(string content, bool throwExceptionOnDeserializationFailure = false, JsonSerializerOptions options = null)
     {
         try
         {
-            var obj = JsonSerializer.Deserialize<T>(content, options ??
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                });
+            var obj = JsonSerializer.Deserialize<T>(content, options ?? StaticObjects.JsonSerializerOptionsForResponseObjects);
             return (true, "OK", obj);
         }
         catch (Exception)
@@ -133,12 +120,10 @@ internal static class Helpers
         try
         {
             // deserialize object to type T
-            using (var stringReader = new StringReader(content))
-            {
-                var serializer = new XmlSerializer(typeof(T));
-                var obj = serializer.Deserialize(stringReader);
-                return (true, "OK", (T)obj);
-            }
+            using var stringReader = new StringReader(content);
+            var serializer = new XmlSerializer(typeof(T));
+            var obj = serializer.Deserialize(stringReader);
+            return (true, "OK", (T)obj);
         }
         catch (Exception)
         {

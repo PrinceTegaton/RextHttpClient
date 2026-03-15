@@ -1,4 +1,6 @@
-﻿namespace Rext;
+﻿using System.Reflection.Metadata;
+
+namespace Rext;
 
 ///<inheritdoc />
 /// <summary>
@@ -68,7 +70,8 @@ public class RextHttpClient : IRextHttpClient, IDisposable
             StatusCodesToHandle = ConfigurationBundle.StatusCodesToHandle,
             ResiliencyPolicies = ConfigurationBundle.ResiliencyPolicies,
             OnError = ConfigurationBundle.OnError,
-            SuppressRextExceptions = ConfigurationBundle.SuppressRextExceptions
+            SuppressRextExceptions = ConfigurationBundle.SuppressRextExceptions,
+            JsonSerializerOptions = configuration.JsonSerializerOptions,
         };
 
         this.Client = httpClient ?? _localConfigurationBundle.HttpClient ?? new HttpClient();
@@ -703,11 +706,11 @@ public class RextHttpClient : IRextHttpClient, IDisposable
             !deserializeSuccessOnly))
         {
             bool throwExOnFail = options.ThrowExceptionOnDeserializationFailure ?? ConfigurationBundle.HttpConfiguration.ThrowExceptionOnDeserializationFailure;
-            (bool status, string message, T result) output = (false, null, default(T));
+            (bool status, string message, T result) output = (false, null, default);
 
             if (options.ExpectedResponseFormat == ContentType.Application_JSON)
             {
-                output = Helpers.DeserializeJSON<T>(rsp.Content, throwExOnFail);
+                output = Helpers.DeserializeJson<T>(rsp.Content, throwExOnFail, _localConfigurationBundle.JsonSerializerOptions);
             }
             else if (options.ExpectedResponseFormat == ContentType.Application_XML)
             {
@@ -715,8 +718,11 @@ public class RextHttpClient : IRextHttpClient, IDisposable
             }
 
             if (output.status)
+            {
                 newRsp.Data = output.result;
+            }
             else
+            {
                 if (newRsp.StatusCode != HttpStatusCode.OK && !deserializeSuccessOnly)
                 {
                     newRsp.Message = $"Type deserialization failed: To prevent deserialization of unsuccessful response types, set DeserializeSuccessResponseOnly=true";
@@ -730,10 +736,12 @@ public class RextHttpClient : IRextHttpClient, IDisposable
                 {
                     newRsp.Message = output.message;
                 }
+            }
         }
         else
+        {
             newRsp.Message += " --> To allow deserialization even when response status code is not successful, set DeserializeSuccessResponseOnly = false";
-
+        }
 
         return newRsp;
     }
@@ -777,9 +785,8 @@ public class RextHttpClient : IRextHttpClient, IDisposable
 
         try
         {
-            Uri uri = options.CreateUri(Client.BaseAddress?.AbsoluteUri ?? _localConfigurationBundle.HttpConfiguration.BaseUrl);
-            if (uri == null)
-                throw new UriFormatException("Invalid request Uri");
+            Uri uri = options.CreateUri(Client.BaseAddress?.AbsoluteUri ?? _localConfigurationBundle.HttpConfiguration.BaseUrl)
+                ?? throw new UriFormatException("Invalid request Uri");
 
             var requestMsg = new HttpRequestMessage(options.Method, uri);
 
@@ -793,10 +800,18 @@ public class RextHttpClient : IRextHttpClient, IDisposable
             if (_localConfigurationBundle.HttpConfiguration.Header != null)
                 requestMsg.SetHeader(_localConfigurationBundle.HttpConfiguration.Header);
 
-            if (!string.IsNullOrEmpty(options.ContentType))
+            if (!string.IsNullOrEmpty(options.ExpectedResponseFormat))
                 requestMsg.SetHeader("Accept", options.ExpectedResponseFormat);
 
-            // POST request
+
+            // for get requests, content is not expected. but in some cases, get requests without content-type header might get blocked.
+            // so we add an empty content with the specified content-type to avoid such issues. this will not have any effect on the request for other cases.
+            if (options.Method == HttpMethod.Get && options.ForceContentTypeOnGetRequests)
+            {
+                requestMsg.Content = new StringContent("", Encoding.UTF8, options.ContentType);
+            }
+
+
             if (options.Method != HttpMethod.Get && options.Payload != null)
             {
                 string strPayload = string.Empty;
@@ -828,11 +843,13 @@ public class RextHttpClient : IRextHttpClient, IDisposable
                 else
                 {
                     // convert object to specified content-type
-                    if (options.ContentType == ContentType.Application_JSON)
+                    if (options.ContentType == ContentType.Application_JSON &&
+                        options.Payload.GetType() != typeof(string)) // only serialize objects. allow json string to pass through as is
                     {
                         strPayload = options.Payload.ToJson(_localConfigurationBundle.HttpConfiguration?.JsonSerializerOptions);
                     }
-                    else if (options.ContentType == ContentType.Application_XML)
+                    else if (options.ContentType == ContentType.Application_XML &&
+                        options.Payload.GetType() != typeof(string)) // only serialize objects. allow xml string to pass through as is
                     {
                         strPayload = options.Payload.ToXml(_localConfigurationBundle.HttpConfiguration?.DefaultXmlEncoding);
                     }
@@ -916,7 +933,6 @@ public class RextHttpClient : IRextHttpClient, IDisposable
             }
             else
             {
-
                 responseString = await response.Content.ReadAsStringAsync();
             }
 

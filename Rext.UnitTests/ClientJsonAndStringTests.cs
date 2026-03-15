@@ -229,7 +229,7 @@ namespace Rext.UnitTests
         [Theory]
         [InlineData(8, "Record with id 8")]
         [InlineData(9, "Next record with id 9")]
-        [InlineData(10, "Just another ecord with id 10")]
+        [InlineData(10, "Just another record with id 10")]
         public async Task Header_Input_ByExtensionMethodCollectionBulk(int id, string headerText)
         {
             Dictionary<string, string> header = new() {
