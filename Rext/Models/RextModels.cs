@@ -28,8 +28,8 @@ public class RextConfigurationBundle
     /// <summary>
     /// Execute action after any http call
     /// </summary>
-    /// <remarks>Url and Response are available</remarks>
-    public Action<string, CustomHttpResponse> AfterCall { get; set; }
+    /// <remarks>Url, Response, and Stopwatch are available. <see cref="EnableStopwatch"/> must be set to true for Stopwatch to have a value</remarks>
+    public Action<string, CustomHttpResponse, Stopwatch> AfterCall { get; set; }
 
     /// <summary>
     /// Execute action when an exception is thrown by RextHttpClient

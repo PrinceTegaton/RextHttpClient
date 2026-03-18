@@ -36,11 +36,6 @@ public class RextHttpClient : IRextHttpClient, IDisposable
     public List<ResiliencyPolicy> ResiliencyPolicies { get; set; } = new List<ResiliencyPolicy>();
 
     /// <summary>
-    /// Get execution time of the http call when configured to run
-    /// </summary>
-    public Stopwatch Stopwatch { get; private set; }
-
-    /// <summary>
     /// Set request timeout
     /// </summary>
     public TimeSpan? Timeout { get; set; }
@@ -779,13 +774,15 @@ public class RextHttpClient : IRextHttpClient, IDisposable
         // execute all user actions pre-call
         _localConfigurationBundle.BeforeCall?.Invoke();
 
+        Uri uri = null;
         var rsp = new CustomHttpResponse<string>();
         var response = new HttpResponseMessage();
         string responseString = string.Empty;
+        Stopwatch stopwatch = null;
 
         try
         {
-            Uri uri = options.CreateUri(Client.BaseAddress?.AbsoluteUri ?? _localConfigurationBundle.HttpConfiguration.BaseUrl)
+            uri = options.CreateUri(Client.BaseAddress?.AbsoluteUri ?? _localConfigurationBundle.HttpConfiguration.BaseUrl)
                 ?? throw new UriFormatException("Invalid request Uri");
 
             var requestMsg = new HttpRequestMessage(options.Method, uri);
@@ -865,7 +862,7 @@ public class RextHttpClient : IRextHttpClient, IDisposable
             // use stopwatch to monitor httpcall duration
             if (_localConfigurationBundle.EnableStopwatch)
             {
-                Stopwatch = Stopwatch.StartNew();
+                stopwatch = Stopwatch.StartNew();
             }
 
             // check if HttpCompletionOption option is used
@@ -878,7 +875,7 @@ public class RextHttpClient : IRextHttpClient, IDisposable
             // set watch value to public member
             if (_localConfigurationBundle.EnableStopwatch)
             {
-                Stopwatch.Stop();
+                stopwatch.Stop();
             }
 
 
@@ -989,8 +986,6 @@ public class RextHttpClient : IRextHttpClient, IDisposable
                     _localConfigurationBundle.OnStatusCode?.Invoke(ReturnStatusCode);
             }
 
-            // execute all user actions post-call
-            _localConfigurationBundle.AfterCall?.Invoke(uri.ToString(), rsp);
             return rsp;
         }
         catch (Exception ex)
@@ -1014,6 +1009,11 @@ public class RextHttpClient : IRextHttpClient, IDisposable
                 rsp.Message = ex?.Message; //{ex?.InnerException?.Message ?? ex?.InnerException?.Message}";
 
             return rsp;
+        }
+        finally
+        {
+            // execute all user actions post-call and give access to url, response, and duration of http call
+            _localConfigurationBundle.AfterCall?.Invoke(uri?.ToString(), rsp, stopwatch);
         }
     }
 
@@ -1039,7 +1039,6 @@ public class RextHttpClient : IRextHttpClient, IDisposable
             if (disposing)
             {
                 this.Client.Dispose();
-                this.Stopwatch = null;
             }
 
             _disposed = true;

@@ -36,6 +36,11 @@ public class CustomHttpResponse
     /// Handled exception data
     /// </summary>
     public Exception Exception { get; set; }
+
+    /// <summary>
+    /// Get execution time of the http call when configured to run
+    /// </summary>
+    public Stopwatch Stopwatch { get; }
 }
 
 /// <summary>

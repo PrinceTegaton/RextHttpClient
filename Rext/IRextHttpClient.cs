@@ -16,11 +16,6 @@ public interface IRextHttpClient
     List<ResiliencyPolicy> ResiliencyPolicies { get; }
 
     /// <summary>
-    /// Get execution time of the http call when configured to run
-    /// </summary>
-    Stopwatch Stopwatch { get; }
-
-    /// <summary>
     /// Set request timeout
     /// </summary>
     TimeSpan? Timeout { get; set; }
