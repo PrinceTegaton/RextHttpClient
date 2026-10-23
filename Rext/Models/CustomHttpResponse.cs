@@ -36,6 +36,11 @@ public class CustomHttpResponse
     /// Handled exception data
     /// </summary>
     public Exception Exception { get; set; }
+
+    /// <summary>
+    /// Stopwatch tracking http call duration. This is available only when the request or global configuration has enabled stopwatch
+    /// </summary>
+    public Stopwatch Stopwatch { get; set; }
 }
 
 /// <summary>
