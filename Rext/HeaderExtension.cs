@@ -123,14 +123,17 @@ public static class HeaderExtension
         // process from a single object
         else
         {
-            PropertyInfo headerItem = header.GetType().GetProperties().FirstOrDefault();
-            string value = headerItem?.GetValue(header, null)?.ToString();
-
-            RemoveDuplicate(requestObj, headerItem?.Name);
-
-            if (!string.IsNullOrEmpty(value))  // prevent adding null header item
+            foreach (PropertyInfo headerItem in header.GetType().GetProperties())
             {
-                requestObj.Headers.TryAddWithoutValidation(headerItem?.Name, value);
+                string name = headerItem.Name;
+                string value = headerItem.GetValue(header)?.ToString();
+
+                RemoveDuplicate(requestObj, name);
+
+                if (!string.IsNullOrEmpty(value))
+                {
+                    requestObj.Headers.TryAddWithoutValidation(name, value);
+                }
             }
         }
     }

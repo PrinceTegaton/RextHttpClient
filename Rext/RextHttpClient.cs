@@ -442,7 +442,7 @@ public class RextHttpClient : IRextHttpClient, IDisposable
             Header = header,
             Payload = payload,
             ContentType = ContentType.Application_JSON,
-            ExpectedResponseFormat = ContentType.Application_JSON
+            ExpectedResponseFormat = ContentType.Application_JSON,
         });
 
         return data;
@@ -696,7 +696,9 @@ public class RextHttpClient : IRextHttpClient, IDisposable
             StatusCode = rsp.StatusCode,
             Message = rsp.Message,
             Content = rsp.Content,
-            Headers = rsp.Headers
+            Headers = rsp.Headers,
+            Exception = rsp.Exception,
+            Stopwatch = rsp.Stopwatch
         };
 
         bool deserializeSuccessOnly = options?.DeserializeSuccessResponseOnly ?? _localConfigurationBundle.HttpConfiguration.DeserializeSuccessResponseOnly;
@@ -751,8 +753,9 @@ public class RextHttpClient : IRextHttpClient, IDisposable
 
     private async Task<CustomHttpResponse<string>> ProcessRequest(RextOptions options)
     {
-        ResiliencyPolicy policy = null;
+        ResiliencyPolicy enforcableResiliencyPolicy = null;
         int retryCount = 0;
+
     start:
         if (this.Client == null)
             throw new ArgumentNullException("HttpClient object cannot be null");
@@ -883,44 +886,63 @@ public class RextHttpClient : IRextHttpClient, IDisposable
 
 
             #region handle resiliency policies
-            List<ResiliencyPolicy> resiliencyPolicies = null;
-            if (_localConfigurationBundle.MergeResiliencyPoliciesAddedFromExtension)
+            if (enforcableResiliencyPolicy == null)
             {
-                // merge global and local policies
-                if (this.ResiliencyPolicies != null && this.ResiliencyPolicies.Any())
+                // a one-time use policy list is created to ensure that the global policies are not modified by local policies.
+                // this is to avoid unexpected behavior when multiple calls are made with different local policies.
+                List<ResiliencyPolicy> resiliencyPolicies = new();
+
+                if (_localConfigurationBundle.MergeResiliencyPoliciesAddedFromExtension)
                 {
-                    resiliencyPolicies = _localConfigurationBundle.ResiliencyPolicies;
-                    resiliencyPolicies.AddRange(ResiliencyPolicies);
+                    // merge global and local policies
+                    if (this.ResiliencyPolicies != null && this.ResiliencyPolicies.Count > 0)
+                    {
+                        if (_localConfigurationBundle.ResiliencyPolicies != null && _localConfigurationBundle.ResiliencyPolicies.Count > 0)
+                        {
+                            // add global policies first
+                            resiliencyPolicies.AddRange(_localConfigurationBundle.ResiliencyPolicies);
+                        }
+
+                        // add local policies next
+                        resiliencyPolicies.AddRange(ResiliencyPolicies);
+                    }
+                }
+                else
+                {
+                    // override global policies
+                    resiliencyPolicies = ResiliencyPolicies ?? _localConfigurationBundle.ResiliencyPolicies;
+                }
+
+                if (resiliencyPolicies != null && resiliencyPolicies.Count > 0)
+                {
+                    // check for a policy matching the response status code
+
+                    enforcableResiliencyPolicy ??= resiliencyPolicies.FirstOrDefault(a =>
+                        (a.StatusCodes.Contains((int)response.StatusCode) || a.StatusCode == (int)response.StatusCode) &&
+                        (options?.IgnoreStatusCodeInResiliencyPolicies != null &&
+                        !options.IgnoreStatusCodeInResiliencyPolicies.Contains((int)response.StatusCode)));
                 }
             }
             else
             {
-                // override global policies
-                resiliencyPolicies = ResiliencyPolicies ?? _localConfigurationBundle.ResiliencyPolicies;
-            }
-
-            if (policy != null || (resiliencyPolicies != null && resiliencyPolicies.Any()))
-            {
-                policy ??= _localConfigurationBundle.ResiliencyPolicies.FirstOrDefault(a => (a.StatusCodes.Contains((int)response.StatusCode) || a.StatusCode == (int)response.StatusCode) &&
-                (options?.IgnoreStatusCodeInResiliencyPolicies != null &&
-                !options.IgnoreStatusCodeInResiliencyPolicies.Contains((int)response.StatusCode)));
-
-                if (policy != null && retryCount < policy.Retry)
+                // perform retry of http call based on counter value configured in the policy
+                if (retryCount < enforcableResiliencyPolicy.Retry)
                 {
-                    if (policy.Interval.HasValue)
+                    if (enforcableResiliencyPolicy.Interval.HasValue)
                     {
-                        await Task.Delay(policy.Interval.Value);
+                        await Task.Delay(enforcableResiliencyPolicy.Interval.Value);
                     }
 
                     retryCount++;
                     goto start;
                 }
-
             }
+
             #endregion
 
             rsp.StatusCode = response.StatusCode;
             rsp.Retries = retryCount;
+            rsp.Stopwatch = Stopwatch;
 
             if (options.IsStreamResponse)
             {
